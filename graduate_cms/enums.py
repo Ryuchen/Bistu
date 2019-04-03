@@ -35,12 +35,29 @@ class DegreeChoice(Enum):
     D1 = "博士"
     D2 = "硕士"
     D3 = "本科"
+    D4 = "本硕连读"
+    D5 = "硕博连读"
+    D6 = "直博"
 
 
 class StatusChoice(Enum):
     S1 = "在校"
     S2 = "离校"
     S3 = "留校"
+
+
+class LearnTypeChoice(Enum):
+    L1 = "全日制"
+    L2 = '非全日制'
+
+
+class EducationChoice(Enum):
+    L1 = '硕士'
+    L2 = '博士'
+
+
+
+
 
 
 
