@@ -7,9 +7,15 @@
 # @File : errors.py 
 # @Desc : 
 # ==================================================
-import json
-
 from rest_framework import status
+
+
+class AuthenticateError(Exception):
+    code = status.HTTP_401_UNAUTHORIZED
+    details = ""
+
+    def __init__(self, details=None):
+        self.details = details
 
 
 class ForbiddenError(Exception):
@@ -17,8 +23,5 @@ class ForbiddenError(Exception):
     details = ""
 
     def __init__(self, details=None):
-        if type(details) is str:
-            self.details = json.loads(details)
-        else:
-            self.details = details
+        self.details = details
 

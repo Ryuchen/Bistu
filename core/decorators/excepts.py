@@ -57,6 +57,16 @@ def excepts(func):
         }
         try:
             return func(*args, **kwargs)
+        except AuthenticateError as e:
+            res["meta"]['message'] = 'Unauthenticated'
+            res["meta"]["details"] = "{0}".format(e.details)
+            res["meta"]['code'] = e.code
+            return JsonResponse(res, status=e.code)
+        except ForbiddenError as e:
+            res["meta"]['message'] = 'Forbidden'
+            res["meta"]["details"] = "{0}".format(e.details)
+            res["meta"]['code'] = e.code
+            return JsonResponse(res, status=e.code)
         except ConnectionError as e:
             res["meta"]['message'] = 'Engine connection error'
             res["meta"]["details"] = "{0}".format(e)
@@ -73,6 +83,7 @@ def excepts(func):
             res["meta"]['code'] = status.HTTP_405_METHOD_NOT_ALLOWED
             return JsonResponse(res, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         except (TypeError, KeyError, SyntaxError, ValueError, AttributeError) as e:
+            log.error("{0}".format(e), exc_info=True)
             res["meta"]['message'] = 'BAD REQUEST'
             res["meta"]["details"] = "{0}".format(e)
             res["meta"]['code'] = status.HTTP_400_BAD_REQUEST

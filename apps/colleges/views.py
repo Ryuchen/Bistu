@@ -7,11 +7,13 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
+from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from core.decorators.excepts import excepts
 from core.exceptions.errors import ForbiddenError
+from contrib.academy.models import Academy
 
 
 @csrf_exempt
@@ -23,6 +25,7 @@ def academy_view(request):
             "status": 200,
         }
     }
+
     return JsonResponse(res)
 
 
@@ -35,6 +38,13 @@ def academies_view(request):
             "status": 200,
         }
     }
+
+    if request.method == "GET":
+        academies = Academy.objects.get()
+        res["data"]["academies"] = serializers.serialize('json', academies)
+    else:
+        raise NotImplementedError
+
     return JsonResponse(res)
 
 
