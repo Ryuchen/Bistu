@@ -9,7 +9,8 @@
 # ==================================================
 import uuid
 
-from contrib.defines.enums import *
+from core.definition.enums import *
+
 from contrib.academy.models import Academy, Major
 
 from django.db import models

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'contrib.users.apps.UsersConfig',
     'contrib.academy.apps.AcademyConfig',
     'contrib.cultivate.apps.CultivateConfig',
+    'core',
 ]
 
 MIDDLEWARE = [

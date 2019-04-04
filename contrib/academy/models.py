@@ -34,7 +34,7 @@ class Major(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     maj_name = models.CharField(max_length=128, null=True, help_text="学科专业名称")
     maj_code = models.IntegerField(null=True, help_text="学科专业编号")
-    research = models.ManyToManyField(Research, help_text="科研方向")
+    research = models.ManyToManyField(Research, help_text="研究方向")
 
     def __str__(self):
         return str(self.maj_code) + self.maj_name
