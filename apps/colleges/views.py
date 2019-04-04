@@ -7,102 +7,177 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
-from django.core import serializers
-from django.http import JsonResponse
+from rest_framework import generics, status
+from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework_bulk import generics
 from core.decorators.excepts import excepts
-from core.exceptions.errors import ForbiddenError
-from contrib.academy.models import Academy
+from contrib.academy.models import Academy, Major
+from .serializers import MajorSerializers, AcademySerializers
 
 
-@csrf_exempt
-@excepts
-def academy_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-
-    return JsonResponse(res)
+class SimpleMajor(object):
+	model = Major
+	queryset = Major.objects.all()
+	serializer_class = MajorSerializers
 
 
-@csrf_exempt
-@excepts
-def academies_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
+class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
+	@excepts
+	@csrf_exempt
+	def get(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		instance = self.get_object()
+		serializer = self.get_serializer(instance)
+		res['data'] = serializer.data
+		return Response(res)
 
-    if request.method == "GET":
-        academies = Academy.objects.get()
-        res["data"]["academies"] = serializers.serialize('json', academies)
-    else:
-        raise NotImplementedError
+	@excepts
+	@csrf_exempt
+	def put(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		partial = kwargs.pop('partial', False)
+		instance = self.get_object()
+		serializer = self.get_serializer(instance, data=request.data, partial=partial)
+		serializer.is_valid(raise_exception=True)
+		self.perform_update(serializer)
+		return Response(res)
 
-    return JsonResponse(res)
-
-
-@csrf_exempt
-@excepts
-def academies_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-    return JsonResponse(res)
-
-
-@csrf_exempt
-@excepts
-def major_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-    return JsonResponse(res)
-
-
-@csrf_exempt
-@excepts
-def majors_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-    return JsonResponse(res)
+	@excepts
+	@csrf_exempt
+	def delete(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		instance = self.get_object()
+		self.perform_destroy(instance)
+		return Response(res)
 
 
-@csrf_exempt
-@excepts
-def research_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-    return JsonResponse(res)
+class MajorList(SimpleMajor, generics.ListCreateAPIView):
+	@excepts
+	@csrf_exempt
+	def get(self, request, *args, **kwargs):
+		res = {
+			'code': status.HTTP_200_OK,
+			'data': []
+		}
+		queryset = self.filter_queryset(self.get_queryset())
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = self.get_serializer(page, many=True)
+		else:
+			serializer = self.get_serializer(queryset, many=True)
+		res["data"] = serializer.data
+
+		return Response(res)
+
+	# 添加
+	@excepts
+	@csrf_exempt
+	def post(self, request, *args, **kwargs):
+		res = {
+			'code': status.HTTP_200_OK,
+			'data': {}
+		}
+		serializer = self.get_serializer(data=request.data)
+		serializer.is_valid(raise_exception=True)
+		self.perform_create(serializer)
+		res['data'] = serializer.data
+		return Response(res)
 
 
-@csrf_exempt
-@excepts
-def researches_view(request):
-    res = {
-        "code": "00000000",
-        "data": {
-            "status": 200,
-        }
-    }
-    return JsonResponse(res)
+class SimpleAcademy(object):
+	model = Academy
+	queryset = Academy.objects.all()
+	serializer_class = AcademySerializers
+
+
+class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
+	@excepts
+	@csrf_exempt
+	def get(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		instance = self.get_object()
+		serializer = self.get_serializer(instance)
+		res['data'] = serializer.data
+		return Response(res)
+
+	@excepts
+	@csrf_exempt
+	def put(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		partial = kwargs.pop('partial', False)
+		instance = self.get_object()
+		serializer = self.get_serializer(instance, data=request.data, partial=partial)
+		serializer.is_valid(raise_exception=True)
+		self.perform_update(serializer)
+		return Response(res)
+
+	@excepts
+	@csrf_exempt
+	def delete(self, request, *args, **kwargs):
+		res = {
+			"code": "00000000",
+			"data": {
+				"status": 200,
+			}
+		}
+		instance = self.get_object()
+		self.perform_destroy(instance)
+		return Response(res)
+
+
+class AcademyList(SimpleAcademy, generics.ListCreateAPIView):
+	@excepts
+	@csrf_exempt
+	def get(self, request, *args, **kwargs):
+		res = {
+			'code': status.HTTP_200_OK,
+			'data': []
+		}
+		queryset = self.filter_queryset(self.get_queryset())
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = self.get_serializer(page, many=True)
+		else:
+			serializer = self.get_serializer(queryset, many=True)
+		res["data"] = serializer.data
+		return Response(res)
+
+	# 添加
+	@excepts
+	@csrf_exempt
+	def post(self, request, *args, **kwargs):
+		res = {
+			'code': status.HTTP_200_OK,
+			'data': {}
+		}
+		serializer = self.get_serializer(data=request.data)
+		serializer.is_valid(raise_exception=True)
+		self.perform_create(serializer)
+		res['data'] = serializer.data
+		return Response(res)

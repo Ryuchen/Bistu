@@ -7,15 +7,12 @@
 # @File : urls.py 
 # @Desc : 
 # ==================================================
-from . import views
-
 from django.conf.urls import url
+from .views import MajorList, MajorDetail, AcademyList, AcademyDetail
 
 urlpatterns = [
-    url(r"^research/$", views.research_view, name="research"),
-    url(r"^researches/$", views.researches_view, name="researches"),
-    url(r"^major/$", views.major_view, name="major"),
-    url(r"^majors/$", views.majors_view, name="majors"),
-    url(r"^academy/$", views.academy_view, name="academy"),
-    url(r"^academies/$", views.academies_view, name="academies"),
+    url(r"^majors$", MajorList.as_view(), name="major-list"),
+    url(r"^major/(?P<pk>\d+)$", MajorDetail.as_view(), name="major-detail"),
+    url(r"^academies$", AcademyList.as_view(), name="academy-list"),
+    url(r"^academy/(?P<pk>\d+)$", AcademyDetail.as_view(), name="academy-detail"),
 ]
