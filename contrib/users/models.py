@@ -55,7 +55,7 @@ class Tutor(models.Model):
     """
     导师模型
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='users')
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
     tut_gender = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
     tut_title = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in TitleChoice], help_text="职称")
@@ -66,7 +66,7 @@ class Tutor(models.Model):
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_degree = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in DegreeChoice], help_text="学位")
     education = models.OneToOneField(Education, null=True, on_delete=models.SET_NULL, help_text="学历")
-    academy = models.OneToOneField(Academy, null=True, on_delete=models.SET_NULL, help_text="所属学院")
+    academy = models.OneToOneField(Academy, null=True, on_delete=models.SET_NULL, related_name='academies', help_text="所属学院")
     major = models.ManyToManyField(Major)
 
     def __str__(self):
@@ -120,8 +120,8 @@ class Student(models.Model):
     stu_status = models.CharField(max_length=64, null=False, choices=[(tag.name, tag.value) for tag in StatusChoice],
                                   help_text="在学状态", default='S1')
     stu_is_superb = models.BooleanField(default=False, help_text="是否优秀毕业生")
-    stu_class = models.OneToOneField(Class, null=True, on_delete=models.SET_NULL, help_text="所属班级")
-    education = models.OneToOneField(Education, null=True, on_delete=models.SET_NULL, help_text="学历")
+    stu_class = models.CharField(max_length=128, null=True, on_delete=models.SET_NULL, help_text="所属班级")
+    education = models.CharField(max_length=64, null=True, on_delete=models.SET_NULL, help_text="学历")
     academy = models.OneToOneField(Academy, null=True, on_delete=models.SET_NULL, help_text='所属学院')
     tutor = models.OneToOneField(Tutor, null=True, on_delete=models.SET_NULL, help_text="指导老师")
     major = models.OneToOneField(Major, null=True, on_delete=models.SET_NULL, help_text="学科专业")

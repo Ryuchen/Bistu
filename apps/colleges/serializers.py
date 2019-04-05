@@ -20,7 +20,7 @@ class MajorSerializers(serializers.ModelSerializer):
 
 class AcademySerializers(serializers.ModelSerializer):
 	""" 学院 """
-	majors = serializers.SlugRelatedField(many=True, read_only=True, slug_field='maj_name')
+	majors = serializers.SlugRelatedField(many=True, queryset=Major.objects.filter(), slug_field='maj_name')
 
 	class Meta:
 		model = Academy

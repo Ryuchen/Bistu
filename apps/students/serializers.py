@@ -9,18 +9,7 @@
 # ==================================================
 from rest_framework import serializers
 from contrib.users.models import Student, Education, Class, Tutor
-
-
-class EducationSerializers(serializers.ModelSerializer):
-	class Meta:
-		model = Education
-		fields = '__all__'
-
-
-class ClassSerializers(serializers.ModelSerializer):
-	class Meta:
-		model = Class
-		fields = '__all__'
+from contrib.academy.models import Academy, Major
 
 
 class TutorSerializers(serializers.ModelSerializer):
@@ -30,6 +19,11 @@ class TutorSerializers(serializers.ModelSerializer):
 
 
 class StudentSerializers(serializers.ModelSerializer):
+	classes = serializers.SlugRelatedField(many=False, queryset=Class.objects.all(), slug_field='maj_name')
+	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='academy')
+	major = serializers.SlugRelatedField(many=False, queryset=Major.objects.all(), slug_field='majors')
+	tutor = serializers.SlugRelatedField(many=False, queryset=Tutor.objects.all(), slug_field='tutor')
+
 	class Meta:
 		model = Student
 		fields = '__all__'
