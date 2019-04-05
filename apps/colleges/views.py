@@ -92,23 +92,6 @@ class MajorList(SimpleMajor, generics.ListCreateAPIView):
 			'code': status.HTTP_200_OK,
 			'data': {}
 		}
-		# bulk create
-		# data = [
-		# 	{"maj_name": "现代设计理论与方法学科方向", "maj_code": "01", "maj_type": "一级学科硕士学位"},
-		# 	{"maj_name": "汽车系统动力学与控制学科方向", "maj_code": "02", "maj_type": "一级学科硕士学位"},
-		# 	{"maj_name": "机器人技术学科方向", "maj_code": "03", "maj_type": "一级学科硕士学位"},
-		# 	{"maj_name": "智能制造学科方向", "maj_code": "04", "maj_type": "一级学科硕士学位"},
-		# 	{"maj_name": "机电系统测控与信息化学科方向", "maj_code": "05", "maj_type": "一级学科硕士学位"},
-		# 	{"maj_name": "车辆工程领域", "maj_code": "06", "maj_type": "工程硕士专业学位"},
-		# 	{"maj_name": "机械工程领域", "maj_code": "07", "maj_type": "工程硕士专业学位"}
-		# ]
-
-		# single create
-		data = {
-			"maj_name": "AI人工职能",
-			"maj_code": "08",
-			"maj_type": "工程硕士专业学位"
-		}
 		data = request.data
 		bulk = isinstance(data, list)
 

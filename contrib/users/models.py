@@ -55,7 +55,8 @@ class Tutor(models.Model):
     """
     导师模型
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='users')
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
     tut_gender = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
     tut_title = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in TitleChoice], help_text="职称")
@@ -65,12 +66,11 @@ class Tutor(models.Model):
     tut_political = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in PoliticalChoice], help_text="政治面貌")
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_degree = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in DegreeChoice], help_text="学位")
-    education = models.OneToOneField(Education, null=True, on_delete=models.SET_NULL, help_text="学历")
-    academy = models.OneToOneField(Academy, null=True, on_delete=models.SET_NULL, related_name='academies', help_text="所属学院")
-    major = models.ManyToManyField(Major)
+    education = models.OneToOneField(Education, null=True, on_delete=True, related_name='education', help_text="学历")
+    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
 
-    def __str__(self):
-        return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.last_name + self.user.first_name)
+    # def __str__(self):
+    #     return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.last_name + self.user.first_name)
 
     class Meta:
         verbose_name = "导师"
@@ -81,12 +81,13 @@ class Student(models.Model):
     """
     学生模型
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user')
     stu_number = models.IntegerField(null=False, unique=True, help_text="学号", default='001')
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice],
                                   help_text="性别")
     stu_card_type = models.CharField(max_length=128, null=False, help_text='身份证件类型', default="身份证")
-    stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="")
+    stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="12345")
     stu_candidate_number = models.CharField(max_length=128, null=True, help_text="考生号")
     stu_birth_day = models.DateField(help_text="出生日期")
     stu_nation = models.CharField(max_length=64, null=False, help_text='民族', default='汉')
@@ -102,14 +103,14 @@ class Student(models.Model):
                                         choices=[(tag.name, tag.value) for tag in DegreeChoice])
     stu_grade = models.CharField(max_length=64, null=False, help_text='年级', default='1')
     stu_system = models.IntegerField(null=False, help_text='学制', default=3)
-    stu_entrance_time = models.CharField(max_length=32, null=False, help_text='入学时间', default='2019-09')
+    stu_entrance_time = models.CharField(max_length=32, null=False, help_text='入学日期', default='2019-09')
     stu_graduation_time = models.CharField(max_length=32, null=False, help_text='毕业日期', default='2021-07')
     stu_cultivating_mode = models.CharField(max_length=128, null=False, help_text='培养方式', default='C1',
                                             choices=[(tag.name, tag.value) for tag in CultivatingMode])
     stu_enrollment_category = models.CharField(max_length=64, null=False,
                                                choices=[(tag.name, tag.value) for tag in EnrollmentCategory],
                                                help_text='录取类别', default='E1')
-    stu_nationality = models.CharField(max_length=128, null=False, help_text='国籍', default='中国')
+    stu_natioanlity = models.CharField(max_length=128, null=False, help_text='国籍', default='中国')
     stu_special_program = models.CharField(max_length=128, null=False,
                                            choices=[(tag.name, tag.value) for tag in SpecialProgram],
                                            help_text='专项计划', default='S1')
@@ -120,11 +121,10 @@ class Student(models.Model):
     stu_status = models.CharField(max_length=64, null=False, choices=[(tag.name, tag.value) for tag in StatusChoice],
                                   help_text="在学状态", default='S1')
     stu_is_superb = models.BooleanField(default=False, help_text="是否优秀毕业生")
-    stu_class = models.CharField(max_length=128, null=True, on_delete=models.SET_NULL, help_text="所属班级")
-    education = models.CharField(max_length=64, null=True, on_delete=models.SET_NULL, help_text="学历")
-    academy = models.OneToOneField(Academy, null=True, on_delete=models.SET_NULL, help_text='所属学院')
-    tutor = models.OneToOneField(Tutor, null=True, on_delete=models.SET_NULL, help_text="指导老师")
-    major = models.OneToOneField(Major, null=True, on_delete=models.SET_NULL, help_text="学科专业")
+    stu_class = models.CharField(max_length=128, null=True, help_text="所属班级")
+    academy = models.ForeignKey(Academy, null=True, on_delete=models.SET_NULL, related_name='stu_academy', help_text='所属学院')
+    tutor = models.ForeignKey(Tutor, null=True, related_name='stu_tutor', on_delete=models.SET_NULL, help_text="指导老师")
+    major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
 
     def __str__(self):
         return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.last_name + self.user.first_name)

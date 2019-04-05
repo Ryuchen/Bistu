@@ -7,12 +7,27 @@
 # @File : views.py 
 # @Desc : 
 # ==================================================
+import json
+from django.contrib.auth.hashers import make_password
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from core.decorators.excepts import excepts
-from contrib.users.models import Tutor
+from contrib.users.models import Tutor, Education
 from .serializers import TutorSerializers
+
+
+def user_chanle(username):
+	user = dict()
+	if username:
+		user['username'] = username
+		user['first_name'] = username
+		user['last_name'] = username
+		user['password'] = make_password('1234567')
+		user['is_superusre'] = False
+		user['is_staff'] = True
+		user['is_active'] = True
+	return user
 
 
 class SimpleTutor(object):
@@ -45,9 +60,12 @@ class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
 				"status": 200,
 			}
 		}
+		data = request.data
+		username = data.get('user')
+		data["user"] = user_chanle(username)
 		partial = kwargs.pop('partial', False)
 		instance = self.get_object()
-		serializer = self.get_serializer(instance, data=request.data, partial=partial)
+		serializer = self.get_serializer(instance, data=data, partial=partial, context={"academy": "", 'user': "", "education": ""})
 		serializer.is_valid(raise_exception=True)
 		self.perform_update(serializer)
 		return Response(res)
@@ -94,12 +112,17 @@ class TutorList(SimpleTutor, generics.ListCreateAPIView):
 		}
 		data = request.data
 		bulk = isinstance(data, list)
-
 		if not bulk:
-			serializer = self.get_serializer(data=data)
+			username = data.get('user')
+			data["user"] = user_chanle(username)
+			serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
 		else:
-			serializer = self.get_serializer(data=data, many=True)
+			for item in data:
+				username = item['user']
+				item["user"] = user_chanle(username)
+			serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": "", "education": ""})
 		serializer.is_valid(raise_exception=True)
 		self.perform_create(serializer)
 		res['data'] = serializer.data
 		return Response(res)
+
