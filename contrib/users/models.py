@@ -58,19 +58,19 @@ class Tutor(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
-    tut_gender = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
-    tut_title = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in TitleChoice], help_text="职称")
+    tut_gender = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in GenderChoice]), help_text="性别")
+    tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]), help_text="职称")
     tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
     tut_birth_day = models.DateField(help_text="出生日期")
     tut_entry_day = models.DateField(help_text="入职日期")
-    tut_political = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in PoliticalChoice], help_text="政治面貌")
+    tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]), help_text="政治面貌")
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
-    tut_degree = models.CharField(max_length=64, choices=[(tag.name, tag.value) for tag in DegreeChoice], help_text="学位")
+    tut_degree = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]), help_text="学位")
     education = models.OneToOneField(Education, null=True, on_delete=True, related_name='education', help_text="学历")
     academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
 
-    # def __str__(self):
-    #     return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.last_name + self.user.first_name)
+    def __str__(self):
+        return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.last_name + self.user.first_name)
 
     class Meta:
         verbose_name = "导师"
@@ -127,6 +127,15 @@ class Student(models.Model):
     major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
 
     def __str__(self):
+        self.stu_gender = self.get_stu_gender_display()
+        self.stu_political = self.get_stu_political_display()
+        self.stu_type = self.get_stu_type_display()
+        self.stu_learn_type = self.get_stu_learn_type_display()
+        self.stu_learn_status = self.get_stu_learn_status_display()
+        self.stu_cultivating_mode = self.get_stu_cultivating_mode_display()
+        self.stu_enrollment_category = self.get_stu_enrollment_category_display()
+        self.stu_special_program = self.get_stu_special_program_display()
+        self.stu_status = self.get_stu_status_display()
         return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.last_name + self.user.first_name)
 
     class Meta:
