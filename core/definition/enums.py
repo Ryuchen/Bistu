@@ -57,8 +57,8 @@ class StudentCategory(Enum):
 
 
 class CultivatingMode(Enum):
-    C1 = "专业学位"
-    C2 = "专业学位"
+    C1 = "专硕"
+    C2 = "学硕"
 
 
 class EnrollmentCategory(Enum):
@@ -78,5 +78,22 @@ class SpecialProgram(Enum):
     S9 = '其他'
 
 
+class MajorType(Enum):
+    C1 = "专业硕士学位"
+    C2 = "学科硕士学位"
 
 
+class MajorDegree(Enum):
+    D1 = "哲学"
+    D2 = "经济学"
+    D3 = "法学"
+    D4 = "教育学"
+    D5 = "文学"
+    D6 = "历史学"
+    D7 = "理学"
+    D8 = "工学"
+    D9 = "农学"
+    D10 = "医学"
+    D11 = "军事学"
+    D12 = "管理学"
+    D13 = "艺术学"
