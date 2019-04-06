@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="6de76920-fac1-4a48-8d0e-e4d6594d2681" name="Default" comment="" />
+=======
+    <list default="true" id="6de76920-fac1-4a48-8d0e-e4d6594d2681" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/colleges/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/colleges/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/colleges/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/colleges/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/teachers/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/teachers/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/teachers/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/teachers/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/users/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+    </list>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,12 +31,109 @@
     <option name="HIDDEN_KINDS">
       <set />
     </option>
+<<<<<<< HEAD
     <expand />
+=======
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="db" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="db" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="db" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="main: schema" type="90513b60:SqliteImplModel$Schema" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="db" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="main: schema" type="90513b60:SqliteImplModel$Schema" />
+        <item name="academy_academy: table" type="ffe0bd85:SqliteImplModel$Table" />
+      </path>
+    </expand>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <select />
   </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
+<<<<<<< HEAD
+=======
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/colleges/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="232" column="23" lean-forward="true" selection-start-line="232" selection-start-column="23" selection-end-line="232" selection-end-column="23" />
+              <folding>
+                <element signature="e#242#253#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/teachers/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="260">
+              <caret line="10" column="41" lean-forward="true" selection-start-line="10" selection-start-column="41" selection-end-line="10" selection-end-column="41" />
+              <folding>
+                <element signature="e#242#274#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/teachers/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="183">
+              <caret line="144" column="35" lean-forward="true" selection-start-line="144" selection-start-column="35" selection-end-line="144" selection-end-column="35" />
+              <folding>
+                <element signature="e#243#254#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/contrib/users/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="317">
+              <caret line="71" column="22" lean-forward="true" selection-start-line="71" selection-start-column="22" selection-end-line="71" selection-end-column="22" />
+              <folding>
+                <element signature="e#239#250#0" expanded="true" />
+                <element signature="e#3149#7445#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/teachers/serializers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="381">
+              <caret line="36" column="15" lean-forward="true" selection-start-line="36" selection-start-column="15" selection-end-line="36" selection-end-column="15" />
+              <folding>
+                <element signature="e#240#275#0" expanded="true" />
+                <element signature="e#941#1284#0" />
+                <element signature="e#1333#1683#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -39,6 +148,7 @@
       <find>用户管理系统</find>
       <find>maj_name</find>
       <find>on_delete</find>
+      <find>os.path</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\libin\Desktop\student_manage</dir>
@@ -64,22 +174,25 @@
         <option value="$PROJECT_DIR$/core/management/commands/fake_data.py" />
         <option value="$PROJECT_DIR$/contrib/academy/models.py" />
         <option value="$PROJECT_DIR$/apps/teachers/seriazelizers.py" />
-        <option value="$PROJECT_DIR$/apps/colleges/urls.py" />
         <option value="$PROJECT_DIR$/apps/teachers/urls.py" />
         <option value="$PROJECT_DIR$/contrib/users/apps.py" />
         <option value="$PROJECT_DIR$/web/settings.py" />
         <option value="$PROJECT_DIR$/core/definition/enums.py" />
         <option value="$PROJECT_DIR$/apps/colleges/serializers.py" />
-        <option value="$PROJECT_DIR$/web/urls.py" />
         <option value="$PROJECT_DIR$/apps/accounts/serializers.py" />
-        <option value="$PROJECT_DIR$/apps/teachers/views.py" />
-        <option value="$PROJECT_DIR$/apps/teachers/serializers.py" />
         <option value="$PROJECT_DIR$/apps/students/urls.py" />
-        <option value="$PROJECT_DIR$/apps/colleges/views.py" />
-        <option value="$PROJECT_DIR$/contrib/users/models.py" />
         <option value="$PROJECT_DIR$/apps/students/serializers.py" />
         <option value="$PROJECT_DIR$/apps/students/views.py" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/.gitignore" />
+=======
+        <option value="$PROJECT_DIR$/web/urls.py" />
+        <option value="$PROJECT_DIR$/apps/colleges/urls.py" />
+        <option value="$PROJECT_DIR$/apps/colleges/views.py" />
+        <option value="$PROJECT_DIR$/apps/teachers/views.py" />
+        <option value="$PROJECT_DIR$/contrib/users/models.py" />
+        <option value="$PROJECT_DIR$/apps/teachers/serializers.py" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
       </list>
     </option>
   </component>
@@ -110,6 +223,7 @@
               <item name="apps" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
+<<<<<<< HEAD
               <item name="Bistu" type="b2602c69:ProjectViewProjectNode" />
               <item name="Bistu" type="462c0819:PsiDirectoryNode" />
               <item name="contrib" type="462c0819:PsiDirectoryNode" />
@@ -123,6 +237,33 @@
             <path>
               <item name="Bistu" type="b2602c69:ProjectViewProjectNode" />
               <item name="Bistu" type="462c0819:PsiDirectoryNode" />
+=======
+              <item name="student_manage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="student_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="colleges" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="student_manage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="student_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="teachers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="student_manage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="student_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="contrib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="student_manage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="student_manage" type="462c0819:PsiDirectoryNode" />
+              <item name="contrib" type="462c0819:PsiDirectoryNode" />
+              <item name="users" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="student_manage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="student_manage" type="462c0819:PsiDirectoryNode" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
               <item name="web" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -254,7 +395,14 @@
       <option name="project" value="LOCAL" />
       <updated>1554444267892</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="aa">
+      <created>1554487365588</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1554487365588</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -264,6 +412,7 @@
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49926144" visible="true" weight="0.08737093" />
       <window_info id="Structure" order="1" sideWeight="0.50073856" side_tool="true" weight="0.17465389" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -272,6 +421,24 @@
       <window_info anchor="bottom" id="Run" order="2" weight="0.25134844" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.122977346" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+=======
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Event Log" order="12" sideWeight="0.50053304" side_tool="true" weight="0.2524272" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49946696" weight="0.2524272" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.25134844" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.3106796" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49926144" visible="true" weight="0.13951011" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="right" id="Database" order="3" visible="true" weight="0.11661342" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32901832" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.32960597" />
+      <window_info id="Structure" order="1" sideWeight="0.50073856" side_tool="true" weight="0.17465389" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.38511327" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
@@ -331,6 +498,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
+<<<<<<< HEAD
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -345,6 +513,17 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/contrib/academy/migrations/0002_auto_20190405_0011.py" />
+=======
+      <option name="time" value="48" />
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/contrib/academy/migrations/0002_auto_20190405_0011.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-21" />
+      </provider>
+    </entry>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <entry file="file://$PROJECT_DIR$/contrib/academy/migrations/0001_initial.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
@@ -352,11 +531,18 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$USER_HOME$/pthon3.7.0/Lib/copy.py" />
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/rest_framework/mixins.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="186">
           <caret line="24" column="41" lean-forward="true" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
+=======
+    <entry file="file://$USER_HOME$/pthon3.7.0/Lib/copy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="185" selection-start-line="185" selection-end-line="185" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
         </state>
       </provider>
     </entry>
@@ -373,6 +559,7 @@
     <entry file="file://$PROJECT_DIR$/contrib/cultivate/apps.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/apps/colleges/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -383,6 +570,8 @@
         </state>
       </provider>
     </entry>
+=======
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <entry file="file://$PROJECT_DIR$/contrib/users/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
@@ -397,9 +586,20 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_tutor_major" />
     <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/academy_academy_majors" />
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/django/db/models/fields/related.py">
+=======
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_tutor_major">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/db/models/fields/related.py">
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-524">
           <caret line="81" column="6" selection-start-line="81" selection-start-column="6" selection-end-line="81" selection-end-column="6" />
@@ -435,6 +635,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/contrib/academy/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -455,6 +656,8 @@
         </state>
       </provider>
     </entry>
+=======
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <entry file="file://$PROJECT_DIR$/contrib/cultivate/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="156">
@@ -462,6 +665,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/rest_framework/generics.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="292">
@@ -491,6 +695,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/django/db/models/query.py">
+=======
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/db/models/query.py">
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="339">
           <caret line="410" column="27" lean-forward="true" selection-start-line="410" selection-start-column="27" selection-end-line="410" selection-end-column="27" />
@@ -505,6 +715,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/rest_framework/relations.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="342">
@@ -520,6 +731,15 @@
       </provider>
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/3f7a0536-fef0-40da-8123-14c551faba69/console_1.sql" />
+=======
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/3f7a0536-fef0-40da-8123-14c551faba69/console_1.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="12" column="25" lean-forward="true" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
     <entry file="file://$PROJECT_DIR$/apps/accounts/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -551,44 +771,86 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/venv/lib/site-packages/django/views/decorators/csrf.py">
+=======
+    <entry file="file://$PROJECT_DIR$/apps/students/urls.py">
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="53" selection-start-line="53" selection-end-line="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/teachers/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="15" column="86" lean-forward="true" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="86" />
+        <state relative-caret-position="104">
+          <caret line="4" column="17" lean-forward="true" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
           <folding>
-            <element signature="e#242#274#0" expanded="true" />
+            <element signature="e#236#268#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/students/urls.py">
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/auth_user">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_student">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="213" selection-start-line="213" selection-end-line="213" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/students/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="5" column="11" lean-forward="true" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
+          <folding>
+            <element signature="e#240#278#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/students/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="330">
           <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+=======
+        <state>
+          <caret line="117" selection-start-line="117" selection-end-line="166" selection-end-column="24" />
+          <folding>
+            <element signature="e#240#251#0" expanded="true" />
+          </folding>
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/colleges/views.py">
+    <entry file="file://$PROJECT_DIR$/web/urls.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="2332">
           <caret line="106" selection-start-line="106" selection-end-line="106" />
+=======
+        <state relative-caret-position="494">
+          <caret line="20" column="48" selection-start-line="20" selection-start-column="48" selection-end-line="20" selection-end-column="48" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/teachers/serializers.py">
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="10" selection-start-line="10" selection-end-line="10" selection-end-column="43" />
+        <state relative-caret-position="255">
+          <caret line="492" lean-forward="true" selection-start-line="492" selection-end-line="492" />
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/academy_academy" />
     <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/auth_user" />
     <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_education" />
@@ -603,49 +865,188 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/students/serializers.py">
+=======
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/utils/autoreload.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="31" column="24" selection-start-line="31" selection-start-column="24" selection-end-line="31" selection-end-column="24" />
+        <state relative-caret-position="-2676">
+          <caret line="106" column="20" selection-start-line="106" selection-start-column="20" selection-end-line="106" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/xlrd/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="184" column="15" lean-forward="true" selection-start-line="184" selection-start-column="15" selection-end-line="184" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/decorators/excepts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="332">
+          <caret line="79" selection-start-line="79" selection-end-line="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/decorators/csrf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="236">
+          <caret line="53" selection-start-line="53" selection-end-line="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/generics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="104" column="8" selection-start-line="104" selection-start-column="8" selection-end-line="104" selection-end-column="8" />
           <folding>
-            <element signature="e#240#278#0" expanded="true" />
+            <element signature="e#5621#5940#0" />
+            <element signature="e#5993#6228#0" />
+            <element signature="e#6282#6476#0" />
+            <element signature="e#6672#6831#0" />
+            <element signature="e#6914#7063#0" />
+            <element signature="e#7158#7220#1" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/mixins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="25" column="25" lean-forward="true" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/academy_major">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/academy_academy_majors">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/contrib/academy/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="279">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="e#244#255#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/colleges/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="17" column="21" selection-start-line="17" selection-start-column="11" selection-end-line="17" selection-end-column="21" />
+          <folding>
+            <element signature="e#242#274#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_education">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/users_tutor">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/teachers/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="10" column="41" lean-forward="true" selection-start-line="10" selection-start-column="41" selection-end-line="10" selection-end-column="41" />
+          <folding>
+            <element signature="e#242#274#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://3f7a0536-fef0-40da-8123-14c551faba69/schema/main/table/academy_academy">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/colleges/views.py">
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="232" column="23" lean-forward="true" selection-start-line="232" selection-start-column="23" selection-end-line="232" selection-end-column="23" />
+          <folding>
+            <element signature="e#242#253#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/teachers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1073">
-          <caret line="59" column="30" selection-start-line="59" selection-start-column="30" selection-end-line="59" selection-end-column="30" />
+        <state relative-caret-position="183">
+          <caret line="144" column="35" lean-forward="true" selection-start-line="144" selection-start-column="35" selection-end-line="144" selection-end-column="35" />
           <folding>
             <element signature="e#243#254#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/students/views.py">
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/relations.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="747">
-          <caret line="165" column="53" selection-start-line="165" selection-start-column="53" selection-end-line="165" selection-end-column="53" />
-          <folding>
-            <element signature="e#240#251#0" expanded="true" />
-            <element signature="e#768#2138#0" />
-          </folding>
+        <state relative-caret-position="316">
+          <caret line="207" column="13" lean-forward="true" selection-start-line="207" selection-start-column="13" selection-end-line="207" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/definition/enums.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1021">
+        <state relative-caret-position="312">
           <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/fields.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="1427" lean-forward="true" selection-start-line="1427" selection-end-line="1427" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/teachers/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="381">
+          <caret line="36" column="15" lean-forward="true" selection-start-line="36" selection-start-column="15" selection-end-line="36" selection-end-column="15" />
+          <folding>
+            <element signature="e#240#275#0" expanded="true" />
+            <element signature="e#941#1284#0" />
+            <element signature="e#1333#1683#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/contrib/users/models.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="1206">
           <caret line="100" column="56" selection-start-line="100" selection-start-column="56" selection-end-line="100" selection-end-column="56" />
+=======
+        <state relative-caret-position="317">
+          <caret line="71" column="22" lean-forward="true" selection-start-line="71" selection-start-column="22" selection-end-line="71" selection-end-column="22" />
+>>>>>>> 3b004a9a29d53fdb2644883acf42b795c0fbf521
           <folding>
             <element signature="e#239#250#0" expanded="true" />
+            <element signature="e#3149#7445#0" />
           </folding>
         </state>
       </provider>
