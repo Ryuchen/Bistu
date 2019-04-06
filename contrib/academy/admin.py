@@ -17,6 +17,5 @@ class AcademyAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-admin.site.register(models.Research, AcademyAdmin)
 admin.site.register(models.Major, AcademyAdmin)
 admin.site.register(models.Academy, AcademyAdmin)

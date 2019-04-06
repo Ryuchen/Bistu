@@ -14,3 +14,4 @@ class UsersConfig(AppConfig):
     name = 'contrib.users'
     verbose_name = '用户管理系统'
     verbose_name_plural = verbose_name
+

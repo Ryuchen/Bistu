@@ -12,21 +12,6 @@ import uuid
 from django.db import models
 
 
-class Research(models.Model):
-    """
-    研究方向模型
-    """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    res_name = models.CharField(max_length=128, null=True, help_text="研究方向")
-
-    def __str__(self):
-        return self.res_name
-
-    class Meta:
-        verbose_name = "研究方向"
-        verbose_name_plural = verbose_name
-
-
 class Major(models.Model):
     """
     学科专业模型
@@ -34,7 +19,7 @@ class Major(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     maj_name = models.CharField(max_length=128, null=True, help_text="学科专业名称")
     maj_code = models.IntegerField(null=True, help_text="学科专业编号")
-    research = models.ManyToManyField(Research, help_text="研究方向")
+    maj_type = models.CharField(max_length=128, null=True)
 
     def __str__(self):
         return str(self.maj_code) + self.maj_name
@@ -51,7 +36,7 @@ class Academy(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     aca_name = models.CharField(max_length=128, null=True, help_text="学院名称")
     aca_code = models.IntegerField(null=True, help_text="学院代码")
-    major = models.ManyToManyField(Major)
+    majors = models.ManyToManyField(Major, related_name='majors')
 
     def __str__(self):
         return str(self.aca_code) + self.aca_name
