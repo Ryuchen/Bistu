@@ -7,6 +7,7 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
+from core.definition.enums import *
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from contrib.users.models import Tutor, Education
@@ -24,6 +25,11 @@ class EducationSerializers(serializers.ModelSerializer):
 
 class TutorSerializers(serializers.ModelSerializer):
 	""" 老师 """
+	tut_gender = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in GenderChoice]), help_text="性别")
+	tut_title = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in TitleChoice]), help_text="职称")
+	tut_political = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]), help_text="政治面貌")
+	tut_degree = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]), help_text="学位")
+
 	user = UserSerializers(many=False)
 	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_name')
 	education = EducationSerializers(many=False)
