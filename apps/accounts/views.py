@@ -28,6 +28,7 @@ def login_view(request):
         "code": "00000000",
         "data": {
             "status": 200,
+            "type": "account",
         }
     }
     if request.method != "POST":
@@ -42,8 +43,10 @@ def login_view(request):
         user = User.objects.filter(username=username).first()
         if user.is_superuser:
             res["data"]["currentAuthority"] = "admin"
+        elif user.is_staff:
+            res["data"]["currentAuthority"] = "staff"
         else:
-            res["data"]["currentAuthority"] = "user"
+            res["data"]["currentAuthority"] = "teacher"
         return JsonResponse(res)
     else:
         raise AuthenticateError("Username or Password is incorrect!")
@@ -58,10 +61,6 @@ def logout_view(request):
             "status": 200,
         }
     }
-    if "username" in request.session:
-        Session.objects.filter(session_key=request.user.userprofile.session_key).delete()
-        del request.session['username']
-        request.session.clear()
     logout(request)
     return JsonResponse(res)
 
@@ -79,7 +78,7 @@ def current_user_view(request):
         raise NotImplementedError
 
     if request.user.is_authenticated:
-        if request.user.is_authenticated:
+        if request.user.is_superuser:
             res["data"]["profile"] = {
                 "name": request.user.username,
                 "email": request.user.email,
@@ -88,21 +87,21 @@ def current_user_view(request):
                 "group": "超级管理员"
             }
         else:
-            if request.user.tutor:
+            if request.user.is_staff:
                 res["data"]["profile"] = {
                     "name": request.user.username,
                     "email": request.user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                    "title": request.user.tutor.tut_title,
-                    "group": "教师"
+                    "title": "你是当前学院的管理员",
+                    "group": "学院管理人员"
                 }
             else:
                 res["data"]["profile"] = {
                     "name": request.user.username,
                     "email": request.user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                    "title": "Good Good Study, Day Day Up!",
-                    "group": "学生"
+                    "title": "研究生导师",
+                    "group": "教师"
                 }
         return JsonResponse(res)
     else:

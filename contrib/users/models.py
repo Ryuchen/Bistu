@@ -61,7 +61,7 @@ class Tutor(models.Model):
     tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]),
                                  help_text="职称")
     tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
-    tut_birth_day = models.DateField(help_text="出生日期", )
+    tut_birth_day = models.DateField(help_text="出生日期")
     tut_entry_day = models.DateField(help_text="入职日期")
     tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]),
                                      help_text="政治面貌")
