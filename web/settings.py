@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'contrib.academy.apps.AcademyConfig',
     'contrib.cultivate.apps.CultivateConfig',
     'core',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -161,6 +162,7 @@ LOGGING = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_PARSER_CLASSES': (

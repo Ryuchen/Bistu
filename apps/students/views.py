@@ -7,8 +7,9 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
+import json
 import xlrd
-from rest_framework import generics, status
+from rest_framework import mixins, generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 
@@ -73,7 +74,66 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
 		return Response(res)
 
 
-class StudentList(SimpleStudent, generics.GenericAPIView):
+class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView):
+
+	def get_queryset(self):
+		queryset = self.queryset
+		params = self.request.query_params.get("params")
+		if params:
+			params = json.loads(params)
+			username = params.get('username')
+			if username:
+				queryset = queryset.filter(user__username=username)
+
+			stu_gender = params.get('stu_gender')
+			if stu_gender:
+				queryset = queryset.filter(stu_gender=stu_gender)
+
+			stu_source = params.get('stu_source')
+			if stu_source:
+				queryset = queryset.filter(stu_source=stu_source)
+
+			stu_is_village = params.get('stu_is_village')
+			if stu_is_village:
+				queryset = queryset.filter(stu_source=stu_source)
+
+			academy = params.get('academy')
+			if academy:
+				queryset = queryset.filter(academy__aca_cname=academy)
+
+			major = params.get('major')
+			if major:
+				queryset = queryset.filter(major__maj_name=major)
+
+			tutor = params.get('tutor')
+			if tutor:
+				queryset = queryset.filter(tutor__user__username=tutor)
+
+			stu_cultivating_mode = params.get('stu_cultivating_mode')
+			if stu_cultivating_mode:
+				queryset = queryset.filter(stu_cultivating_mode=stu_cultivating_mode)
+
+			stu_enrollment_category = params.get('stu_enrollment_category')
+			if stu_enrollment_category:
+				queryset = queryset.filter(stu_enrollment_category=stu_enrollment_category)
+
+			stu_special_program = params.get('stu_special_program')
+			if stu_special_program:
+				queryset = queryset.filter(stu_special_program=stu_special_program)
+
+			stu_is_tuition_fees = params.get('stu_is_tuition_fees')
+			if stu_is_tuition_fees:
+				queryset = queryset.filter(stu_is_tuition_fees=stu_is_tuition_fees)
+
+			stu_is_archives = params.get('stu_is_archives')
+			if stu_is_archives:
+				queryset = queryset.filter(stu_is_archives=stu_is_archives)
+
+			stu_is_superb = params.get('stu_is_superb')
+			if stu_is_superb:
+				queryset = queryset.filter(stu_is_superb=stu_is_superb)
+		return queryset
+
 	@excepts
 	@csrf_exempt
 	def get(self, request, *args, **kwargs):

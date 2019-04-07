@@ -23,6 +23,13 @@ class StudentSerializers(serializers.ModelSerializer):
 	class Meta:
 		model = Student
 		fields = '__all__'
+		depth = 2
+		extra_kwargs = {
+			'major': {'lookup_field': 'maj_name'},
+			'user': {'lookup_field': 'username'},
+			'academy': {'lookup_field': 'aca_cname'},
+			'tutor': {'lookup_field': 'tut_number'}
+		}
 
 	def create(self, validated_data):
 		user = validated_data.pop('user')
@@ -36,3 +43,4 @@ class StudentSerializers(serializers.ModelSerializer):
 		if not User.objects.filter(username=username).count():
 			User.objects.filter(id=instance.user_id).update(username=username)
 		return instance
+
