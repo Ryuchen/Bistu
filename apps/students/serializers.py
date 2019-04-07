@@ -16,7 +16,7 @@ from apps.teachers.serializers import UserSerializers
 
 class StudentSerializers(serializers.ModelSerializer):
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_name')
+	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
 	major = serializers.SlugRelatedField(many=False, queryset=Major.objects.all(), slug_field='maj_name')
 	tutor = serializers.SlugRelatedField(many=False, queryset=Tutor.objects.all(), slug_field='tut_number')
 
