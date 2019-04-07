@@ -8,13 +8,10 @@
 # @Desc :
 # ==================================================
 import uuid
-
-from core.definition.enums import *
-
-from contrib.academy.models import Academy, Major, Research
-
 from django.db import models
 from django.contrib.auth.models import User
+from core.definition.enums import *
+from contrib.academy.models import Academy, Major, Research
 
 
 class Education(models.Model):
