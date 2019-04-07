@@ -8,13 +8,10 @@
 # @Desc :
 # ==================================================
 import uuid
-
-from core.definition.enums import *
-
-from contrib.academy.models import Academy, Major, Research
-
 from django.db import models
 from django.contrib.auth.models import User
+from core.definition.enums import *
+from contrib.academy.models import Academy, Major, Research
 
 
 class Education(models.Model):
@@ -59,14 +56,18 @@ class Tutor(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
-    tut_gender = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in GenderChoice]), help_text="性别")
-    tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]), help_text="职称")
+    tut_gender = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in GenderChoice]),
+                                  help_text="性别")
+    tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]),
+                                 help_text="职称")
     tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
-    tut_birth_day = models.DateField(help_text="出生日期")
+    tut_birth_day = models.DateField(help_text="出生日期", )
     tut_entry_day = models.DateField(help_text="入职日期")
-    tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]), help_text="政治面貌")
+    tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]),
+                                     help_text="政治面貌")
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
-    tut_degree = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]), help_text="学位")
+    tut_degree = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]),
+                                  help_text="学位")
     education = models.ForeignKey(Education, null=True, on_delete=True, related_name='education', help_text="学历")
     academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
 
@@ -91,7 +92,7 @@ class Student(models.Model):
     stu_card_type = models.CharField(max_length=128, null=False, help_text='身份证件类型', default="身份证")
     stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="12345")
     stu_candidate_number = models.CharField(max_length=128, null=True, help_text="考生号")
-    stu_birth_day = models.DateField(help_text="出生日期")
+    stu_birth_day = models.CharField(max_length=64, null=True, help_text="出生日期", default='201909')
     stu_nation = models.CharField(max_length=64, null=False, help_text='民族', default='汉')
     stu_source = models.CharField(max_length=128, null=True, help_text="生源地")
     stu_is_village = models.BooleanField(default=False, help_text='是否农村学生')
@@ -116,19 +117,11 @@ class Student(models.Model):
     stu_class = models.CharField(max_length=128, null=True, help_text="所属班级")
     tutor = models.ForeignKey(Tutor, null=True, related_name='stu_tutor', on_delete=models.SET_NULL, help_text="指导老师")
     academy = models.ForeignKey(Academy, null=True, related_name='stu_academy', on_delete=models.SET_NULL, help_text='所属学院')
+    major_category = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in MajorDegree], help_text='专业大类', default='D1')
     major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
     research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
 
     def __str__(self):
-        self.stu_gender = self.get_stu_gender_display()
-        self.stu_political = self.get_stu_political_display()
-        self.stu_type = self.get_stu_type_display()
-        self.stu_learn_type = self.get_stu_learn_type_display()
-        self.stu_learn_status = self.get_stu_learn_status_display()
-        self.stu_cultivating_mode = self.get_stu_cultivating_mode_display()
-        self.stu_enrollment_category = self.get_stu_enrollment_category_display()
-        self.stu_special_program = self.get_stu_special_program_display()
-        self.stu_status = self.get_stu_status_display()
         return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
 
     class Meta:

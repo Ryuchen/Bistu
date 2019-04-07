@@ -16,13 +16,20 @@ from apps.teachers.serializers import UserSerializers
 
 class StudentSerializers(serializers.ModelSerializer):
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_name')
+	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
 	major = serializers.SlugRelatedField(many=False, queryset=Major.objects.all(), slug_field='maj_name')
 	tutor = serializers.SlugRelatedField(many=False, queryset=Tutor.objects.all(), slug_field='tut_number')
 
 	class Meta:
 		model = Student
 		fields = '__all__'
+		depth = 2
+		extra_kwargs = {
+			'major': {'lookup_field': 'maj_name'},
+			'user': {'lookup_field': 'username'},
+			'academy': {'lookup_field': 'aca_cname'},
+			'tutor': {'lookup_field': 'tut_number'}
+		}
 
 	def create(self, validated_data):
 		user = validated_data.pop('user')
@@ -36,3 +43,4 @@ class StudentSerializers(serializers.ModelSerializer):
 		if not User.objects.filter(username=username).count():
 			User.objects.filter(id=instance.user_id).update(username=username)
 		return instance
+

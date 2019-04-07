@@ -8,11 +8,20 @@
 # @Desc : 
 # ==================================================
 from rest_framework import serializers
-from contrib.academy.models import Major, Academy
+from contrib.academy.models import Major, Academy, Research
+
+
+class ResearchSerializers(serializers.ModelSerializer):
+	""" 科研方向 """
+	class Meta:
+		model = Research
+		fields = '__all__'
 
 
 class MajorSerializers(serializers.ModelSerializer):
 	""" 学科专业 """
+	research = serializers.SlugRelatedField(many=True, queryset=Research.objects.filter(), slug_field='res_name')
+
 	class Meta:
 		model = Major
 		fields = '__all__'
@@ -24,5 +33,5 @@ class AcademySerializers(serializers.ModelSerializer):
 
 	class Meta:
 		model = Academy
-		fields = ('uuid', 'aca_name', 'aca_code', 'majors')
+		fields = '__all__'
 
