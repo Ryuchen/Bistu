@@ -7,7 +7,6 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
-from core.definition.enums import *
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from contrib.users.models import Tutor, Education
@@ -25,14 +24,9 @@ class EducationSerializers(serializers.ModelSerializer):
 
 class TutorSerializers(serializers.ModelSerializer):
 	""" 老师 """
-	tut_gender = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in GenderChoice]), help_text="性别")
-	tut_title = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in TitleChoice]), help_text="职称")
-	tut_political = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]), help_text="政治面貌")
-	tut_degree = serializers.ChoiceField(choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]), help_text="学位")
-
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_name')
-	education = EducationSerializers(many=False)
+	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
+	education = EducationSerializers(many=False, required=False)
 
 	class Meta:
 		model = Tutor
@@ -40,12 +34,17 @@ class TutorSerializers(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		user = validated_data.pop('user')
-		education = validated_data.pop('education')
 		if not User.objects.filter(username=user.get('username')).count():
 			user = User.objects.create(**user)
-		education = Education.objects.create(**education)
-
-		new_tutor = Tutor.objects.create(user=user, education=education, **validated_data)
+		if validated_data.get('education'):
+			education = validated_data.pop('education')
+			if isinstance(education, dict):
+				education = Education.objects.create(**education)
+				new_tutor = Tutor.objects.create(user=user, education=education, **validated_data)
+			else:
+				new_tutor = Tutor.objects.create(user=user, **validated_data)
+		else:
+			new_tutor = Tutor.objects.create(user=user, **validated_data)
 		return new_tutor
 
 	def update(self, instance, validated_data):

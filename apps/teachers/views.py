@@ -8,6 +8,7 @@
 # @Desc : 
 # ==================================================
 import xlrd
+import datetime
 from django.contrib.auth.hashers import make_password
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -84,7 +85,7 @@ class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
 		return Response(res)
 
 
-class TutorList(SimpleTutor, generics.ListCreateAPIView):
+class TutorList(SimpleTutor, generics.GenericAPIView):
 	@excepts
 	@csrf_exempt
 	def get(self, request, *args, **kwargs):
@@ -120,14 +121,15 @@ class TutorList(SimpleTutor, generics.ListCreateAPIView):
 			for item in data:
 				username = item['user']
 				item["user"] = user_chanle(username)
-			serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": "", "education": ""})
+			serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
 		serializer.is_valid(raise_exception=True)
-		self.perform_create(serializer)
+		serializer.save()
+		# self.perform_create(serializer)
 		res['data'] = serializer.data
 		return Response(res)
 
-	@excepts
-	@csrf_exempt
+	# @excepts
+	# @csrf_exempt
 	def put(self, request, *args, **kwargs):
 		res = {
 			'code': status.HTTP_200_OK,
@@ -142,19 +144,18 @@ class TutorList(SimpleTutor, generics.ListCreateAPIView):
 			row = table.row_values(i)
 			t_dict = dict()
 			t_dict["tut_number"] = int(row[0]) if row[0] else 0
-			t_dict["user"] = row[1]
+			t_dict["user"] = user_chanle(row[1])
 			t_dict["tut_gender"] = row[2]
 			t_dict["tut_title"] = row[3]
 			t_dict["tut_cardID"] = row[4]
-			t_dict["tut_birth_day"] = xlrd.xldate_as_datetime(row[5])
-			t_dict["tut_entry_day"] = xlrd.xldate_as_datetime(row[6])
+			t_dict["tut_birth_day"] = str(xlrd.xldate_as_datetime(row[5], 'YYYY-MM-DD'))[0:10]
+			t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[6], 'YYYY-MM-DD'))[0:10]
 			t_dict["tut_political"] = row[7]
 			t_dict["tut_telephone"] = row[8]
 			t_dict["tut_degree"] = row[9]
-			t_dict["education"] = row[10]
-			t_dict["academy"] = row[11]
+			t_dict["academy"] = row[10]
 			t_list.append(t_dict)
-		serializer = self.get_serializer(data=t_list, many=True)
+		serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 		res['data'] = serializer.data

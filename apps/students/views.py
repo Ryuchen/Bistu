@@ -73,7 +73,7 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
 		return Response(res)
 
 
-class StudentList(SimpleStudent, generics.ListCreateAPIView):
+class StudentList(SimpleStudent, generics.GenericAPIView):
 	@excepts
 	@csrf_exempt
 	def get(self, request, *args, **kwargs):
@@ -110,58 +110,61 @@ class StudentList(SimpleStudent, generics.ListCreateAPIView):
 				item["user"] = user_chanle(username)
 			serializer = self.get_serializer(data=data, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
 		serializer.is_valid(raise_exception=True)
-		self.perform_create(serializer)
+		serializer.save()
 		res['data'] = serializer.data
 		return Response(res)
 
+	@excepts
+	@csrf_exempt
+	def put(self, request, *args, **kwargs):
+		res = {
+			'code': status.HTTP_200_OK,
+			'data': {}
+		}
+		file = request.data['file']
+		data = xlrd.open_workbook(filename=None, file_contents=file.read())
+		table = data.sheets()[0]
+		nrows = table.nrows  # 获取该sheet中的有效行数
+		s_list = list()
+		for i in range(1, nrows):
+			rowx = table.row_values(i)
+			student_dict = dict()
+			student_dict["user"] = user_chanle(rowx[0])
+			student_dict["stu_number"] = rowx[1]
+			student_dict["stu_candidate_number"] = rowx[2]
+			student_dict["stu_card_type"] = rowx[3]
+			student_dict["stu_cardID"] = rowx[4]
+			student_dict["stu_gender"] = rowx[5]
+			student_dict["stu_birth_day"] = rowx[6]
+			student_dict["stu_nation"] = rowx[7]
+			student_dict["stu_source"] = rowx[8]
+			student_dict["stu_is_village"] = True if rowx[9] == "是" else False
+			student_dict["stu_political"] = rowx[10]
+			student_dict["academy"] = rowx[11]
+			student_dict["major"] = rowx[12]
 
-@excepts
-@csrf_exempt
-def upload_student(request):
-	res = {
-		'code': status.HTTP_200_OK,
-		'data': {}
-	}
-	file = request.FILES.get('students')
-	data = xlrd.open_workbook(file)
-	table = data.sheets()[0]
-	# table_name = table.name
-	nrows = table.nrows  # 获取该sheet中的有效行数
-	ncols = table.ncols  # 获取该sheet中的有效行数
-	student_list = list()
-	for rowx in nrows:
-		table.row(rowx)  # 返回由该行中所有的单元格对象组成的列
-		student_dict = dict()
-		student_dict["user"] = rowx[0]
-		student_dict["stu_number"] = rowx[1]
-		student_dict["stu_candidate_number"] = rowx[1]
-		student_dict["stu_card_type"] = rowx[1]
-		student_dict["stu_cardID"] = rowx[1]
-		student_dict["stu_gender"] = rowx[1]
-		student_dict["stu_birth_day"] = rowx[1]
-		student_dict["stu_nation"] = rowx[1]
-		student_dict["stu_source"] = rowx[1]
-		student_dict["stu_is_village"] = rowx[1]
-		student_dict["stu_political"] = rowx[1]
-		student_dict["academy"] = rowx[1]
-		student_dict["major"] = rowx[1]
+			student_dict["major_category"] = rowx[13]
+			student_dict["stu_class"] = rowx[14]
+			student_dict["stu_status"] = rowx[15]
+			student_dict["tutor"] = rowx[16]
+			student_dict["stu_type"] = rowx[17]
+			student_dict["stu_learn_type"] = rowx[18]
+			student_dict["stu_learn_status"] = rowx[19]
+			student_dict["stu_grade"] = rowx[20]
+			student_dict["stu_system"] = rowx[21]
+			student_dict["stu_entrance_time"] = rowx[22]
+			student_dict["stu_cultivating_mode"] = rowx[23]
+			student_dict["stu_enrollment_category"] = rowx[24]
+			student_dict["stu_natioanlity"] = rowx[25]
+			student_dict["stu_special_program"] = rowx[26]
+			student_dict["stu_is_regular_income"] = True if rowx[27] == "是" else False
+			student_dict["stu_is_tuition_fees"] = True if rowx[28] == "是" else False
+			student_dict["stu_is_achives"] = True if rowx[29] == "是" else False
+			student_dict["stu_graduation_time"] = rowx[30]
+			s_list.append(student_dict)
+		serializer = self.get_serializer(data=s_list, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
+		serializer.is_valid(raise_exception=True)
+		serializer.save()
+		res['data'] = serializer.data
+		return Response(res)
 
-		student_dict[""] = rowx[1]
-		student_dict["stu_class"] = rowx[1]
-		student_dict["stu_status"] = rowx[1]
-		student_dict["tutor"] = rowx[1]
-		student_dict["stu_type"] = rowx[1]
-		student_dict["stu_learn_type"] = rowx[1]
-		student_dict["stu_learn_status"] = rowx[1]
-		student_dict["stu_grade"] = rowx[1]
-		student_dict["stu_system"] = rowx[1]
-		student_dict["stu_entrance_time"] = rowx[1]
-		student_dict["stu_cultivating_mode"] = rowx[1]
-		student_dict["stu_enrollment_category"] = rowx[1]
-		student_dict["stu_natioanlity"] = rowx[1]
-		student_dict["stu_special_program"] = rowx[1]
-		student_dict["stu_is_regular_income"] = rowx[1]
-		student_dict["stu_is_tuition_fees"] = rowx[1]
-		student_dict["stu_is_achives"] = rowx[1]
-		student_dict["stu_graduation_time"] = rowx[1]
-	return Response(res)

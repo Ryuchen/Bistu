@@ -8,10 +8,11 @@
 # @Desc : 
 # ==================================================
 from django.conf.urls import url
-from .views import MajorList, MajorDetail, AcademyList, AcademyDetail
+from .views import MajorList, MajorDetail, AcademyList, AcademyDetail, ResearchList
 
 
 urlpatterns = [
+    url(r"^researches$", ResearchList.as_view(), name="research-list"),
     url(r"^majors$", MajorList.as_view(), name="major-list"),
     url(r"^major/(?P<pk>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$", MajorDetail.as_view(),
         name="major-detail"),
