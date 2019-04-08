@@ -98,7 +98,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
 			academy = params.get('academy')
 			if academy:
-				queryset = queryset.filter(academy__aca_cname=academy)
+				queryset = queryset.filter(academy__uuid=academy)
 
 			major = params.get('major')
 			if major:
@@ -106,7 +106,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
 			tutor = params.get('tutor')
 			if tutor:
-				queryset = queryset.filter(tutor__user__username=tutor)
+				queryset = queryset.filter(tutor__uuid=tutor)
 
 			stu_cultivating_mode = params.get('stu_cultivating_mode')
 			if stu_cultivating_mode:
