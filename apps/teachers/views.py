@@ -8,13 +8,14 @@
 # @Desc : 
 # ==================================================
 import xlrd
-import datetime
+import json
 from django.contrib.auth.hashers import make_password
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from core.decorators.excepts import excepts
 from contrib.users.models import Tutor
+from contrib.academy.models import Major
 from .serializers import TutorSerializers
 
 
@@ -86,6 +87,30 @@ class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
 
 
 class TutorList(SimpleTutor, generics.GenericAPIView):
+
+	def get_queryset(self):
+		queryset = self.queryset
+		academy = self.request.query_params.get('academy')
+		if academy:
+			queryset = queryset.filter(academy__uuid=academy)
+		# 职称
+		tut_title = self.request.query_params.get('tut_title')
+		if tut_title:
+			queryset = queryset.filter(tut_title=tut_title)
+		# 姓名
+		username = self.request.query_params.get('username')
+		if username:
+			queryset = queryset.filter(user__username=username)
+		# 电话
+		tut_telephone = self.request.query_params.get('tut_telephone')
+		if tut_telephone:
+			queryset = queryset.filter(tut_telephone=tut_telephone)
+		# 学位
+		tut_degree = self.request.query_params.get('tut_degree')
+		if tut_degree:
+			queryset = queryset.filter(tut_degree=tut_degree)
+		return queryset
+
 	@excepts
 	@csrf_exempt
 	def get(self, request, *args, **kwargs):
@@ -93,7 +118,7 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 			'code': status.HTTP_200_OK,
 			'data': []
 		}
-		queryset = self.filter_queryset(self.get_queryset())
+		queryset = self.get_queryset()
 		page = self.paginate_queryset(queryset)
 		if page is not None:
 			serializer = self.get_serializer(page, many=True)
@@ -116,20 +141,21 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 		if not bulk:
 			username = data.get('user')
 			data["user"] = user_chanle(username)
+			data["majors"] = Major.objects.filter(maj_name=data.get('majors')).uuid
 			serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
 		else:
 			for item in data:
 				username = item['user']
 				item["user"] = user_chanle(username)
+				data["majors"] = Major.objects.filter(maj_name=item.get('majors')).uuid
 			serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
-		# self.perform_create(serializer)
 		res['data'] = serializer.data
 		return Response(res)
 
-	# @excepts
-	# @csrf_exempt
+	@excepts
+	@csrf_exempt
 	def put(self, request, *args, **kwargs):
 		res = {
 			'code': status.HTTP_200_OK,
@@ -153,7 +179,7 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 			t_dict["tut_political"] = row[7]
 			t_dict["tut_telephone"] = row[8]
 			t_dict["tut_degree"] = row[9]
-			t_dict["academy"] = row[10]
+			t_dict["academy"] = Major.objects.filter(maj_name=row[10]).uuid
 			t_list.append(t_dict)
 		serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
 		serializer.is_valid(raise_exception=True)

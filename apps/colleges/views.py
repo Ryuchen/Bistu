@@ -12,6 +12,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from core.decorators.excepts import excepts
+from django.contrib.auth.models import User
 from contrib.academy.models import Academy, Major, Research
 from .serializers import MajorSerializers, AcademySerializers, ResearchSerializers
 
@@ -163,9 +164,11 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
 				"status": 200,
 			}
 		}
+		data = request.data
+		data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
 		partial = kwargs.pop('partial', False)
 		instance = self.get_object()
-		serializer = self.get_serializer(instance, data=request.data, partial=partial, context={"research": ""})
+		serializer = self.get_serializer(instance, data=data, partial=partial, context={"research": ""})
 		serializer.is_valid(raise_exception=True)
 		self.perform_update(serializer)
 		return Response(res)
@@ -214,8 +217,11 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
 		bulk = isinstance(data, list)
 
 		if not bulk:
+			data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
 			serializer = self.get_serializer(data=data, context={"research": ""})
 		else:
+			for item in data.get('research'):
+				data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=item.get('research').split(","))]
 			serializer = self.get_serializer(data=data, many=True, context={"research": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
@@ -279,9 +285,12 @@ class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
 				"status": 200,
 			}
 		}
+		data = request.data
+		data["aca_user"] = User.objects.get(username=data.get('aca_user')).id
+		data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('majors').split(","))]
 		partial = kwargs.pop('partial', False)
 		instance = self.get_object()
-		serializer = self.get_serializer(instance, data=request.data, partial=partial)
+		serializer = self.get_serializer(instance, data=data, partial=partial)
 		serializer.is_valid(raise_exception=True)
 		self.perform_update(serializer)
 		return Response(res)
@@ -327,11 +336,15 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
 		}
 		data = request.data
 		bulk = isinstance(data, list)
-
 		if not bulk:
-			serializer = self.get_serializer(data=data, context={"majors": ""})
+			data["aca_user"] = User.objects.get(username=data.get('aca_user')).id
+			data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('majors').split(","))]
+			serializer = self.get_serializer(data=data, context={"majors": "", "aca_user": ""})
 		else:
-			serializer = self.get_serializer(data=data, many=True, context={"majors": ""})
+			for item in data:
+				data["aca_user"] = User.objects.get(username=item.get('aca_user')).id
+				data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=item.get('majors').split(","))]
+			serializer = self.get_serializer(data=data, many=True, context={"majors": "", "aca_user": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 		res['data'] = serializer.data

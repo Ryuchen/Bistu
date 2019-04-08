@@ -90,7 +90,7 @@ class Student(models.Model):
     stu_avatar = models.ImageField(null=True, help_text="学生照片")
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
     stu_card_type = models.CharField(max_length=128, null=False, help_text='身份证件类型', default="身份证")
-    stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="12345")
+    stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="")
     stu_candidate_number = models.CharField(max_length=128, null=True, help_text="考生号")
     stu_birth_day = models.CharField(max_length=64, null=True, help_text="出生日期", default='201909')
     stu_nation = models.CharField(max_length=64, null=False, help_text='民族', default='汉')

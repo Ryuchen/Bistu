@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.decorators.excepts import excepts
 from contrib.users.models import Student
+from contrib.academy.models import Academy, Major
 from apps.students.serializers import StudentSerializers
 from apps.teachers.views import user_chanle
 
@@ -78,16 +79,43 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
 	def get_queryset(self):
 		queryset = self.queryset
-		params = self.request.query_params.get("params")
+		params = self.request.query_params
 		if params:
-			params = json.loads(params)
 			username = params.get('username')
 			if username:
 				queryset = queryset.filter(user__username=username)
 
+			academy = params.get('academy')
+			if academy:
+				queryset = queryset.filter(academy__uuid=academy)
+
+			major = params.get('major')
+			if major:
+				queryset = queryset.filter(major__uuid=major)
+
+			tutor = params.get('tutor')
+			if tutor:
+				queryset = queryset.filter(tutor__user__username=tutor)
+
+			stu_number = params.get('stu_number')
+			if stu_number:
+				queryset = queryset.filter(stu_number=stu_number)
+
 			stu_gender = params.get('stu_gender')
 			if stu_gender:
 				queryset = queryset.filter(stu_gender=stu_gender)
+
+			stu_card_id = params.get('stu_cardID')
+			if stu_card_id:
+				queryset = queryset.filter(stu_cardID=stu_card_id)
+
+			stu_candidate_number = params.get('stu_candidate_number')
+			if stu_candidate_number:
+				queryset = queryset.filter(stu_candidate_number=stu_candidate_number)
+
+			stu_nation = params.get('stu_nation')
+			if stu_nation:
+				queryset = queryset.filter(stu_nation=stu_nation)
 
 			stu_source = params.get('stu_source')
 			if stu_source:
@@ -97,17 +125,37 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			if stu_is_village:
 				queryset = queryset.filter(stu_source=stu_source)
 
-			academy = params.get('academy')
-			if academy:
-				queryset = queryset.filter(academy__aca_cname=academy)
+			stu_political = params.get('stu_political')
+			if stu_political:
+				queryset = queryset.filter(stu_political=stu_political)
 
-			major = params.get('major')
-			if major:
-				queryset = queryset.filter(major__maj_name=major)
+			stu_type = params.get('stu_type')
+			if stu_type:
+				queryset = queryset.filter(stu_type=stu_type)
 
-			tutor = params.get('tutor')
-			if tutor:
-				queryset = queryset.filter(tutor__user__username=tutor)
+			stu_learn_type = params.get('stu_learn_type')
+			if stu_learn_type:
+				queryset = queryset.filter(stu_learn_type=stu_learn_type)
+
+			stu_learn_status = params.get('stu_learn_status')
+			if stu_learn_status:
+				queryset = queryset.filter(stu_learn_status=stu_learn_status)
+
+			stu_grade = params.get('stu_grade')
+			if stu_grade:
+				queryset = queryset.filter(stu_grade=stu_grade)
+
+			stu_system = params.get('stu_system')
+			if stu_system:
+				queryset = queryset.filter(stu_system=stu_system)
+
+			stu_entrance_time = params.get('stu_entrance_time')
+			if stu_entrance_time:
+				queryset = queryset.filter(stu_entrance_time=stu_entrance_time)
+
+			stu_graduation_time = params.get('stu_graduation_time')
+			if stu_graduation_time:
+				queryset = queryset.filter(stu_graduation_time=stu_graduation_time)
 
 			stu_cultivating_mode = params.get('stu_cultivating_mode')
 			if stu_cultivating_mode:
@@ -117,9 +165,9 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			if stu_enrollment_category:
 				queryset = queryset.filter(stu_enrollment_category=stu_enrollment_category)
 
-			stu_special_program = params.get('stu_special_program')
-			if stu_special_program:
-				queryset = queryset.filter(stu_special_program=stu_special_program)
+			stu_is_regular_income = params.get('stu_is_regular_income')
+			if stu_is_regular_income:
+				queryset = queryset.filter(stu_is_regular_income=stu_is_regular_income)
 
 			stu_is_tuition_fees = params.get('stu_is_tuition_fees')
 			if stu_is_tuition_fees:
@@ -132,6 +180,22 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			stu_is_superb = params.get('stu_is_superb')
 			if stu_is_superb:
 				queryset = queryset.filter(stu_is_superb=stu_is_superb)
+
+			stu_telephone = params.get('stu_telephone')
+			if stu_telephone:
+				queryset = queryset.filter(stu_telephone=stu_telephone)
+
+			stu_status = params.get('stu_status')
+			if stu_status:
+				queryset = queryset.filter(stu_status=stu_status)
+
+			stu_class = params.get('stu_class')
+			if stu_class:
+				queryset = queryset.filter(stu_class=stu_class)
+
+			major_category = params.get('major_category')
+			if major_category:
+				queryset = queryset.filter(major_category=major_category)
 		return queryset
 
 	@excepts
@@ -163,11 +227,15 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 		if not bulk:
 			username = data.get('user')
 			data["user"] = user_chanle(username)
+			data["stu_major"] = Major.objects.filter(maj_name=data.get('stu_major')).uuid
+			data["stu_academy"] = Academy.objects.filter(aca_cname=data.get('stu_academy')).uuid
 			serializer = self.get_serializer(data=data, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
 		else:
 			for item in data:
 				username = item['user']
 				item["user"] = user_chanle(username)
+				data["stu_major"] = Major.objects.filter(maj_name=item['stu_major']).uuid
+				data["stu_academy"] = Academy.objects.filter(aca_cnam=item['stu_academy']).uuid
 			serializer = self.get_serializer(data=data, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
@@ -200,9 +268,8 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			student_dict["stu_source"] = rowx[8]
 			student_dict["stu_is_village"] = True if rowx[9] == "是" else False
 			student_dict["stu_political"] = rowx[10]
-			student_dict["academy"] = rowx[11]
-			student_dict["major"] = rowx[12]
-
+			student_dict["academy"] = Academy.objects.filter(aca_cnam=rowx[11]).uuid
+			student_dict["major"] = Major.objects.filter(maj_name=rowx[12]).uuid
 			student_dict["major_category"] = rowx[13]
 			student_dict["stu_class"] = rowx[14]
 			student_dict["stu_status"] = rowx[15]
