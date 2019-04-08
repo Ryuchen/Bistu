@@ -12,11 +12,12 @@ from django.contrib.auth.models import User
 from contrib.users.models import Student, Tutor
 from contrib.academy.models import Academy, Major
 from apps.teachers.serializers import UserSerializers
+from apps.colleges.serializers import AcademySerializers
 
 
 class StudentSerializers(serializers.ModelSerializer):
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
+	academy = AcademySerializers(many=False)
 	major = serializers.SlugRelatedField(many=False, queryset=Major.objects.all(), slug_field='maj_name')
 	tutor = serializers.SlugRelatedField(many=False, queryset=Tutor.objects.all(), slug_field='tut_number')
 
