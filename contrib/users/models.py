@@ -86,6 +86,7 @@ class Student(models.Model):
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user')
+    stu_name = models.CharField(null=False, max_length=64, help_text="学生名称")
     stu_number = models.IntegerField(null=False, unique=True, default='20190101', help_text="学号")
     stu_avatar = models.ImageField(null=True, help_text="学生照片")
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
@@ -127,4 +128,3 @@ class Student(models.Model):
     class Meta:
         verbose_name = "学生"
         verbose_name_plural = verbose_name
-        ordering = ['stu_number']

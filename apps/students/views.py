@@ -30,7 +30,8 @@ class SimpleStudent(object):
 						'stu_grade', 'stu_system', 'stu_entrance_time', 'stu_graduation_time', 'stu_cultivating_mode',
 						'stu_enrollment_category', 'stu_nationality', 'stu_special_program', 'stu_is_regular_income',
 						'stu_is_tuition_fees', 'stu_is_archives', 'stu_is_superb', 'stu_telephone', 'stu_status',
-						'stu_class', 'major_category')
+						'stu_class', 'major_category', 'stu_name')
+	ordering_fields = ('stu_number', 'stu_entrance_time', 'stu_graduation_time', 'stu_birth_day')
 
 
 class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
@@ -87,10 +88,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 		queryset = self.queryset
 		params = self.request.query_params
 		if params:
-			username = params.get('username')
-			if username:
-				queryset = queryset.filter(user__username=username)
-
 			academy = params.get('academy')
 			if academy:
 				queryset = queryset.filter(academy__uuid=academy)
@@ -142,7 +139,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 				username = item['user']
 				item["user"] = user_chanle(username)
 				data["stu_major"] = Major.objects.filter(maj_name=item['stu_major']).uuid
-				data["stu_academy"] = Academy.objects.filter(aca_cnam=item['stu_academy']).uuid
+				data["stu_academy"] = Academy.objects.filter(aca_cname=item['stu_academy']).uuid
 			serializer = self.get_serializer(data=data, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
@@ -175,7 +172,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			student_dict["stu_source"] = rowx[8]
 			student_dict["stu_is_village"] = True if rowx[9] == "是" else False
 			student_dict["stu_political"] = rowx[10]
-			student_dict["academy"] = Academy.objects.filter(aca_cnam=rowx[11]).uuid
+			student_dict["academy"] = Academy.objects.filter(aca_cname=rowx[11]).uuid
 			student_dict["major"] = Major.objects.filter(maj_name=rowx[12]).uuid
 			student_dict["major_category"] = rowx[13]
 			student_dict["stu_class"] = rowx[14]

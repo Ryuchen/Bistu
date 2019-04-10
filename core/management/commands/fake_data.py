@@ -336,15 +336,16 @@ class Command(BaseCommand):
                 aca_fax=self.create_phone(),
                 aca_href=fake.url(),
                 aca_brief=fake.text(),
-                aca_user=staff_user_list.pop().id,
+                aca_user=staff_user_list.pop(),
             )
             academy_list.append(academy)
-            maj_degree = fake.random.choice([tag.value for tag in MajorDegree])
+            print(MajorDegree)
+            maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(3, 7)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(AcademyOfDegree),
                     maj_code=random.randint(10000, 99999),
-                    maj_type=fake.random.choice([tag.value for tag in MajorType]),
+                    maj_type=fake.random.choice([tag.name for tag in MajorType]),
                     maj_first=fake.random.choice([True, False]),
                     maj_second=fake.random.choice([True, False]),
                     maj_setup_time=fake.date(),
@@ -356,12 +357,12 @@ class Command(BaseCommand):
                     research_list.append(research)
                     major.research.add(research)
                 academy.majors.add(major)
-            maj_degree = fake.random.choice([tag.value for tag in MajorDegree])
+            maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(3, 5)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(ProfessionalOfDegree),
                     maj_code=random.randint(10000, 99999),
-                    maj_type=fake.random.choice([tag.value for tag in MajorType]),
+                    maj_type=fake.random.choice([tag.name for tag in MajorType]),
                     maj_first=fake.random.choice([True, False]),
                     maj_second=fake.random.choice([True, False]),
                     maj_setup_time=fake.date(),
@@ -389,14 +390,14 @@ class Command(BaseCommand):
 
             teacher = Tutor(
                 tut_number=random.randint(197901010000, 201901010000),
-                tut_gender=fake.random.choice([tag.value for tag in GenderChoice]),
-                tut_title=fake.random.choice([tag.value for tag in TitleChoice]),
+                tut_gender=fake.random.choice([tag.name for tag in GenderChoice]),
+                tut_title=fake.random.choice([tag.name for tag in TitleChoice]),
                 tut_cardID=self.create_card_id(),
                 tut_birth_day=fake.date_of_birth(minimum_age=32, maximum_age=65),
                 tut_entry_day=fake.date(),
-                tut_political=fake.random.choice([tag.value for tag in PoliticalChoice]),
+                tut_political=fake.random.choice([tag.name for tag in PoliticalChoice]),
                 tut_telephone=self.create_telephone(),
-                tut_degree=fake.random.choice([tag.value for tag in DegreeChoice]),
+                tut_degree=fake.random.choice([tag.name for tag in DegreeChoice]),
             )
             teacher.user = teacher_list.pop()
             teacher.education = education
@@ -410,8 +411,9 @@ class Command(BaseCommand):
             student_num += 1
             student = Student(
                 stu_number=student_num,
+                stu_name=fake.name(),
                 stu_avatar=fake.random.choice(Avatars),
-                stu_gender=fake.random.choice([tag.value for tag in GenderChoice]),
+                stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
                 stu_card_type='身份证',
                 stu_cardID=self.create_card_id(),
                 stu_candidate_number=random.randint(12101000000000, 12201000000000),
@@ -419,24 +421,24 @@ class Command(BaseCommand):
                 stu_nation=fake.random.choice(EthnicChoice),
                 stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
                 stu_is_village=fake.random.choice([True, False]),
-                stu_political=fake.random.choice([tag.value for tag in PoliticalChoice]),
-                stu_type=fake.random.choice([tag.value for tag in StudentType]),
-                stu_learn_type=fake.random.choice([tag.value for tag in StudentCategory]),
-                stu_learn_status=fake.random.choice([tag.value for tag in DegreeChoice]),
+                stu_political=fake.random.choice([tag.name for tag in PoliticalChoice]),
+                stu_type=fake.random.choice([tag.name for tag in StudentType]),
+                stu_learn_type=fake.random.choice([tag.name for tag in StudentCategory]),
+                stu_learn_status=fake.random.choice([tag.name for tag in DegreeChoice]),
                 stu_grade=random.randint(1, 3),
                 stu_system=3,
                 stu_entrance_time=fake.date(),
                 stu_graduation_time=fake.date(),
-                stu_cultivating_mode=fake.random.choice([tag.value for tag in CultivatingMode]),
-                stu_enrollment_category=fake.random.choice([tag.value for tag in EnrollmentCategory]),
+                stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingMode]),
+                stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategory]),
                 stu_nationality='中国',
-                stu_special_program=fake.random.choice([tag.value for tag in SpecialProgram]),
+                stu_special_program=fake.random.choice([tag.name for tag in SpecialProgram]),
                 stu_is_regular_income=fake.random.choice([True, False]),
                 stu_is_tuition_fees=fake.random.choice([True, False]),
                 stu_is_archives=fake.random.choice([True, False]),
                 stu_is_superb=fake.random.choice([True, False]),
                 stu_telephone=self.create_telephone(),
-                stu_status=fake.random.choice([tag.value for tag in StatusChoice]),
+                stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
                 stu_class='信管1201',
             )
             student.user = student_list.pop()

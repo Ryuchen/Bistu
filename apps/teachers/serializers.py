@@ -32,6 +32,14 @@ class TutorSerializers(serializers.ModelSerializer):
 		model = Tutor
 		fields = '__all__'
 
+	def to_representation(self, instance):
+		instance.tut_gender = instance.get_tut_gender_display()
+		instance.tut_title = instance.get_tut_title_display()
+		instance.tut_political = instance.get_tut_political_display()
+		instance.tut_degree = instance.get_tut_degree_display()
+		data = super(TutorSerializers, self).to_representation(instance)
+		return data
+
 	def create(self, validated_data):
 		user = validated_data.pop('user')
 		if not User.objects.filter(username=user.get('username')).count():
