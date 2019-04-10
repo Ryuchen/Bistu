@@ -9,27 +9,36 @@
 # ==================================================
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from contrib.users.models import Student, Tutor
-from contrib.academy.models import Academy, Major
-from apps.teachers.serializers import UserSerializers
+from contrib.users.models import Student
+from apps.accounts.serializers import UserSerializers
+from apps.teachers.serializers import TutorSerializers
+from apps.colleges.serializers import AcademySerializers, MajorSerializers
 
 
 class StudentSerializers(serializers.ModelSerializer):
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
-	major = serializers.SlugRelatedField(many=False, queryset=Major.objects.all(), slug_field='maj_name')
-	tutor = serializers.SlugRelatedField(many=False, queryset=Tutor.objects.all(), slug_field='tut_number')
+	academy = AcademySerializers(many=False)
+	major = MajorSerializers(many=False)
+	tutor = TutorSerializers(many=False)
 
 	class Meta:
 		model = Student
 		fields = '__all__'
-		depth = 2
-		extra_kwargs = {
-			'major': {'lookup_field': 'maj_name'},
-			'user': {'lookup_field': 'username'},
-			'academy': {'lookup_field': 'aca_cname'},
-			'tutor': {'lookup_field': 'tut_number'}
-		}
+		depth = 3
+
+	def to_representation(self, instance):
+		instance.stu_gender = instance.get_stu_gender_display()
+		instance.stu_political = instance.get_stu_political_display()
+		instance.stu_type = instance.get_stu_type_display()
+		instance.stu_learn_type = instance.get_stu_learn_type_display()
+		instance.stu_learn_status = instance.get_stu_learn_status_display()
+		instance.stu_cultivating_mode = instance.get_stu_cultivating_mode_display()
+		instance.stu_enrollment_category = instance.get_stu_enrollment_category_display()
+		instance.stu_special_program = instance.get_stu_special_program_display()
+		instance.stu_status = instance.get_stu_status_display()
+		instance.major_category = instance.get_major_category_display()
+		data = super(StudentSerializers, self).to_representation(instance)
+		return data
 
 	def create(self, validated_data):
 		user = validated_data.pop('user')

@@ -9,6 +9,7 @@
 # ==================================================
 from rest_framework import serializers
 from contrib.academy.models import Major, Academy, Research
+from apps.accounts.serializers import UserSerializers
 
 
 class ResearchSerializers(serializers.ModelSerializer):
@@ -20,7 +21,7 @@ class ResearchSerializers(serializers.ModelSerializer):
 
 class MajorSerializers(serializers.ModelSerializer):
 	""" 学科专业 """
-	research = serializers.SlugRelatedField(many=True, queryset=Research.objects.filter(), slug_field='res_name')
+	research = ResearchSerializers(many=True)
 
 	class Meta:
 		model = Major
@@ -29,7 +30,8 @@ class MajorSerializers(serializers.ModelSerializer):
 
 class AcademySerializers(serializers.ModelSerializer):
 	""" 学院 """
-	majors = serializers.SlugRelatedField(many=True, queryset=Major.objects.filter(), slug_field='maj_name')
+	majors = MajorSerializers(many=True)
+	aca_user = UserSerializers(many=False)
 
 	class Meta:
 		model = Academy
