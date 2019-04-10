@@ -26,7 +26,7 @@ class TutorSerializers(serializers.ModelSerializer):
 	""" 老师 """
 	user = UserSerializers(many=False)
 	academy = AcademySerializers(many=False)
-	education = EducationSerializers(many=False, required=False)
+	education = EducationSerializers(many=False)
 
 	class Meta:
 		model = Tutor
