@@ -62,8 +62,7 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
 		data["user"] = user_chanle(username)
 		partial = kwargs.pop('partial', False)
 		instance = self.get_object()
-		serializer = self.get_serializer(instance, data=data, partial=partial,
-										 context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
+		serializer = self.get_serializer(instance, data=data, partial=partial, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
 		serializer.is_valid(raise_exception=True)
 		self.perform_update(serializer)
 		return Response(res)
