@@ -11,6 +11,6 @@ from django.conf.urls import url
 from apps.students.views import StudentDetail, StudentList
 
 urlpatterns = [
-	url(r"^students$", StudentList.as_view(), name="student-list"),
+	url(r"^students/$", StudentList.as_view(), name="student-list"),
 	url(r"^student/(?P<pk>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$", StudentDetail.as_view(), name="student-detail")
 ]

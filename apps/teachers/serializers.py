@@ -10,8 +10,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from contrib.users.models import Tutor, Education
-from contrib.academy.models import Academy
 from apps.accounts.serializers import UserSerializers
+from apps.colleges.serializers import AcademySerializers
 
 
 class EducationSerializers(serializers.ModelSerializer):
@@ -25,8 +25,8 @@ class EducationSerializers(serializers.ModelSerializer):
 class TutorSerializers(serializers.ModelSerializer):
 	""" 老师 """
 	user = UserSerializers(many=False)
-	academy = serializers.SlugRelatedField(many=False, queryset=Academy.objects.all(), slug_field='aca_cname')
-	education = EducationSerializers(many=False, required=False)
+	academy = AcademySerializers(many=False)
+	education = EducationSerializers(many=False)
 
 	class Meta:
 		model = Tutor
