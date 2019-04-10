@@ -11,18 +11,20 @@ import xlrd
 from rest_framework.response import Response
 from rest_framework import mixins, generics, status
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.pagination import LimitOffsetPagination
 
-from core.decorators.excepts import excepts
 from contrib.users.models import Student
+from core.decorators.excepts import excepts
+from apps.teachers.views import user_chanle
 from contrib.academy.models import Academy, Major
 from apps.students.serializers import StudentSerializers
-from apps.teachers.views import user_chanle
 
 
 class SimpleStudent(object):
 	model = Student
 	queryset = Student.objects.all()
 	serializer_class = StudentSerializers
+	pagination_class = LimitOffsetPagination
 	filterset_fields = ('stu_number', 'stu_gender', 'stu_cardID', 'stu_candidate_number', 'stu_nation', 'stu_source',
 						'stu_is_village', 'stu_political', 'stu_type', 'stu_learn_type', 'stu_learn_status',
 						'stu_grade', 'stu_system', 'stu_entrance_time', 'stu_graduation_time', 'stu_cultivating_mode',
@@ -101,106 +103,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 			tutor = params.get('tutor')
 			if tutor:
 				queryset = queryset.filter(tutor__user__username=tutor)
-
-			# stu_number = params.get('stu_number')
-			# if stu_number:
-			# 	queryset = queryset.filter(stu_number=stu_number)
-			#
-			# stu_gender = params.get('stu_gender')
-			# if stu_gender:
-			# 	queryset = queryset.filter(stu_gender=stu_gender)
-			#
-			# stu_card_id = params.get('stu_cardID')
-			# if stu_card_id:
-			# 	queryset = queryset.filter(stu_cardID=stu_card_id)
-			#
-			# stu_candidate_number = params.get('stu_candidate_number')
-			# if stu_candidate_number:
-			# 	queryset = queryset.filter(stu_candidate_number=stu_candidate_number)
-			#
-			# stu_nation = params.get('stu_nation')
-			# if stu_nation:
-			# 	queryset = queryset.filter(stu_nation=stu_nation)
-			#
-			# stu_source = params.get('stu_source')
-			# if stu_source:
-			# 	queryset = queryset.filter(stu_source=stu_source)
-			#
-			# stu_is_village = params.get('stu_is_village')
-			# if stu_is_village:
-			# 	queryset = queryset.filter(stu_source=stu_source)
-			#
-			# stu_political = params.get('stu_political')
-			# if stu_political:
-			# 	queryset = queryset.filter(stu_political=stu_political)
-			#
-			# stu_type = params.get('stu_type')
-			# if stu_type:
-			# 	queryset = queryset.filter(stu_type=stu_type)
-			#
-			# stu_learn_type = params.get('stu_learn_type')
-			# if stu_learn_type:
-			# 	queryset = queryset.filter(stu_learn_type=stu_learn_type)
-			#
-			# stu_learn_status = params.get('stu_learn_status')
-			# if stu_learn_status:
-			# 	queryset = queryset.filter(stu_learn_status=stu_learn_status)
-			#
-			# stu_grade = params.get('stu_grade')
-			# if stu_grade:
-			# 	queryset = queryset.filter(stu_grade=stu_grade)
-			#
-			# stu_system = params.get('stu_system')
-			# if stu_system:
-			# 	queryset = queryset.filter(stu_system=stu_system)
-			#
-			# stu_entrance_time = params.get('stu_entrance_time')
-			# if stu_entrance_time:
-			# 	queryset = queryset.filter(stu_entrance_time=stu_entrance_time)
-			#
-			# stu_graduation_time = params.get('stu_graduation_time')
-			# if stu_graduation_time:
-			# 	queryset = queryset.filter(stu_graduation_time=stu_graduation_time)
-			#
-			# stu_cultivating_mode = params.get('stu_cultivating_mode')
-			# if stu_cultivating_mode:
-			# 	queryset = queryset.filter(stu_cultivating_mode=stu_cultivating_mode)
-			#
-			# stu_enrollment_category = params.get('stu_enrollment_category')
-			# if stu_enrollment_category:
-			# 	queryset = queryset.filter(stu_enrollment_category=stu_enrollment_category)
-			#
-			# stu_is_regular_income = params.get('stu_is_regular_income')
-			# if stu_is_regular_income:
-			# 	queryset = queryset.filter(stu_is_regular_income=stu_is_regular_income)
-			#
-			# stu_is_tuition_fees = params.get('stu_is_tuition_fees')
-			# if stu_is_tuition_fees:
-			# 	queryset = queryset.filter(stu_is_tuition_fees=stu_is_tuition_fees)
-			#
-			# stu_is_archives = params.get('stu_is_archives')
-			# if stu_is_archives:
-			# 	queryset = queryset.filter(stu_is_archives=stu_is_archives)
-			#
-			# stu_is_superb = params.get('stu_is_superb')
-			# if stu_is_superb:
-			# 	queryset = queryset.filter(stu_is_superb=stu_is_superb)
-			#
-			# stu_telephone = params.get('stu_telephone')
-			# if stu_telephone:
-			# 	queryset = queryset.filter(stu_telephone=stu_telephone)
-			#
-			# stu_status = params.get('stu_status')
-			# if stu_status:
-			# 	queryset = queryset.filter(stu_status=stu_status)
-			#
-			# stu_class = params.get('stu_class')
-			# if stu_class:
-			# 	queryset = queryset.filter(stu_class=stu_class)
-			#
-			# major_category = params.get('major_category')
-			# if major_category:
-			# 	queryset = queryset.filter(major_category=major_category)
 		return queryset
 
 	@excepts
@@ -214,8 +116,9 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 		page = self.paginate_queryset(queryset)
 		if page is not None:
 			serializer = self.get_serializer(page, many=True)
-		else:
-			serializer = self.get_serializer(queryset, many=True)
+			return self.get_paginated_response(serializer.data)
+
+		serializer = self.get_serializer(queryset, many=True)
 		res["data"] = serializer.data
 		return Response(res)
 
