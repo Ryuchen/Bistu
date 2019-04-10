@@ -39,6 +39,7 @@ class SimpleTutor(object):
 	serializer_class = TutorSerializers
 	pagination_class = LimitOffsetPagination
 	filterset_fields = ("tut_title", "tut_telephone", "tut_degree")
+	ordering_fields = ('tut_number', 'tut_birth_day', 'tut_entry_day')
 
 
 class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
@@ -96,22 +97,10 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 		academy = self.request.query_params.get('academy')
 		if academy:
 			queryset = queryset.filter(academy__uuid=academy)
-		# 职称
-		# tut_title = self.request.query_params.get('tut_title')
-		# if tut_title:
-		# 	queryset = queryset.filter(tut_title=tut_title)
 		# 姓名
 		username = self.request.query_params.get('username')
 		if username:
 			queryset = queryset.filter(user__username=username)
-		# 电话
-		# tut_telephone = self.request.query_params.get('tut_telephone')
-		# if tut_telephone:
-		# 	queryset = queryset.filter(tut_telephone=tut_telephone)
-		# 学位
-		# tut_degree = self.request.query_params.get('tut_degree')
-		# if tut_degree:
-		# 	queryset = queryset.filter(tut_degree=tut_degree)
 		return queryset
 
 	@excepts
