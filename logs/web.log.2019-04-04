@@ -1,0 +1,32 @@
+2019-04-03 09:47:07,216 [Thread-7:123145353822208] [default:81] [ERROR]- Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/ryuchen/PycharmProjects/Bistu/apps/accounts/views.py", line 45, in login_view
+    raise ForbiddenError("Username or Password is incorrect!")
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/exceptions/errors.py", line 20, in __init__
+    self.details = json.loads(details)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-04-03 09:51:12,615 [Thread-7:123145390174208] [default:81] [ERROR]- Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/ryuchen/PycharmProjects/Bistu/apps/accounts/views.py", line 45, in login_view
+    raise ForbiddenError("Username or Password is incorrect!")
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/exceptions/errors.py", line 20, in __init__
+    self.details = json.loads(details)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-04-03 10:33:15,524 [Thread-7:123145367130112] [default:82] [ERROR]- admin
+2019-04-03 10:33:15,844 [Thread-8:123145367130112] [default:82] [ERROR]- admin
