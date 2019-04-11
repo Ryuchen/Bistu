@@ -42,6 +42,7 @@ class TutorSerializers(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		user = validated_data.pop('user')
+
 		if not User.objects.filter(username=user.get('username')).count():
 			user = User.objects.create(**user)
 		if validated_data.get('education'):
