@@ -164,14 +164,16 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 			t_dict["tut_number"] = int(row[0]) if row[0] else 0
 			t_dict["user"] = user_chanle(row[1], int(row[0]))
 			t_dict["tut_gender"] = row[2]
-			t_dict["tut_title"] = row[3]
-			t_dict["tut_cardID"] = row[4]
+			t_dict["tut_political"] = row[3]
+			t_dict["tut_title"] = row[4]
 			t_dict["tut_birth_day"] = str(xlrd.xldate_as_datetime(row[5], 'YYYY-MM-DD'))[0:10]
-			t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[6], 'YYYY-MM-DD'))[0:10]
-			t_dict["tut_political"] = row[7]
-			t_dict["tut_telephone"] = row[8]
-			t_dict["tut_degree"] = row[9]
-			t_dict["academy"] = Major.objects.filter(maj_name=row[10]).uuid
+			t_dict["tut_degree"] = row[6]
+			t_dict["academy"] = Major.objects.filter(maj_name=row[7]).uuid
+			t_dict["tut_cardID"] = row[8]
+			t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[9], 'YYYY-MM-DD'))[0:10]
+			t_dict["tut_telephone"] = row[10]
+
+
 			t_list.append(t_dict)
 		serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
 		serializer.is_valid(raise_exception=True)

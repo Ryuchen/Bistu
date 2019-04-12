@@ -54,22 +54,22 @@ class Tutor(models.Model):
     导师模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
+    tut_birth_day = models.CharField(help_text="出生日期")
+    tut_entry_day = models.CharField(help_text="入职日期")
+    tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
+    tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
+    education = models.ForeignKey(Education, null=True, on_delete=True, related_name='education', help_text="学历")
+    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
     tut_gender = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in GenderChoice]),
                                   help_text="性别")
     tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]),
                                  help_text="职称")
-    tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
-    tut_birth_day = models.DateField(help_text="出生日期")
-    tut_entry_day = models.DateField(help_text="入职日期")
     tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]),
                                      help_text="政治面貌")
-    tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_degree = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]),
                                   help_text="学位")
-    education = models.ForeignKey(Education, null=True, on_delete=True, related_name='education', help_text="学历")
-    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
 
     def __str__(self):
         return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.first_name + self.user.last_name)
