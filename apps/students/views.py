@@ -209,11 +209,36 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 class StudentStatistics(generics.GenericAPIView):
 	@excepts
 	@csrf_exempt
-	def get(self):
+	def get(self, request, *args, **kwargs):
 		res = {
 			"code": "00000000",
 			"data": {
 				"status": 200,
 			}
 		}
+		student = Student.objects.all()
+		majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_type', 'majors__maj_code')
+		s_list = list()
+		for item in majors:
+			s_dict = {
+				"name": "",
+				"major": {},
+				"count": 0
+			}
+			s_dict['count'] = student.filter(academy__aca_cname=item['aca_cname']).count()
+			aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(major__maj_name=item['majors__maj_name'])
+			s_dict['name'] = item['aca_cname']
+			s_dict['major']['name'] = item['majors__maj_name']
+			s_dict['major']['type'] = item['majors__maj_type']
+			s_dict['major']['maj_code'] = item['majors__maj_code']
+			s_dict['major']['count'] = aca_student.count()
+			s_dict['major']['col_1'] = aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count()
+			s_dict['major']['col_2'] = aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count()
+			s_dict['major']['col_3'] = aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count()
+			s_dict['major']['col_4'] = aca_student.filter(volunteer=True).count()
+			s_dict['major']['col_5'] = aca_student.filter(exemption=True).count()
+			s_dict['major']['col_6'] = aca_student.filter(adjust=True).count()
+			s_dict['major']['col_7'] = aca_student.filter(stu_special_program='S3').count()
+			s_list.append(s_dict)
+			res["data"] = s_list
 		return Response(res)
