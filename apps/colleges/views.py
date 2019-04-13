@@ -29,92 +29,57 @@ class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response(res)
+        return Response(status=status.HTTP_200_OK)
 
 
 class ResearchList(SimpleResearch, generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': []
-        }
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
         else:
             serializer = self.get_serializer(queryset, many=True)
-        res["data"] = serializer.data
-
-        return Response(res)
+        return Response(serializer.data)
 
     # 添加
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         data = request.data
         bulk = isinstance(data, list)
-
         if not bulk:
             serializer = self.get_serializer(data=data)
         else:
             serializer = self.get_serializer(data=data, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -130,8 +95,7 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
         serializer = self.get_serializer(data=m_list, many=True, context={"research": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # 专业
@@ -146,26 +110,13 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         data = request.data
         data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
         partial = kwargs.pop('partial', False)
@@ -173,48 +124,32 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data, partial=partial, context={"research": ""})
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response(res)
+        return Response(status.HTTP_200_OK)
 
 
 class MajorList(SimpleMajor, generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': []
-        }
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
         else:
             serializer = self.get_serializer(queryset, many=True)
-        res["data"] = serializer.data
-
-        return Response(res)
+        return Response(serializer.data)
 
     # 添加
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         data = request.data
         bulk = isinstance(data, list)
 
@@ -228,16 +163,11 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
             serializer = self.get_serializer(data=data, many=True, context={"research": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -253,8 +183,7 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
         serializer = self.get_serializer(data=m_list, many=True, context={"research": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
 
 # 学院
@@ -269,26 +198,13 @@ class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         data = request.data
         data["aca_user"] = User.objects.get(username=data.get('aca_user')).id
         data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('majors').split(","))]
@@ -297,47 +213,32 @@ class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response(res)
+        return Response(status.HTTP_200_OK)
 
 
 class AcademyList(SimpleAcademy, generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': []
-        }
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
         else:
             serializer = self.get_serializer(queryset, many=True)
-        res["data"] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     # 添加
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -351,16 +252,11 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
             serializer = self.get_serializer(data=data, many=True, context={"majors": "", "aca_user": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -376,5 +272,4 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
         serializer = self.get_serializer(data=m_list, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
