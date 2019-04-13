@@ -16,48 +16,47 @@ from apps.colleges.serializers import AcademySerializers, MajorSerializers
 
 
 class StudentSerializers(serializers.ModelSerializer):
-	user = UserSerializers(many=False)
-	academy = AcademySerializers(many=False)
-	major = MajorSerializers(many=False)
-	tutor = TutorSerializers(many=False)
+    user = UserSerializers(many=False)
+    academy = AcademySerializers(many=False)
+    major = MajorSerializers(many=False)
+    tutor = TutorSerializers(many=False)
 
-	class Meta:
-		model = Student
-		fields = '__all__'
-		depth = 3
+    class Meta:
+        model = Student
+        fields = '__all__'
+        depth = 3
 
-	def to_representation(self, instance):
-		instance.stu_gender = instance.get_stu_gender_display()
-		instance.stu_political = instance.get_stu_political_display()
-		instance.stu_type = instance.get_stu_type_display()
-		instance.stu_learn_type = instance.get_stu_learn_type_display()
-		instance.stu_learn_status = instance.get_stu_learn_status_display()
-		instance.stu_cultivating_mode = instance.get_stu_cultivating_mode_display()
-		instance.stu_enrollment_category = instance.get_stu_enrollment_category_display()
-		instance.stu_special_program = instance.get_stu_special_program_display()
-		instance.stu_status = instance.get_stu_status_display()
-		instance.major_category = instance.get_major_category_display()
-		data = super(StudentSerializers, self).to_representation(instance)
-		return data
+    def to_representation(self, instance):
+        instance.stu_gender = instance.get_stu_gender_display()
+        instance.stu_political = instance.get_stu_political_display()
+        instance.stu_type = instance.get_stu_type_display()
+        instance.stu_learn_type = instance.get_stu_learn_type_display()
+        instance.stu_learn_status = instance.get_stu_learn_status_display()
+        instance.stu_cultivating_mode = instance.get_stu_cultivating_mode_display()
+        instance.stu_enrollment_category = instance.get_stu_enrollment_category_display()
+        instance.stu_special_program = instance.get_stu_special_program_display()
+        instance.stu_status = instance.get_stu_status_display()
+        instance.major_category = instance.get_major_category_display()
+        data = super(StudentSerializers, self).to_representation(instance)
+        return data
 
-	def to_internal_value(self, data):
-		return data
+    def to_internal_value(self, data):
+        return data
 
-	def create(self, validated_data):
-		user = validated_data.pop('user')
-		major = validated_data.pop('major')
-		tutor = validated_data.pop('tutor')
-		academy = validated_data.pop('academy')
-		if not User.objects.filter(first_name=user.get('first_name')).count():
-			user = User.objects.create(**user)
-		else:
-			user = User.objects.filter(first_name=user['first_name']).first()
-		new_tutor = Student.objects.create(user=user, academy=academy, major=major, tutor=tutor, **validated_data)
-		return new_tutor
+    def create(self, validated_data):
+        user = validated_data.pop('user')
+        major = validated_data.pop('major')
+        tutor = validated_data.pop('tutor')
+        academy = validated_data.pop('academy')
+        if not User.objects.filter(first_name=user.get('first_name')).count():
+            user = User.objects.create(**user)
+        else:
+            user = User.objects.filter(first_name=user['first_name']).first()
+        new_tutor = Student.objects.create(user=user, academy=academy, major=major, tutor=tutor, **validated_data)
+        return new_tutor
 
-	def update(self, instance, validated_data):
-		username = validated_data.get('user')['username']
-		if not User.objects.filter(username=username).count():
-			User.objects.filter(id=instance.user_id).update(username=username)
-		return instance
-
+    def update(self, instance, validated_data):
+        username = validated_data.get('user')['username']
+        if not User.objects.filter(username=username).count():
+            User.objects.filter(id=instance.user_id).update(username=username)
+        return instance
