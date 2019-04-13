@@ -440,6 +440,9 @@ class Command(BaseCommand):
                 stu_telephone=self.create_telephone(),
                 stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
                 stu_class='信管1201',
+                exemption=fake.random.choice([True, False]),
+                adjust=fake.random.choice([True, False]),
+                volunteer=fake.random.choice([True, False]),
             )
             student.user = student_list.pop()
             student.tutor = fake.random.choice(tutors_list)

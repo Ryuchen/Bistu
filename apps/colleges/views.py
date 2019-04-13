@@ -22,6 +22,7 @@ class SimpleResearch(object):
 	model = Research
 	queryset = Research.objects.all()
 	serializer_class = ResearchSerializers
+	pagination_class = None
 
 
 class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
@@ -138,6 +139,7 @@ class SimpleMajor(object):
 	model = Major
 	queryset = Major.objects.all()
 	serializer_class = MajorSerializers
+	pagination_class = None
 
 
 class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
@@ -259,6 +261,7 @@ class SimpleAcademy(object):
 	model = Academy
 	queryset = Academy.objects.all()
 	serializer_class = AcademySerializers
+	pagination_class = None
 
 
 class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
