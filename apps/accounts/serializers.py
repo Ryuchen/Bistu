@@ -12,8 +12,8 @@ from django.contrib.auth.models import User
 
 
 class UserSerializers(serializers.ModelSerializer):
-	""" user """
+    """ user """
 
-	class Meta:
-		model = User
-		fields = '__all__'
+    class Meta:
+        model = User
+        fields = '__all__'
