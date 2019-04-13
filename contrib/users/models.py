@@ -54,8 +54,8 @@ class Tutor(models.Model):
     导师模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    tut_birth_day = models.CharField(help_text="出生日期")
-    tut_entry_day = models.CharField(help_text="入职日期")
+    tut_birth_day = models.CharField(max_length=128, null=True, help_text="出生日期")
+    tut_entry_day = models.CharField(max_length=128, null=True, help_text="入职日期")
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
