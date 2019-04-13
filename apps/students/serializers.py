@@ -40,11 +40,19 @@ class StudentSerializers(serializers.ModelSerializer):
 		data = super(StudentSerializers, self).to_representation(instance)
 		return data
 
+	def to_internal_value(self, data):
+		return data
+
 	def create(self, validated_data):
 		user = validated_data.pop('user')
-		if not User.objects.filter(username=user.get('username')).count():
+		major = validated_data.pop('major')
+		tutor = validated_data.pop('tutor')
+		academy = validated_data.pop('academy')
+		if not User.objects.filter(first_name=user.get('first_name')).count():
 			user = User.objects.create(**user)
-		new_tutor = Student.objects.create(user=user, **validated_data)
+		else:
+			user = User.objects.filter(first_name=user['first_name']).first()
+		new_tutor = Student.objects.create(user=user, academy=academy, major=major, tutor=tutor, **validated_data)
 		return new_tutor
 
 	def update(self, instance, validated_data):
