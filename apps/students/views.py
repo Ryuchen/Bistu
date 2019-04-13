@@ -101,7 +101,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
             tutor = params.get('tutor')
             if tutor:
-                queryset = queryset.filter(tutor__user__username=tutor)
+                queryset = queryset.filter(tutor__uuid=tutor)
         return queryset
 
     @excepts
