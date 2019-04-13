@@ -103,6 +103,9 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             tutor = params.get('tutor')
             if tutor:
                 queryset = queryset.filter(tutor__user__username=tutor)
+            ordering = self.request.query_params.get('ordering')
+            if ordering:
+                queryset = queryset.order_by(ordering)
         return queryset
 
     @excepts
