@@ -20,16 +20,16 @@ from .serializers import TutorSerializers
 from core.decorators.excepts import excepts
 
 
-def user_chanle(username):
+def user_chanle(username, tut_number):
 	user = dict()
 	if username:
-		user['username'] = username
+		user['username'] = str(int(tut_number))
 		user['first_name'] = username
 		user['last_name'] = username
-		user['password'] = make_password('1234567')
-		user['is_superusre'] = False
+		user['password'] = make_password('123456')
+		user['is_superuser'] = False
 		user['is_staff'] = True
-		user['is_active'] = True
+		user['is_active'] = False
 	return user
 
 
@@ -39,6 +39,7 @@ class SimpleTutor(object):
 	serializer_class = TutorSerializers
 	pagination_class = LimitOffsetPagination
 	filterset_fields = ("tut_title", "tut_telephone", "tut_degree")
+	ordering_fields = ('tut_number', 'tut_birth_day', 'tut_entry_day')
 
 
 class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
@@ -96,22 +97,10 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 		academy = self.request.query_params.get('academy')
 		if academy:
 			queryset = queryset.filter(academy__uuid=academy)
-		# 职称
-		# tut_title = self.request.query_params.get('tut_title')
-		# if tut_title:
-		# 	queryset = queryset.filter(tut_title=tut_title)
 		# 姓名
 		username = self.request.query_params.get('username')
 		if username:
 			queryset = queryset.filter(user__username=username)
-		# 电话
-		# tut_telephone = self.request.query_params.get('tut_telephone')
-		# if tut_telephone:
-		# 	queryset = queryset.filter(tut_telephone=tut_telephone)
-		# 学位
-		# tut_degree = self.request.query_params.get('tut_degree')
-		# if tut_degree:
-		# 	queryset = queryset.filter(tut_degree=tut_degree)
 		return queryset
 
 	@excepts
@@ -144,13 +133,13 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 		if not bulk:
 			username = data.get('user')
 			data["user"] = user_chanle(username)
-			data["majors"] = Major.objects.filter(maj_name=data.get('majors')).uuid
+			data["majors"] = Major.objects.filter(maj_name=data.get('majors')).filter()
 			serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
 		else:
 			for item in data:
 				username = item['user']
 				item["user"] = user_chanle(username)
-				data["majors"] = Major.objects.filter(maj_name=item.get('majors')).uuid
+				data["majors"] = Major.objects.filter(maj_name=item.get('majors')).filter()
 			serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
@@ -173,16 +162,18 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 			row = table.row_values(i)
 			t_dict = dict()
 			t_dict["tut_number"] = int(row[0]) if row[0] else 0
-			t_dict["user"] = user_chanle(row[1])
+			t_dict["user"] = user_chanle(row[1], int(row[0]))
 			t_dict["tut_gender"] = row[2]
-			t_dict["tut_title"] = row[3]
-			t_dict["tut_cardID"] = row[4]
+			t_dict["tut_political"] = row[3]
+			t_dict["tut_title"] = row[4]
 			t_dict["tut_birth_day"] = str(xlrd.xldate_as_datetime(row[5], 'YYYY-MM-DD'))[0:10]
-			t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[6], 'YYYY-MM-DD'))[0:10]
-			t_dict["tut_political"] = row[7]
-			t_dict["tut_telephone"] = row[8]
-			t_dict["tut_degree"] = row[9]
-			t_dict["academy"] = Major.objects.filter(maj_name=row[10]).uuid
+			t_dict["tut_degree"] = row[6]
+			t_dict["academy"] = Major.objects.filter(maj_name=row[7]).uuid
+			t_dict["tut_cardID"] = row[8]
+			t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[9], 'YYYY-MM-DD'))[0:10]
+			t_dict["tut_telephone"] = row[10]
+
+
 			t_list.append(t_dict)
 		serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
 		serializer.is_valid(raise_exception=True)

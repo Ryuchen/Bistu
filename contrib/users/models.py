@@ -54,22 +54,22 @@ class Tutor(models.Model):
     导师模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
+    tut_birth_day = models.CharField(help_text="出生日期")
+    tut_entry_day = models.CharField(help_text="入职日期")
+    tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_number = models.IntegerField(null=False, unique=True, help_text="导师工号")
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user')
+    tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
+    education = models.ForeignKey(Education, null=True, on_delete=True, related_name='education', help_text="学历")
+    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
     tut_gender = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in GenderChoice]),
                                   help_text="性别")
     tut_title = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in TitleChoice]),
                                  help_text="职称")
-    tut_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号")
-    tut_birth_day = models.DateField(help_text="出生日期")
-    tut_entry_day = models.DateField(help_text="入职日期")
     tut_political = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in PoliticalChoice]),
                                      help_text="政治面貌")
-    tut_telephone = models.IntegerField(null=True, help_text="电话号码")
     tut_degree = models.CharField(max_length=64, choices=sorted([(tag.name, tag.value) for tag in DegreeChoice]),
                                   help_text="学位")
-    education = models.ForeignKey(Education, null=True, on_delete=True, related_name='education', help_text="学历")
-    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', help_text="所属学院")
 
     def __str__(self):
         return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.first_name + self.user.last_name)
@@ -86,6 +86,7 @@ class Student(models.Model):
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user')
+    stu_name = models.CharField(null=False, max_length=64, help_text="学生名称")
     stu_number = models.IntegerField(null=False, unique=True, default='20190101', help_text="学号")
     stu_avatar = models.ImageField(null=True, help_text="学生照片")
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
@@ -95,7 +96,7 @@ class Student(models.Model):
     stu_birth_day = models.CharField(max_length=64, null=True, help_text="出生日期", default='201909')
     stu_nation = models.CharField(max_length=64, null=False, help_text='民族', default='汉')
     stu_source = models.CharField(max_length=128, null=True, help_text="生源地")
-    stu_is_village = models.BooleanField(default=False, help_text='是否农村学生')
+    stu_is_village = models.BooleanField(null=True, help_text='是否农村学生')
     stu_political = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in PoliticalChoice], help_text="政治面貌")
     stu_type = models.CharField(max_length=128, null=False, choices=[(tag.name, tag.value) for tag in StudentType], help_text='学生类型', default='S1')
     stu_learn_type = models.CharField(max_length=64, null=False, choices=[(tag.name, tag.value) for tag in StudentCategory], help_text='学习形式', default='S1')
@@ -120,6 +121,9 @@ class Student(models.Model):
     major_category = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in MajorDegree], help_text='专业大类', default='D1')
     major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
     research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
+    exemption = models.BooleanField(default=False, help_text="是否推免生")
+    adjust = models.BooleanField(default=False, help_text="是否调剂")
+    volunteer = models.BooleanField(default=True, help_text="是否第一志愿")
 
     def __str__(self):
         return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
@@ -127,4 +131,3 @@ class Student(models.Model):
     class Meta:
         verbose_name = "学生"
         verbose_name_plural = verbose_name
-        ordering = ['stu_number']
