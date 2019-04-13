@@ -229,6 +229,7 @@ class StudentStatistics(generics.GenericAPIView):
             aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(
                 major__maj_name=item['majors__maj_name'])
             s_dict['name'] = item['aca_cname']
+            s_dict['code'] = item['majors__maj_code']
             s_dict['major']['name'] = item['majors__maj_name']
             s_dict['major']['type'] = item['majors__maj_type']
             s_dict['major']['maj_code'] = item['majors__maj_code']
