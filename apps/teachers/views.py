@@ -8,6 +8,8 @@
 # @Desc : 
 # ==================================================
 import xlrd
+from rest_framework import filters
+import django_filters.rest_framework
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -38,8 +40,7 @@ class SimpleTutor(object):
     queryset = Tutor.objects.all()
     serializer_class = TutorSerializers
     pagination_class = LimitOffsetPagination
-    filterset_fields = ("tut_title", "tut_telephone", "tut_degree")
-    ordering_fields = ('tut_number', 'tut_birth_day', 'tut_entry_day')
+    filter_fields = ("tut_title", "tut_telephone", "tut_degree")
 
 
 class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
@@ -102,6 +103,10 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
         username = self.request.query_params.get('username')
         if username:
             queryset = queryset.filter(user__username=username)
+
+        ordering = self.request.query_params.get('ordering')
+        if ordering:
+            queryset = queryset.order_by(ordering)
         return queryset
 
     @excepts
