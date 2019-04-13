@@ -41,26 +41,13 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         data = request.data
         username = data.get('user')
         data["user"] = user_chanle(username)
@@ -70,20 +57,14 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
                                          context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def delete(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response(res)
+        return Response(status.HTTP_200_OK)
 
 
 class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView):
@@ -111,10 +92,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': []
-        }
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -122,17 +99,12 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        res["data"] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     # 添加
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -155,16 +127,11 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
                                                       "stu_tutor": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        res = {
-            'code': status.HTTP_200_OK,
-            'data': {}
-        }
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -210,20 +177,13 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
                                                                           "stu_major": "", "stu_tutor": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        res['data'] = serializer.data
-        return Response(res)
+        return Response(serializer.data)
 
 
 class StudentStatistics(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        res = {
-            "code": "00000000",
-            "data": {
-                "status": 200,
-            }
-        }
         student = Student.objects.all()
         majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_type', 'majors__maj_code')
         s_list = list()
@@ -245,5 +205,4 @@ class StudentStatistics(generics.GenericAPIView):
             s_dict['major']['col_6'] = aca_student.filter(adjust=True).count()
             s_dict['major']['col_7'] = aca_student.filter(stu_special_program='S3').count()
             s_list.append(s_dict)
-            res["data"] = s_list
-        return Response(res)
+        return Response(s_list)
