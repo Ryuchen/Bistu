@@ -193,6 +193,7 @@ class StudentStatistics(generics.GenericAPIView):
             aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(
                 major__maj_name=item['majors__maj_name'])
             s_dict['name'] = item['aca_cname']
+            s_dict['code'] = item['majors__maj_code']
             s_dict['major']['name'] = item['majors__maj_name']
             s_dict['major']['type'] = item['majors__maj_type']
             s_dict['major']['maj_code'] = item['majors__maj_code']
@@ -206,3 +207,119 @@ class StudentStatistics(generics.GenericAPIView):
             s_dict['major']['col_7'] = aca_student.filter(stu_special_program='S3').count()
             s_list.append(s_dict)
         return Response(s_list)
+
+
+from rest_framework.decorators import api_view
+@api_view(['GET'])
+def create_xls(request):
+    import xlwt
+    res = {}
+    # 创建一个workbook 设置编码
+    workbook = xlwt.Workbook(encoding='utf-8')
+    # 创建一个worksheet
+    worksheet = workbook.add_sheet('My Worksheet')
+    alignment = xlwt.Alignment()
+    alignment.horz = xlwt.Alignment.HORZ_CENTER
+    alignment.vert = xlwt.Alignment.VERT_CENTER
+
+    # 写入excel
+    # 第一行
+    header_style = xlwt.XFStyle()
+    header_font = xlwt.Font()
+    header_font.bold = True
+    header_style.font = header_font
+    header_style.alignment = alignment
+    worksheet.write_merge(0, 0, 0, 11, label='年硕士生分专业招生人数汇总表', style=header_style)
+
+    # 参数对应第二行
+    worksheet.write(1, 0, label='招生专业代码', style=header_style)
+    worksheet.write(1, 1, label='招生专业名称', style=header_style)
+    worksheet.write_merge(1, 2, 2, 2, '学院名称', style=header_style)
+    worksheet.write(1, 3, label='学院总数', style=header_style)
+    worksheet.write_merge(1, 2, 4, 4, '各专业招生数', style=header_style)
+    worksheet.write(1, 5, label='全日制学术型', style=header_style)
+    worksheet.write(1, 6, label='全日制专业学位', style=header_style)
+    worksheet.write(1, 7, label='非全日制专业学位', style=header_style)
+    worksheet.write(1, 8, label='录取一志愿', style=header_style)
+    worksheet.write(1, 9, label='推免生', style=header_style)
+    worksheet.write(1, 10, label='调剂人数', style=header_style)
+    worksheet.write(1, 11, label='退役大学生', style=header_style)
+    # 参数对应第三行
+    worksheet.write(2, 0, label='')
+    worksheet.write(2, 1, label='合计', style=header_style)
+    worksheet.write(2, 3, label='')
+    worksheet.write(2, 5, label='')
+    worksheet.write(2, 6, label='')
+    worksheet.write(2, 7, label='')
+    worksheet.write(2, 8, label='')
+    worksheet.write(2, 9, label='')
+    worksheet.write(2, 10, label='')
+    worksheet.write(2, 11, label='')
+    # 列宽
+    worksheet.col(0).width = 256 * 15
+    worksheet.col(1).width = 256 * 25
+    worksheet.col(2).width = 256 * 25
+    worksheet.col(3).width = 256 * 15
+    worksheet.col(4).width = 256 * 15
+    worksheet.col(5).width = 256 * 15
+    worksheet.col(6).width = 256 * 15
+    worksheet.col(7).width = 256 * 15
+    worksheet.col(8).width = 256 * 15
+    # 行高
+    tall_style = xlwt.easyxf('font:height 240;')
+    first_row = worksheet.row(1)
+    first_row.set_style(tall_style)
+
+    # 数据处理
+    # student = Student.objects.all()
+    # majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_code')
+    # i = 2
+    # for item in majors:
+    #     i += 1
+    #     aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(
+    #         major__maj_name=item['majors__maj_name'])
+    #
+        # worksheet.write(i, 0, label=item['majors__maj_code'])
+        # worksheet.write(i, 1, label=item['majors__maj_name'])
+        # worksheet.write(i, 2, label=item['aca_cname'])
+        # worksheet.write(i, 3, label=student.filter(academy__aca_cname=item['aca_cname']).count())
+        # worksheet.write(i, 4, label=aca_student.count())
+        # worksheet.write(i, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
+        # worksheet.write(i, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
+        # worksheet.write(i, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
+        # worksheet.write(i, 8, label=aca_student.filter(volunteer=True).count())
+        # worksheet.write(i, 9, label=aca_student.filter(exemption=True).count())
+        # worksheet.write(i, 10, label=aca_student.filter(adjust=True).count())
+        # worksheet.write(i, 11, label=aca_student.filter(stu_special_program='S3').count())
+
+
+    # 获取所有的学生
+    student = Student.objects.all()
+    # 获取所有的学院
+    acas = Academy.objects.values("aca_cname")
+    i = 2
+    for aca in acas:
+        majors = Academy.objects.filter(aca_cname=aca['aca_cname']).values('majors__maj_name', 'majors__maj_code')
+        row_start = i + 1
+        row_end = row_start + len(majors) + 1
+        worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'])
+        student = student.filter(academy__aca_cname=aca['aca_cname'])
+        worksheet.write_merge(row_start, row_end, 3, 3, student.count())
+        for major in majors:
+            sing_row_start = row_start
+            aca_student = student.filter(major__maj_name=major['majors__maj_name'])
+            worksheet.write(i, 0, label=major['majors__maj_code'])
+            worksheet.write(i, 1, label=major['majors__maj_name'])
+            worksheet.write(i, 4, label=aca_student.count())
+            worksheet.write(i, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
+            worksheet.write(i, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
+            worksheet.write(i, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
+            worksheet.write(i, 8, label=aca_student.filter(volunteer=True).count())
+            worksheet.write(i, 9, label=aca_student.filter(exemption=True).count())
+            worksheet.write(i, 10, label=aca_student.filter(adjust=True).count())
+            worksheet.write(i, 11, label=aca_student.filter(stu_special_program='S3').count())
+            sing_row_start += 1
+
+    # 保存
+    workbook.save('Excel_test.xls')
+    return Response(res)
