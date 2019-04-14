@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+# Ignore directory
 .idea/
 __pycache__/
 venv/
+
+# Ignore files
+*.pyc
