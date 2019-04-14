@@ -270,29 +270,6 @@ def create_xls(request):
     first_row = worksheet.row(1)
     first_row.set_style(tall_style)
 
-    # 数据处理
-    # student = Student.objects.all()
-    # majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_code')
-    # i = 2
-    # for item in majors:
-    #     i += 1
-    #     aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(
-    #         major__maj_name=item['majors__maj_name'])
-    #
-        # worksheet.write(i, 0, label=item['majors__maj_code'])
-        # worksheet.write(i, 1, label=item['majors__maj_name'])
-        # worksheet.write(i, 2, label=item['aca_cname'])
-        # worksheet.write(i, 3, label=student.filter(academy__aca_cname=item['aca_cname']).count())
-        # worksheet.write(i, 4, label=aca_student.count())
-        # worksheet.write(i, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
-        # worksheet.write(i, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
-        # worksheet.write(i, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
-        # worksheet.write(i, 8, label=aca_student.filter(volunteer=True).count())
-        # worksheet.write(i, 9, label=aca_student.filter(exemption=True).count())
-        # worksheet.write(i, 10, label=aca_student.filter(adjust=True).count())
-        # worksheet.write(i, 11, label=aca_student.filter(stu_special_program='S3').count())
-
-
     # 获取所有的学生
     student = Student.objects.all()
     # 获取所有的学院
@@ -308,17 +285,31 @@ def create_xls(request):
         for major in majors:
             sing_row_start = row_start
             aca_student = student.filter(major__maj_name=major['majors__maj_name'])
-            worksheet.write(i, 0, label=major['majors__maj_code'])
-            worksheet.write(i, 1, label=major['majors__maj_name'])
-            worksheet.write(i, 4, label=aca_student.count())
-            worksheet.write(i, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
-            worksheet.write(i, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
-            worksheet.write(i, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
-            worksheet.write(i, 8, label=aca_student.filter(volunteer=True).count())
-            worksheet.write(i, 9, label=aca_student.filter(exemption=True).count())
-            worksheet.write(i, 10, label=aca_student.filter(adjust=True).count())
-            worksheet.write(i, 11, label=aca_student.filter(stu_special_program='S3').count())
+            worksheet.write(sing_row_start, 0, label=major['majors__maj_code'])
+            worksheet.write(sing_row_start, 1, label=major['majors__maj_name'])
+            worksheet.write(sing_row_start, 4, label=aca_student.count())
+            worksheet.write(sing_row_start, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
+            worksheet.write(sing_row_start, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
+            worksheet.write(sing_row_start, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
+            worksheet.write(sing_row_start, 8, label=aca_student.filter(volunteer=True).count())
+            worksheet.write(sing_row_start, 9, label=aca_student.filter(exemption=True).count())
+            worksheet.write(sing_row_start, 10, label=aca_student.filter(adjust=True).count())
+            worksheet.write(sing_row_start, 11, label=aca_student.filter(stu_special_program='S3').count())
             sing_row_start += 1
+            row_start = sing_row_start
+        # 学院汇总
+        row_start += 1
+        worksheet.write(row_start, 0, label='')
+        worksheet.write(row_start, 1, label='学院汇总')
+        worksheet.write(row_start, 4, label=122)
+        worksheet.write(row_start, 5, label=122)
+        worksheet.write(row_start, 6, label=122)
+        worksheet.write(row_start, 7, label=122)
+        worksheet.write(row_start, 8, label=22)
+        worksheet.write(row_start, 9, label=22)
+        worksheet.write(row_start, 10, label=22)
+        worksheet.write(row_start, 11, label=22)
+        i = row_start
 
     # 保存
     workbook.save('Excel_test.xls')
