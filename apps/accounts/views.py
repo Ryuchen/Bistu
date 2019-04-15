@@ -105,5 +105,5 @@ def current_user_view(request):
                 }
         return JsonResponse(res)
     else:
-        raise ForbiddenError("You need login first!")
+        raise AuthenticateError("You need login first!")
 
