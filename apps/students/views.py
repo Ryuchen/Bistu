@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import LimitOffsetPagination
 
 from core.decorators.excepts import excepts
-from apps.teachers.views import user_chanle
+from apps.teachers.views import user_create
 from contrib.users.models import Student, Tutor
 from contrib.academy.models import Academy, Major
 from apps.students.serializers import StudentSerializers
@@ -50,7 +50,7 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         data = request.data
         username = data.get('user')
-        data["user"] = user_chanle(username)
+        data["user"] = user_create(username)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=partial,
@@ -83,7 +83,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
             tutor = params.get('tutor')
             if tutor:
-                queryset = queryset.filter(tutor__user__username=tutor)
+                queryset = queryset.filter(tutor__uuid=tutor)
             ordering = self.request.query_params.get('ordering')
             if ordering:
                 queryset = queryset.order_by(ordering)
@@ -109,7 +109,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         bulk = isinstance(data, list)
         if not bulk:
             username = data.get('user')
-            data["user"] = user_chanle(username)
+            data["user"] = user_create(username)
             data["stu_major"] = Major.objects.filter(maj_name=data.get('stu_major')).first()
             data["stu_academy"] = Academy.objects.filter(aca_cname=data.get('stu_academy')).first()
             data["tutor"] = Tutor.objects.filter(user__first_name=data.get('tutor')).first()
@@ -118,7 +118,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         else:
             for item in data:
                 username = item['user']
-                item["user"] = user_chanle(username)
+                item["user"] = user_create(username)
                 data["stu_major"] = Major.objects.filter(maj_name=item['stu_major']).first()
                 data["stu_academy"] = Academy.objects.filter(aca_cname=item['stu_academy']).first()
                 data["tutor"] = Tutor.objects.filter(user__first_name=data.get('tutor')).first()
@@ -140,7 +140,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         for i in range(1, nrows):
             rowx = table.row_values(i)
             student_dict = dict()
-            student_dict["user"] = user_chanle(rowx[0], rowx[1])
+            student_dict["user"] = user_create(rowx[0], rowx[1])
             student_dict["stu_name"] = rowx[0]
             student_dict["stu_number"] = rowx[1]
             student_dict["stu_candidate_number"] = rowx[2]

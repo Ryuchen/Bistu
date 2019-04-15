@@ -58,8 +58,8 @@ class Academy(models.Model):
     学院模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    # aca_avatar = models.ImageField(help_text="学院图标", null=False)
-    aca_avatar = models.CharField(max_length=128, help_text="学院图标", null=True)
+    aca_avatar = models.ImageField(null=True, upload_to="academies", default='default.png', help_text="学院图标")
+    # aca_avatar = models.ImageField(max_length=128, help_text="学院图标", null=True)
     aca_nickname = models.CharField(max_length=128, null=True, help_text="学院简称")
     aca_cname = models.CharField(max_length=128, null=True, help_text="学院名称(中)")
     aca_ename = models.CharField(max_length=128, null=True, help_text="学院名称(英)")

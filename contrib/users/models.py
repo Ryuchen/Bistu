@@ -55,6 +55,7 @@ class Tutor(models.Model):
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     tut_name = models.CharField(null=False, max_length=64, help_text="导师名称")
+    tut_avatar = models.ImageField(null=True, upload_to="teachers", default='default.png', help_text="教师图片")
     tut_birth_day = models.DateField(max_length=128, null=True, help_text="出生日期")
     tut_entry_day = models.DateField(max_length=128, null=True, help_text="入职日期")
     tut_telephone = models.IntegerField(null=True, help_text="电话号码")
@@ -89,7 +90,7 @@ class Student(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user')
     stu_name = models.CharField(null=False, max_length=64, help_text="学生名称")
     stu_number = models.IntegerField(null=False, unique=True, default='20190101', help_text="学号")
-    stu_avatar = models.ImageField(null=True, help_text="学生照片")
+    stu_avatar = models.ImageField(null=True, upload_to="students", default='default.png', help_text="学生照片")
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
     stu_card_type = models.CharField(max_length=128, null=False, help_text='身份证件类型', default="身份证")
     stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="")
