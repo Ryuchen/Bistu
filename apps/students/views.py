@@ -270,8 +270,6 @@ def create_xls(request):
     first_row = worksheet.row(1)
     first_row.set_style(tall_style)
 
-    # 获取所有的学生
-    student = Student.objects.all()
     # 获取所有的学院
     acas = Academy.objects.values("aca_cname")
     i = 2
@@ -280,37 +278,43 @@ def create_xls(request):
         row_start = i + 1
         row_end = row_start + len(majors) + 1
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'])
-        student = student.filter(academy__aca_cname=aca['aca_cname'])
-        worksheet.write_merge(row_start, row_end, 3, 3, student.count())
+        aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname'])
+        worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count())
         for major in majors:
             sing_row_start = row_start
-            aca_student = student.filter(major__maj_name=major['majors__maj_name'])
+            maj_student = aca_student.filter(major__maj_name=major['majors__maj_name'])
             worksheet.write(sing_row_start, 0, label=major['majors__maj_code'])
             worksheet.write(sing_row_start, 1, label=major['majors__maj_name'])
-            worksheet.write(sing_row_start, 4, label=aca_student.count())
-            worksheet.write(sing_row_start, 5, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count())
-            worksheet.write(sing_row_start, 6, label=aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count())
-            worksheet.write(sing_row_start, 7, label=aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count())
-            worksheet.write(sing_row_start, 8, label=aca_student.filter(volunteer=True).count())
-            worksheet.write(sing_row_start, 9, label=aca_student.filter(exemption=True).count())
-            worksheet.write(sing_row_start, 10, label=aca_student.filter(adjust=True).count())
-            worksheet.write(sing_row_start, 11, label=aca_student.filter(stu_special_program='S3').count())
-            sing_row_start += 1
+            worksheet.write(sing_row_start, 4, label=maj_student.count())
+            worksheet.write(sing_row_start, 5, label=maj_student.filter(stu_learn_type='S1')
+                            .filter(stu_cultivating_mode='C2').count())
+            worksheet.write(sing_row_start, 6, label=maj_student.filter(stu_learn_type='S1')
+                            .filter(stu_cultivating_mode='C1').count())
+            worksheet.write(sing_row_start, 7, label=maj_student.filter(stu_learn_type='S2')
+                            .filter(stu_cultivating_mode='C1').count())
+            worksheet.write(sing_row_start, 8, label=maj_student.filter(volunteer=True).count())
+            worksheet.write(sing_row_start, 9, label=maj_student.filter(exemption=True).count())
+            worksheet.write(sing_row_start, 10, label=maj_student.filter(adjust=True).count())
+            worksheet.write(sing_row_start, 11, label=maj_student.filter(stu_special_program='S3').count())
             row_start = sing_row_start
+            sing_row_start += 1
         # 学院汇总
         row_start += 1
         worksheet.write(row_start, 0, label='')
         worksheet.write(row_start, 1, label='学院汇总')
-        worksheet.write(row_start, 4, label=122)
-        worksheet.write(row_start, 5, label=122)
-        worksheet.write(row_start, 6, label=122)
-        worksheet.write(row_start, 7, label=122)
-        worksheet.write(row_start, 8, label=22)
-        worksheet.write(row_start, 9, label=22)
-        worksheet.write(row_start, 10, label=22)
-        worksheet.write(row_start, 11, label=22)
+        worksheet.write(row_start, 4, label=aca_student.count())
+        worksheet.write(row_start, 5, label=aca_student.filter(stu_learn_type='S1')
+                        .filter(stu_cultivating_mode='C2').count())
+        worksheet.write(row_start, 6, label=aca_student.filter(stu_learn_type='S1')
+                        .filter(stu_cultivating_mode='C1').count())
+        worksheet.write(row_start, 7, label=aca_student.filter(stu_learn_type='S2')
+                        .filter(stu_cultivating_mode='C1').count())
+        worksheet.write(row_start, 8, label=aca_student.filter(volunteer=True).count())
+        worksheet.write(row_start, 9, label=aca_student.filter(exemption=True).count())
+        worksheet.write(row_start, 10, label=aca_student.filter(adjust=True).count())
+        worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count())
         i = row_start
 
     # 保存
-    workbook.save('Excel_test.xls')
+    workbook.save('学院汇总.xls')
     return Response(res)
