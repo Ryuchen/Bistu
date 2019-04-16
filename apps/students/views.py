@@ -219,8 +219,8 @@ class StudentStatistics(generics.GenericAPIView):
         return Response(s_list)
 
 
-@excepts
-@csrf_exempt
+# @excepts
+# @csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
     year = request.GET.get("year", "")
@@ -240,7 +240,23 @@ def create_xls(request):
     header_font.bold = True
     header_style.font = header_font
     header_style.alignment = alignment
-    worksheet.write_merge(0, 0, 0, 11, label='年硕士生分专业招生人数汇总表', style=header_style)
+    # 表格数据居中
+    table_center_style = xlwt.XFStyle()
+    table_center_style.alignment = alignment
+    # 表格数据居左
+    table_left_style = xlwt.XFStyle()
+    table_left_alignment = xlwt.Alignment()
+    table_left_alignment.horz = xlwt.Alignment.HORZ_LEFT
+    table_left_alignment.vert = xlwt.Alignment.VERT_CENTER
+    table_left_style.alignment = table_left_alignment
+    # 表格数据居右
+    table_right_style = xlwt.XFStyle()
+    table_right_alignment = xlwt.Alignment()
+    table_right_alignment.horz = xlwt.Alignment.HORZ_RIGHT
+    table_right_alignment.vert = xlwt.Alignment.VERT_CENTER
+    table_right_style.alignment = table_right_alignment
+
+    worksheet.write_merge(0, 0, 0, 11, label='{0}年硕士生分专业招生人数汇总表'.format(year), style=header_style)
 
     # 参数对应第二行
     worksheet.write(1, 0, label='招生专业代码', style=header_style)
@@ -267,9 +283,9 @@ def create_xls(request):
     worksheet.write(2, 10, label='')
     worksheet.write(2, 11, label='')
     # 列宽
-    worksheet.col(0).width = 256 * 15
-    worksheet.col(1).width = 256 * 25
-    worksheet.col(2).width = 256 * 25
+    worksheet.col(0).width = 256 * 12
+    worksheet.col(1).width = 256 * 30
+    worksheet.col(2).width = 256 * 20
     worksheet.col(3).width = 256 * 15
     worksheet.col(4).width = 256 * 15
     worksheet.col(5).width = 256 * 15
@@ -281,53 +297,70 @@ def create_xls(request):
     first_row = worksheet.row(1)
     first_row.set_style(tall_style)
     # 获取所有的学院
-    acas = Academy.objects.values("aca_cname")
+    acas = Academy.objects.values("aca_cname", "uuid")
     i = 2
     for aca in acas:
-        majors = Academy.objects.filter(aca_cname=aca['aca_cname']).values('majors__maj_name', 'majors__maj_code')
+        majors = Academy.objects.filter(uuid=aca['uuid']).values('majors__uuid', 'majors__maj_name', 'majors__maj_code')
         row_start = i + 1
-        row_end = row_start + len(majors) + 1
-        worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'])
+        row_end = row_start + len(majors)
+        worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'], style=table_center_style)
         if year:
-            aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname']).filter(stu_entrance_time__year=year)
+            aca_student = Student.objects.filter(academy__uuid=aca["uuid"])\
+                .filter(stu_entrance_time__year=year).all()
         else:
-            aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname'])
+            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]).all()
 
-        worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count())
+        worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count(), style=table_center_style)
         for major in majors:
-            sing_row_start = row_start
-            maj_student = aca_student.filter(major__maj_name=major['majors__maj_name'])
-            worksheet.write(sing_row_start, 0, label=major['majors__maj_code'])
-            worksheet.write(sing_row_start, 1, label=major['majors__maj_name'])
-            worksheet.write(sing_row_start, 4, label=maj_student.count())
-            worksheet.write(sing_row_start, 5, label=maj_student.filter(stu_learn_type='S1')
-                            .filter(stu_cultivating_mode='C2').count())
-            worksheet.write(sing_row_start, 6, label=maj_student.filter(stu_learn_type='S1')
-                            .filter(stu_cultivating_mode='C1').count())
-            worksheet.write(sing_row_start, 7, label=maj_student.filter(stu_learn_type='S2')
-                            .filter(stu_cultivating_mode='C1').count())
-            worksheet.write(sing_row_start, 8, label=maj_student.filter(volunteer=True).count())
-            worksheet.write(sing_row_start, 9, label=maj_student.filter(exemption=True).count())
-            worksheet.write(sing_row_start, 10, label=maj_student.filter(adjust=True).count())
-            worksheet.write(sing_row_start, 11, label=maj_student.filter(stu_special_program='S3').count())
-            row_start = sing_row_start
-            sing_row_start += 1
+            maj_student = aca_student.filter(major_id=major["majors__uuid"])
+            worksheet.write(row_start, 0, label=major['majors__maj_code'], style=table_center_style)
+            worksheet.write(row_start, 1, label=major['majors__maj_name'])
+            worksheet.write(row_start, 4, label=maj_student.count(), style=table_center_style)
+            worksheet.write(row_start, 5, label=maj_student.filter(stu_learn_type='S1')
+                            .filter(stu_cultivating_mode='C2').count(), style=table_center_style)
+            worksheet.write(row_start, 6, label=maj_student.filter(stu_learn_type='S1')
+                            .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
+            worksheet.write(row_start, 7, label=maj_student.filter(stu_learn_type='S2')
+                            .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
+            worksheet.write(row_start, 8, label=maj_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
+            worksheet.write(row_start, 9, label=maj_student.filter(stu_is_exemption=True).count(), style=table_center_style)
+            worksheet.write(row_start, 10, label=maj_student.filter(stu_is_adjust=True).count(), style=table_center_style)
+            worksheet.write(row_start, 11, label=maj_student.filter(stu_special_program='S3').count(), style=table_center_style)
+            row_start += 1
         # 学院汇总
-        row_start += 1
         worksheet.write(row_start, 0, label='')
-        worksheet.write(row_start, 1, label='学院汇总')
-        worksheet.write(row_start, 4, label=aca_student.count())
+        worksheet.write(row_start, 1, label='学院汇总', style=table_right_style)
+        worksheet.write(row_start, 4, label=aca_student.count(), style=table_center_style)
         worksheet.write(row_start, 5, label=aca_student.filter(stu_learn_type='S1')
-                        .filter(stu_cultivating_mode='C2').count())
+                        .filter(stu_cultivating_mode='C2').count(), style=table_center_style)
         worksheet.write(row_start, 6, label=aca_student.filter(stu_learn_type='S1')
-                        .filter(stu_cultivating_mode='C1').count())
+                        .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
         worksheet.write(row_start, 7, label=aca_student.filter(stu_learn_type='S2')
-                        .filter(stu_cultivating_mode='C1').count())
-        worksheet.write(row_start, 8, label=aca_student.filter(volunteer=True).count())
-        worksheet.write(row_start, 9, label=aca_student.filter(exemption=True).count())
-        worksheet.write(row_start, 10, label=aca_student.filter(adjust=True).count())
-        worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count())
+                        .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
+        worksheet.write(row_start, 8, label=aca_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
+        worksheet.write(row_start, 9, label=aca_student.filter(stu_is_exemption=True).count(), style=table_center_style)
+        worksheet.write(row_start, 10, label=aca_student.filter(stu_is_adjust=True).count(), style=table_center_style)
+        worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count(), style=table_center_style)
         i = row_start
+
+    # 总表统计
+    all_student = Student.objects.all()
+    i = i+1
+    worksheet.write(i, 0, label='')
+    worksheet.write(i, 1, label='')
+    worksheet.write_merge(i, i, 2, 3, label='拟录取人数汇总', style=table_left_style)
+    worksheet.write(i, 4, label=all_student.count(), style=table_center_style)
+    worksheet.write(i, 5, label=all_student.filter(stu_learn_type='S1')
+                    .filter(stu_cultivating_mode='C2').count(), style=table_center_style)
+    worksheet.write(i, 6, label=all_student.filter(stu_learn_type='S1')
+                    .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
+    worksheet.write(i, 7, label=all_student.filter(stu_learn_type='S2')
+                    .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
+    worksheet.write(i, 8, label=all_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
+    worksheet.write(i, 9, label=all_student.filter(stu_is_exemption=True).count(), style=table_center_style)
+    worksheet.write(i, 10, label=all_student.filter(stu_is_adjust=True).count(), style=table_center_style)
+    worksheet.write(i, 11, label=all_student.filter(stu_special_program='S3').count(),
+                    style=table_center_style)
 
     # 保存
     workbook.save('document.xls')

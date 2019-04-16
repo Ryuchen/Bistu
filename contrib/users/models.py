@@ -123,9 +123,9 @@ class Student(models.Model):
     major_category = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in MajorDegree], help_text='专业大类', default='D1')
     major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
     research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
-    exemption = models.BooleanField(default=False, help_text="是否推免生")
-    adjust = models.BooleanField(default=False, help_text="是否调剂")
-    volunteer = models.BooleanField(default=True, help_text="是否第一志愿")
+    stu_is_exemption = models.BooleanField(default=False, help_text="是否推免生")
+    stu_is_adjust = models.BooleanField(default=False, help_text="是否调剂")
+    stu_is_volunteer = models.BooleanField(default=True, help_text="是否第一志愿")
 
     def __str__(self):
         return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
