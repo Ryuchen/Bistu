@@ -7,11 +7,11 @@
 # @File : fake_data.py 
 # @Desc : 
 # ==================================================
-import datetime
 import os
 import time
 import random
 import string
+import datetime
 
 from faker import Faker
 
@@ -344,8 +344,6 @@ class Command(BaseCommand):
             )
             avatar_name = fake.random.choice(Avatars)
             academy.aca_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
-            academy.save()
-            academy_list.append(academy)
             maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(2, 5)):
                 major = Major.objects.create(
@@ -357,7 +355,6 @@ class Command(BaseCommand):
                     maj_setup_time=fake.date(),
                     maj_degree=maj_degree,
                 )
-                major_list.append(major)
                 for _ in range(random.randint(1, 3)):
                     research = Research.objects.create(res_name=fake.sentence())
                     research_list.append(research)
@@ -380,6 +377,8 @@ class Command(BaseCommand):
                     research_list.append(research)
                     major.research.add(research)
                 academy.majors.add(major)
+            academy.save()
+            academy_list.append(academy)
         self.stdout.write(self.style.SUCCESS('学院相关数据生成完毕~~~~~~'))
 
         # 生成用户相关的数据
@@ -451,19 +450,23 @@ class Command(BaseCommand):
                     stu_is_tuition_fees=fake.random.choice([True, False]),
                     stu_is_archives=fake.random.choice([True, False]),
                     stu_is_superb=fake.random.choice([True, False]),
-                    stu_telephone=self.create_telephone(),
-                    stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
-                    stu_class='信管1201',
                     stu_is_exemption=fake.random.choice([True, False]),
                     stu_is_adjust=fake.random.choice([True, False]),
                     stu_is_volunteer=fake.random.choice([True, False]),
+                    stu_gain_diploma=fake.random.choice([True, False]) if graduate_year else False,
+                    stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
+                    stu_telephone=self.create_telephone(),
+                    stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
+                    stu_class='信管1201'
                 )
                 student.user = student_list.pop()
                 student.stu_name = student.user.first_name + student.user.last_name
                 student.tutor = fake.random.choice(tutors_list)
-                student.academy = fake.random.choice(academy_list)
-                student.major = fake.random.choice(major_list)
-                student.research = fake.random.choice(research_list)
+                stu_academy = fake.random.choice(academy_list)
+                student.academy = stu_academy
+                stu_major = fake.random.choice(stu_academy.majors.all())
+                student.major = stu_major
+                student.research = fake.random.choice(stu_major.research.all())
                 student.save()
         self.stdout.write(self.style.SUCCESS('用户相关数据生成完毕~~~~~~'))
 
