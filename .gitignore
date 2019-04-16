@@ -11,3 +11,4 @@ venv/
 media/academies/*.png
 media/students/*.png
 media/teachers/*.png
+db.sqlite3
