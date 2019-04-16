@@ -67,6 +67,11 @@ def excepts(func):
             res["meta"]["details"] = "{0}".format(e.details)
             res["meta"]['code'] = e.code
             return JsonResponse(res, status=e.code)
+        except FileNotFoundError as e:
+            res["meta"]['message'] = 'File Not Found'
+            res["meta"]["details"] = "{0}".format(e)
+            res["meta"]['code'] = status.HTTP_404_NOT_FOUND
+            return JsonResponse(res, status=status.HTTP_404_NOT_FOUND)
         except ConnectionError as e:
             res["meta"]['message'] = 'Engine connection error'
             res["meta"]["details"] = "{0}".format(e)

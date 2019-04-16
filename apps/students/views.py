@@ -7,9 +7,14 @@
 # @File : views.py
 # @Desc : 
 # ==================================================
+import os
+
 import xlrd
 import xlwt
 from datetime import datetime
+
+from django.conf import settings
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, generics, status
 from rest_framework.decorators import api_view
@@ -214,6 +219,8 @@ class StudentStatistics(generics.GenericAPIView):
         return Response(s_list)
 
 
+@excepts
+@csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
     # 创建一个workbook 设置编码
@@ -318,9 +325,11 @@ def create_xls(request):
         i = row_start
 
     # 保存
-    # workbook.save('学院汇总.xls')
-    response = Response(workbook)
-    response["content_type"] = 'application/vnd.ms-excel'
-    response['Content-Disposition'] = "attachment; filename= {}".format('学院汇总.xls')
-
-    return response
+    workbook.save('document.xls')
+    if os.path.exists(os.path.join(settings.BASE_DIR, 'document.xls')):
+        with open(os.path.join(settings.BASE_DIR, 'document.xls'), 'rb') as excel:
+            response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
+            response['Content-Disposition'] = "attachment; filename= {}".format('学院汇总.xls')
+        return response
+    else:
+        raise FileNotFoundError
