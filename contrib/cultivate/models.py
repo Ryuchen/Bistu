@@ -20,12 +20,15 @@ class Thesis(models.Model):
     the_title = models.CharField(max_length=128, null=False, help_text="课题名称")
     the_start_time = models.DateField(help_text="开题时间")
     the_mid_score = models.CharField(max_length=64, help_text="中期考核结果")
-    the_start_score = models.CharField(max_length=64, help_text="开题结果")
-    the_check_score = models.CharField(max_length=64, help_text="查重结果")
+    the_start_result = models.BooleanField(null=False, default=True, help_text="开题结果")
+    the_check_result = models.FloatField(null=False, default=0.15, help_text="查重结果")
     the_blind_score1 = models.CharField(max_length=64, help_text="盲审结果1")
     the_blind_score2 = models.CharField(max_length=64, help_text="盲审结果2")
+    the_exam_count = models.IntegerField(null=False, default=0, help_text="论文查重次数")
     the_final_score = models.CharField(max_length=64, help_text="答辩成绩")
     the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
+    the_is_delay = models.BooleanField(default=False, help_text="是否延期")
+    the_delay_reason = models.TextField(null=True, help_text="延期原因")
 
     def __str__(self):
         return "论文课题：{0}".format(self.the_title)
