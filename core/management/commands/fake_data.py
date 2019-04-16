@@ -7,11 +7,11 @@
 # @File : fake_data.py 
 # @Desc : 
 # ==================================================
-import datetime
 import os
 import time
 import random
 import string
+import datetime
 
 from faker import Faker
 
@@ -457,7 +457,7 @@ class Command(BaseCommand):
                     stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
                     stu_telephone=self.create_telephone(),
                     stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
-                    stu_class='信管1201',
+                    stu_class='信管1201'
                 )
                 student.user = student_list.pop()
                 student.stu_name = student.user.first_name + student.user.last_name
