@@ -8,9 +8,11 @@
 # @Desc : 
 # ==================================================
 import xlrd
+import xlwt
 from datetime import datetime
 from rest_framework.response import Response
 from rest_framework import mixins, generics, status
+from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -212,15 +214,12 @@ class StudentStatistics(generics.GenericAPIView):
         return Response(s_list)
 
 
-from rest_framework.decorators import api_view
 @api_view(['GET'])
 def create_xls(request):
-    import xlwt
-    res = {}
     # 创建一个workbook 设置编码
     workbook = xlwt.Workbook(encoding='utf-8')
     # 创建一个worksheet
-    worksheet = workbook.add_sheet('My Worksheet')
+    worksheet = workbook.add_sheet('worksheet')
     alignment = xlwt.Alignment()
     alignment.horz = xlwt.Alignment.HORZ_CENTER
     alignment.vert = xlwt.Alignment.VERT_CENTER
@@ -319,5 +318,9 @@ def create_xls(request):
         i = row_start
 
     # 保存
-    workbook.save('学院汇总.xls')
-    return Response(res)
+    # workbook.save('学院汇总.xls')
+    response = Response(workbook)
+    response["content_type"] = 'application/vnd.ms-excel'
+    response['Content-Disposition'] = "attachment; filename= {}".format('学院汇总.xls')
+
+    return response
