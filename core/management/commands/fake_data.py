@@ -420,7 +420,7 @@ class Command(BaseCommand):
         for entrance_year in entrance_years:
             student_num = int(str(entrance_year.year) + '0101001')
             graduate_year = entrance_year.replace(year=(entrance_year.year + 4)) if ((2019 - entrance_year.year) >= 4) else "",
-            for _ in range(students_num / 10):
+            for _ in range(int(students_num / 10)):
                 student_num += 1
                 student = Student(
                     stu_number=student_num,
