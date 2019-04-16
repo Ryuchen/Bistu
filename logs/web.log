@@ -1,7 +1,1 @@
-2019-04-13 15:35:41,200 [Thread-18:123145543823360] [default:86] [ERROR]- Username or Password is incorrect!
-Traceback (most recent call last):
-  File "/Users/ryuchen/PycharmProjects/Bistu-backend/core/decorators/excepts.py", line 59, in handle_except
-    return func(*args, **kwargs)
-  File "/Users/ryuchen/PycharmProjects/Bistu-backend/apps/accounts/views.py", line 52, in login_view
-    raise ValueError("Username or Password is incorrect!")
-ValueError: Username or Password is incorrect!
+
