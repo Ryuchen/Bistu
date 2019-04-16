@@ -415,11 +415,14 @@ class Command(BaseCommand):
             tutors_list.append(teacher)
 
         students_num = len(student_list)
-        entrance_time = datetime.datetime.now().replace(month=9, day=1, minute=0, second=0, microsecond=0)
+        entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
         entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
-            student_num = int(str(entrance_year.year) + '0101001')
-            graduate_year = entrance_year.replace(year=(entrance_year.year + 4)) if ((2019 - entrance_year.year) >= 4) else "",
+            student_num = int('{0}0101001'.format(entrance_year.year))
+            if (2019 - entrance_year.year) >= 4:
+                graduate_year = entrance_year.replace(year=(entrance_year.year + 4))
+            else:
+                graduate_year = None
             for _ in range(int(students_num / 10)):
                 student_num += 1
                 student = Student(

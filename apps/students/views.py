@@ -223,6 +223,8 @@ class StudentStatistics(generics.GenericAPIView):
 @csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
+    year = request.GET.get("year", "")
+
     # 创建一个workbook 设置编码
     workbook = xlwt.Workbook(encoding='utf-8')
     # 创建一个worksheet
@@ -278,7 +280,6 @@ def create_xls(request):
     tall_style = xlwt.easyxf('font:height 240;')
     first_row = worksheet.row(1)
     first_row.set_style(tall_style)
-
     # 获取所有的学院
     acas = Academy.objects.values("aca_cname")
     i = 2
@@ -287,7 +288,11 @@ def create_xls(request):
         row_start = i + 1
         row_end = row_start + len(majors) + 1
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'])
-        aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname'])
+        if year:
+            aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname']).filter(stu_entrance_time__year=year)
+        else:
+            aca_student = Student.objects.filter(academy__aca_cname=aca['aca_cname'])
+
         worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count())
         for major in majors:
             sing_row_start = row_start
@@ -329,7 +334,7 @@ def create_xls(request):
     if os.path.exists(os.path.join(settings.BASE_DIR, 'document.xls')):
         with open(os.path.join(settings.BASE_DIR, 'document.xls'), 'rb') as excel:
             response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
-            response['Content-Disposition'] = "attachment; filename= {}".format('学院汇总.xls')
+            response['Content-Disposition'] = "attachment;filename={}".format('document.xls')
         return response
     else:
         raise FileNotFoundError
