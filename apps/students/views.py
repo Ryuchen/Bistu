@@ -8,7 +8,6 @@
 # @Desc : 
 # ==================================================
 import os
-
 import xlrd
 import xlwt
 from datetime import datetime
@@ -16,8 +15,8 @@ from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.response import Response
-from rest_framework import mixins, generics, status
 from rest_framework.decorators import api_view
+from rest_framework import mixins, generics, status
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -219,8 +218,8 @@ class StudentStatistics(generics.GenericAPIView):
         return Response(s_list)
 
 
-# @excepts
-# @csrf_exempt
+@excepts
+@csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
     year = request.GET.get("year", "")
@@ -342,7 +341,6 @@ def create_xls(request):
         worksheet.write(row_start, 10, label=aca_student.filter(stu_is_adjust=True).count(), style=table_center_style)
         worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count(), style=table_center_style)
         i = row_start
-
     # 总表统计
     all_student = Student.objects.all()
     i = i+1
