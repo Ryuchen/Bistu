@@ -7,3 +7,7 @@ venv/
 
 # Ignore files
 *.pyc
+
+media/academies/*.png
+media/students/*.png
+media/teachers/*.png

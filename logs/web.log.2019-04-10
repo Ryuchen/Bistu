@@ -1,0 +1,104 @@
+2019-04-03 09:47:07,216 [Thread-7:123145353822208] [default:81] [ERROR]- Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/ryuchen/PycharmProjects/Bistu/apps/accounts/views.py", line 45, in login_view
+    raise ForbiddenError("Username or Password is incorrect!")
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/exceptions/errors.py", line 20, in __init__
+    self.details = json.loads(details)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-04-03 09:51:12,615 [Thread-7:123145390174208] [default:81] [ERROR]- Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/ryuchen/PycharmProjects/Bistu/apps/accounts/views.py", line 45, in login_view
+    raise ForbiddenError("Username or Password is incorrect!")
+  File "/Users/ryuchen/PycharmProjects/Bistu/core/exceptions/errors.py", line 20, in __init__
+    self.details = json.loads(details)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-04-03 10:33:15,524 [Thread-7:123145367130112] [default:82] [ERROR]- admin
+2019-04-03 10:33:15,844 [Thread-8:123145367130112] [default:82] [ERROR]- admin
+2019-04-10 09:00:24,481 [Thread-1:123145368616960] [default:86] [ERROR]- Got AttributeError when attempting to get a value for field `stu_gender_value` on serializer `StudentSerializers`.
+The serializer field might be named incorrectly and not match any attribute or key on the `Student` instance.
+Original exception text was: 'Student' object has no attribute 'stu_gender_value'.
+Traceback (most recent call last):
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/fields.py", line 453, in get_attribute
+    return get_attribute(instance, self.source_attrs)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/fields.py", line 101, in get_attribute
+    instance = getattr(instance, attr)
+AttributeError: 'Student' object has no attribute 'stu_gender_value'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/libin/Desktop/student_manage/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/apps/students/views.py", line 119, in get
+    return self.get_paginated_response(serializer.data)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 768, in data
+    ret = super(ListSerializer, self).data
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 262, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 517, in to_representation
+    attribute = field.get_attribute(instance)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/fields.py", line 474, in get_attribute
+    raise type(exc)(msg)
+AttributeError: Got AttributeError when attempting to get a value for field `stu_gender_value` on serializer `StudentSerializers`.
+The serializer field might be named incorrectly and not match any attribute or key on the `Student` instance.
+Original exception text was: 'Student' object has no attribute 'stu_gender_value'.
+2019-04-10 09:16:31,271 [Thread-1:123145513086976] [default:86] [ERROR]- 'StudentSerializers' object has no attribute '_choices'
+Traceback (most recent call last):
+  File "/Users/libin/Desktop/student_manage/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/apps/students/views.py", line 119, in get
+    return self.get_paginated_response(serializer.data)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 768, in data
+    ret = super(ListSerializer, self).data
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 262, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/apps/students/serializers.py", line 47, in to_representation
+    return self._choices[instance]
+AttributeError: 'StudentSerializers' object has no attribute '_choices'
+2019-04-10 09:37:45,114 [Thread-7:123145580367872] [default:86] [ERROR]- 'ellipsis' object is not iterable
+Traceback (most recent call last):
+  File "/Users/libin/Desktop/student_manage/Bistu/core/decorators/excepts.py", line 59, in handle_except
+    return func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/libin/Desktop/student_manage/Bistu/apps/students/views.py", line 119, in get
+    return self.get_paginated_response(serializer.data)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 768, in data
+    ret = super(ListSerializer, self).data
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 262, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/venv/lib/python3.7/site-packages/rest_framework/serializers.py", line 686, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/libin/Desktop/student_manage/Bistu/apps/students/serializers.py", line 44, in to_representation
+    data.update(...)
+TypeError: 'ellipsis' object is not iterable

@@ -20,7 +20,7 @@ from .serializers import TutorSerializers
 from core.decorators.excepts import excepts
 
 
-def user_chanle(username, tut_number):
+def user_create(username, tut_number):
     user = dict()
     if username:
         user['username'] = str(int(tut_number))
@@ -54,7 +54,7 @@ class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         data = request.data
         username = data.get('user')
-        data["user"] = user_chanle(username)
+        data["user"] = user_create(username)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=partial,
@@ -108,13 +108,13 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
         bulk = isinstance(data, list)
         if not bulk:
             username = data.get('user')
-            data["user"] = user_chanle(username)
+            data["user"] = user_create(username)
             data["majors"] = Major.objects.filter(maj_name=data.get('majors')).filter()
             serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
         else:
             for item in data:
                 username = item['user']
-                item["user"] = user_chanle(username)
+                item["user"] = user_create(username)
                 data["majors"] = Major.objects.filter(maj_name=item.get('majors')).filter()
             serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
         serializer.is_valid(raise_exception=True)
@@ -133,7 +133,7 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
             row = table.row_values(i)
             t_dict = dict()
             t_dict["tut_number"] = int(row[0]) if row[0] else 0
-            t_dict["user"] = user_chanle(row[1], int(row[0]))
+            t_dict["user"] = user_create(row[1], int(row[0]))
             t_dict["tut_gender"] = row[2]
             t_dict["tut_political"] = row[3]
             t_dict["tut_title"] = row[4]
