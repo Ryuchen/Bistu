@@ -11,4 +11,5 @@ venv/
 media/academies/*.png
 media/students/*.png
 media/teachers/*.png
+migrations/*.py
 db.sqlite3
