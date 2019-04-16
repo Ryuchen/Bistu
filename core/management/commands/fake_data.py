@@ -7,6 +7,7 @@
 # @File : fake_data.py 
 # @Desc : 
 # ==================================================
+import datetime
 import os
 import time
 import random
@@ -312,7 +313,7 @@ class Command(BaseCommand):
             teacher_list.append(teacher)
         # 生成研究生学生账户
         student_list = []
-        for _ in range(1000):
+        for _ in range(5000):
             student_username = fake.name()
             student = User.objects.create_user(
                 username='student-{0}'.format(_),
@@ -346,7 +347,7 @@ class Command(BaseCommand):
             academy.save()
             academy_list.append(academy)
             maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
-            for _ in range(random.randint(3, 7)):
+            for _ in range(random.randint(2, 5)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(AcademyOfDegree),
                     maj_code=random.randint(10000, 99999),
@@ -357,13 +358,13 @@ class Command(BaseCommand):
                     maj_degree=maj_degree,
                 )
                 major_list.append(major)
-                for _ in range(random.randint(3, 5)):
+                for _ in range(random.randint(1, 3)):
                     research = Research.objects.create(res_name=fake.sentence())
                     research_list.append(research)
                     major.research.add(research)
                 academy.majors.add(major)
             maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
-            for _ in range(random.randint(3, 5)):
+            for _ in range(random.randint(1, 3)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(ProfessionalOfDegree),
                     maj_code=random.randint(10000, 99999),
@@ -374,7 +375,7 @@ class Command(BaseCommand):
                     maj_degree=maj_degree,
                 )
                 major_list.append(major)
-                for _ in range(random.randint(3, 5)):
+                for _ in range(random.randint(1, 2)):
                     research = Research.objects.create(res_name=fake.sentence())
                     research_list.append(research)
                     major.research.add(research)
@@ -414,51 +415,53 @@ class Command(BaseCommand):
             tutors_list.append(teacher)
 
         students_num = len(student_list)
-        student_num = random.randint(20160101001, 20190101001)
-        for _ in range(students_num):
-            student_num += 1
-            student = Student(
-                stu_number=student_num,
-                stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
-                stu_card_type='身份证',
-                stu_cardID=self.create_card_id(),
-                stu_candidate_number=random.randint(12101000000000, 12201000000000),
-                stu_birth_day=fake.date_of_birth(minimum_age=19, maximum_age=22),
-                stu_nation=fake.random.choice(EthnicChoice),
-                stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
-                stu_is_village=fake.random.choice([True, False]),
-                stu_political=fake.random.choice([tag.name for tag in PoliticalChoice]),
-                stu_type=fake.random.choice([tag.name for tag in StudentType]),
-                stu_learn_type=fake.random.choice([tag.name for tag in StudentCategory]),
-                stu_learn_status=fake.random.choice([tag.name for tag in DegreeChoice]),
-                stu_grade=random.randint(1, 3),
-                stu_system=3,
-                stu_entrance_time=fake.date(),
-                stu_graduation_time=fake.date(),
-                stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingMode]),
-                stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategory]),
-                stu_nationality='中国',
-                stu_special_program=fake.random.choice([tag.name for tag in SpecialProgram]),
-                stu_is_regular_income=fake.random.choice([True, False]),
-                stu_is_tuition_fees=fake.random.choice([True, False]),
-                stu_is_archives=fake.random.choice([True, False]),
-                stu_is_superb=fake.random.choice([True, False]),
-                stu_telephone=self.create_telephone(),
-                stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
-                stu_class='信管1201',
-                exemption=fake.random.choice([True, False]),
-                adjust=fake.random.choice([True, False]),
-                volunteer=fake.random.choice([True, False]),
-            )
-            avatar_name = fake.random.choice(Avatars)
-            student.stu_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
-            student.user = student_list.pop()
-            student.stu_name = student.user.first_name + student.user.last_name
-            student.tutor = fake.random.choice(tutors_list)
-            student.academy = fake.random.choice(academy_list)
-            student.major = fake.random.choice(major_list)
-            student.research = fake.random.choice(research_list)
-            student.save()
+        entrance_time = datetime.datetime.now().replace(month=9, day=1, minute=0, second=0, microsecond=0)
+        entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
+        for entrance_year in entrance_years:
+            student_num = int(str(entrance_year.year) + '0101001')
+            graduate_year = entrance_year.replace(year=(entrance_year.year + 4)) if ((2019 - entrance_year.year) >= 4) else "",
+            for _ in range(students_num / 10):
+                student_num += 1
+                student = Student(
+                    stu_number=student_num,
+                    stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
+                    stu_card_type='身份证',
+                    stu_cardID=self.create_card_id(),
+                    stu_candidate_number=random.randint(12101000000000, 12201000000000),
+                    stu_birth_day=fake.date_of_birth(minimum_age=(entrance_year.year - 21), maximum_age=(entrance_year.year - 19)),
+                    stu_nation=fake.random.choice(EthnicChoice),
+                    stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
+                    stu_is_village=fake.random.choice([True, False]),
+                    stu_political=fake.random.choice([tag.name for tag in PoliticalChoice]),
+                    stu_type=fake.random.choice([tag.name for tag in StudentType]),
+                    stu_learn_type=fake.random.choice([tag.name for tag in StudentCategory]),
+                    stu_learn_status=fake.random.choice([tag.name for tag in DegreeChoice]),
+                    stu_grade=random.randint(1, 3),
+                    stu_system=3,
+                    stu_entrance_time=entrance_year,
+                    stu_graduation_time=graduate_year,
+                    stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingMode]),
+                    stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategory]),
+                    stu_nationality='中国',
+                    stu_special_program=fake.random.choice([tag.name for tag in SpecialProgram]),
+                    stu_is_regular_income=fake.random.choice([True, False]),
+                    stu_is_tuition_fees=fake.random.choice([True, False]),
+                    stu_is_archives=fake.random.choice([True, False]),
+                    stu_is_superb=fake.random.choice([True, False]),
+                    stu_telephone=self.create_telephone(),
+                    stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
+                    stu_class='信管1201',
+                    exemption=fake.random.choice([True, False]),
+                    adjust=fake.random.choice([True, False]),
+                    volunteer=fake.random.choice([True, False]),
+                )
+                student.user = student_list.pop()
+                student.stu_name = student.user.first_name + student.user.last_name
+                student.tutor = fake.random.choice(tutors_list)
+                student.academy = fake.random.choice(academy_list)
+                student.major = fake.random.choice(major_list)
+                student.research = fake.random.choice(research_list)
+                student.save()
         self.stdout.write(self.style.SUCCESS('用户相关数据生成完毕~~~~~~'))
 
     def handle(self, *args, **options):

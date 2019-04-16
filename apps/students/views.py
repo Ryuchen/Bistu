@@ -104,7 +104,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
     # 添加
     @excepts
     @csrf_exempt
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -131,7 +131,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
 
     @excepts
     @csrf_exempt
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -184,14 +184,17 @@ class StudentStatistics(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        student = Student.objects.all()
+        year = request.GET.get("year", "")
+        if year:
+            student = Student.objects.filter(stu_entrance_time__year=year).all()
+        else:
+            student = Student.objects.all()
         majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_type', 'majors__maj_code')
         s_list = list()
         for item in majors:
             s_dict = dict(name="", major={}, count=0)
             s_dict['count'] = student.filter(academy__aca_cname=item['aca_cname']).count()
-            aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(
-                major__maj_name=item['majors__maj_name'])
+            aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(major__maj_name=item['majors__maj_name'])
             s_dict['name'] = item['aca_cname']
             s_dict['code'] = item['majors__maj_code']
             s_dict['major']['name'] = item['majors__maj_name']
