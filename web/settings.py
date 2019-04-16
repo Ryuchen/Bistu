@@ -124,6 +124,12 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Media files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/media-files/
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Logging config
 # https://docs.djangoproject.com/en/2.1/topics/logging/

@@ -7,13 +7,17 @@
 # @File : fake_data.py 
 # @Desc : 
 # ==================================================
+import os
 import time
 import random
 import string
 
 from faker import Faker
 
+from django.conf import settings
+from django.core.files import File
 from django.core.management.base import BaseCommand
+
 from contrib.users.models import *
 from contrib.academy.models import *
 
@@ -135,16 +139,16 @@ ProfessionalOfDegree = [
     '电子与通信工程',
 ]
 Avatars = [
-    'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/cnrhVkzwxjPwAaCfPbdc.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/gaOngJwsRYRaVAuXXcmB.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/ubnKSIfAJTxIgXOKlciN.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/jZUIxmJycoymBprLOUbT.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/psOgztMplJMGpVEqfcgF.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/ZpBqSxLxVEXfcUNoPKrz.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/laiEnJdGHVOhJrUShBaJ.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/UrQsqscbKEpNuJcvBZBu.png',
+    'default.png',
+    'avatar1.png',
+    'avatar2.png',
+    'avatar3.png',
+    'avatar4.png',
+    'avatar5.png',
+    'avatar6.png',
+    'avatar7.png',
+    'avatar8.png',
+    'avatar9.png',
 ]
 ProvinceOfChina = [
     (1, '北京市'),
@@ -327,7 +331,6 @@ class Command(BaseCommand):
         research_list = []
         for _ in AcademiesList:
             academy = Academy.objects.create(
-                aca_avatar=fake.random.choice(Avatars),
                 aca_nickname=''.join(random.sample(string.ascii_letters + string.digits, 8)),
                 aca_cname=_,
                 aca_ename=''.join(random.sample(string.ascii_letters + string.digits, 8)),
@@ -338,8 +341,10 @@ class Command(BaseCommand):
                 aca_brief=fake.text(),
                 aca_user=staff_user_list.pop(),
             )
+            avatar_name = fake.random.choice(Avatars)
+            academy.aca_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
+            academy.save()
             academy_list.append(academy)
-            print(MajorDegree)
             maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(3, 7)):
                 major = Major.objects.create(
@@ -399,7 +404,10 @@ class Command(BaseCommand):
                 tut_telephone=self.create_telephone(),
                 tut_degree=fake.random.choice([tag.name for tag in DegreeChoice]),
             )
+            avatar_name = fake.random.choice(Avatars)
+            teacher.tut_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
             teacher.user = teacher_list.pop()
+            teacher.tut_name = teacher.user.first_name + teacher.user.last_name
             teacher.education = education
             teacher.academy = fake.random.choice(academy_list)
             teacher.save()
@@ -411,8 +419,6 @@ class Command(BaseCommand):
             student_num += 1
             student = Student(
                 stu_number=student_num,
-                stu_name=fake.name(),
-                stu_avatar=fake.random.choice(Avatars),
                 stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
                 stu_card_type='身份证',
                 stu_cardID=self.create_card_id(),
@@ -444,7 +450,10 @@ class Command(BaseCommand):
                 adjust=fake.random.choice([True, False]),
                 volunteer=fake.random.choice([True, False]),
             )
+            avatar_name = fake.random.choice(Avatars)
+            student.stu_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
             student.user = student_list.pop()
+            student.stu_name = student.user.first_name + student.user.last_name
             student.tutor = fake.random.choice(tutors_list)
             student.academy = fake.random.choice(academy_list)
             student.major = fake.random.choice(major_list)
