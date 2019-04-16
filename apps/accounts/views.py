@@ -92,7 +92,7 @@ def current_user_view(request):
                     "name": request.user.username,
                     "email": request.user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                    "title": "你是当前学院的管理员",
+                    "title": "你是{0}学院的管理员".format(request.user.academy.aca_cname),
                     "group": "学院管理人员"
                 }
             else:
