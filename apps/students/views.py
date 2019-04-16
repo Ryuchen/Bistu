@@ -256,7 +256,7 @@ def create_xls(request):
     table_right_alignment.vert = xlwt.Alignment.VERT_CENTER
     table_right_style.alignment = table_right_alignment
 
-    worksheet.write_merge(0, 0, 0, 11, label='年硕士生分专业招生人数汇总表', style=header_style)
+    worksheet.write_merge(0, 0, 0, 11, label='{0}年硕士生分专业招生人数汇总表'.format(year), style=header_style)
 
     # 参数对应第二行
     worksheet.write(1, 0, label='招生专业代码', style=header_style)
