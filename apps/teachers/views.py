@@ -109,13 +109,13 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
         if not bulk:
             username = data.get('user')
             data["user"] = user_create(username)
-            data["majors"] = Major.objects.filter(maj_name=data.get('majors')).filter()
+            data["majors"] = Major.objects.filter(maj_name=data.get('majors')).first()
             serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
         else:
             for item in data:
                 username = item['user']
                 item["user"] = user_create(username)
-                data["majors"] = Major.objects.filter(maj_name=item.get('majors')).filter()
+                data["majors"] = Major.objects.filter(maj_name=item.get('majors')).first()
             serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
