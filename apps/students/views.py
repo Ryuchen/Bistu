@@ -198,68 +198,63 @@ class StudentStatistics(generics.GenericAPIView):
             student = Student.objects.all()
         aca_res = list()
         # 获取所有的学院
-        acamadies = Academy.objects.values('uuid', 'aca_cname')
-        for academy in acamadies:
+        academies = Academy.objects.values('uuid', 'aca_cname')
+        for academy in academies:
             aca_dict = dict()
             aca_student = student.filter(academy_id=academy["uuid"])
-            aca_dict[academy['aca_cname']] = dict()
-            aca_dict[academy['aca_cname']]["count"] = aca_student.count()
-            majors = Academy.objects. \
-                filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name', 'majors__maj_code')
+            aca_dict["academy_name"] = academy["aca_cname"]
+            aca_dict["academy_total"] = aca_student.count()
+            majors = Academy.objects.filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name', 'majors__maj_code', 'majors__maj_type')
+            aca_dict["academy_major"] = list()
             for maj in majors:
+                major_obj = dict()
                 maj_student = aca_student.filter(major_id=maj["majors__uuid"])
+                major_obj["major_name"] = maj["majors__maj_name"]
+                major_obj["major_code"] = maj["majors__maj_code"]
+                major_obj["major_type"] = maj["majors__maj_type"]
+                major_obj["major_total"] = maj_student.count()
+                # S1: 全日制
+                s1 = maj_student.filter(stu_learn_type='S1')
+                major_obj["S1"] = dict()
+                major_obj["S1"]["count"] = s1.count()
+                # C2: 学术型
+                c2 = s1.filter(stu_cultivating_mode='C2')
+                major_obj["S1"]["C2"] = dict()
+                major_obj["S1"]["C2"]["count"] = c2.count()
+                major_obj["S1"]["C2"]["stu_is_volunteer"] = c2.filter(stu_is_volunteer=True).count()
+                major_obj["S1"]["C2"]["stu_is_adjust"] = c2.filter(stu_is_adjust=True).count()
+                major_obj["S1"]["C2"]["stu_is_exemption"] = c2.filter(stu_is_exemption=True).count()
+                major_obj["S1"]["C2"]["stu_special_program"] = c2.filter(stu_special_program='S3').count()
+                # C1: 专业型
+                c1 = s1.filter(stu_cultivating_mode='C1')
+                major_obj["S1"]["C1"] = dict()
+                major_obj["S1"]["C1"]["count"] = c1.count()
+                major_obj["S1"]["C1"]["stu_is_volunteer"] = c1.filter(stu_is_volunteer=True).count()
+                major_obj["S1"]["C1"]["stu_is_adjust"] = c1.filter(stu_is_adjust=True).count()
+                major_obj["S1"]["C1"]["stu_is_exemption"] = c1.filter(stu_is_exemption=True).count()
+                major_obj["S1"]["C1"]["stu_special_program"] = c1.filter(stu_special_program='S3').count()
 
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["code"] = maj["majors__maj_code"]
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["count"] = maj_student.count()
-                # S1:全日制 S2:非全日制
-                # C2：学术型 C1:专业型
-                S1 = maj_student.filter(stu_learn_type='S1')
-                S2 = maj_student.filter(stu_learn_type='S2')
-
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["count"] = S1.count()
-                # 全日制学术型
-                C2 = S1.filter(stu_cultivating_mode='C2')
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["count"] = C2.count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_volunteer"] = C2.filter(
-                    stu_is_volunteer=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_adjust"] = C2.filter(
-                    stu_is_adjust=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_exemption"] = C2.filter(
-                    stu_is_exemption=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_special_program"] = C2.filter(
-                    stu_special_program=True).count()
-                # 全日制专业型
-                C1 = S1.filter(stu_cultivating_mode='C1')
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["count"] = C1.count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_volunteer"] = C1.filter(
-                    stu_is_volunteer=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_adjust"] = C1.filter(
-                    stu_is_adjust=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_exemption"] = C1.filter(
-                    stu_is_exemption=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_special_program"] = C1.filter(
-                    stu_special_program=True).count()
-
-                # 非全日制
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["count"] = S2.count()
-                # 非全日制学术
-                S2_C1 = S1.filter(stu_cultivating_mode='C1')
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"] = dict()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["count"] = S2_C1.count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_volunteer"] = S2_C1.filter(
-                    stu_is_volunteer=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_adjust"] = S2_C1.filter(
-                    stu_is_adjust=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_exemption"] = S2_C1.filter(
-                    stu_is_exemption=True).count()
-                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"][
-                    "stu_special_program"] = S2_C1.filter(
-                    stu_special_program=True).count()
+                # S2: 非全日制
+                s2 = maj_student.filter(stu_learn_type='S2')
+                major_obj["S2"] = dict()
+                major_obj["S2"]["count"] = s2.count()
+                # C2: 学术型
+                c2 = s2.filter(stu_cultivating_mode='C2')
+                major_obj["S2"]["C2"] = dict()
+                major_obj["S2"]["C2"]["count"] = c2.count()
+                major_obj["S2"]["C2"]["stu_is_volunteer"] = c2.filter(stu_is_volunteer=True).count()
+                major_obj["S2"]["C2"]["stu_is_adjust"] = c2.filter(stu_is_adjust=True).count()
+                major_obj["S2"]["C2"]["stu_is_exemption"] = c2.filter(stu_is_exemption=True).count()
+                major_obj["S2"]["C2"]["stu_special_program"] = c2.filter(stu_special_program='S3').count()
+                # C1: 专业型
+                c1 = s2.filter(stu_cultivating_mode='C1')
+                major_obj["S2"]["C1"] = dict()
+                major_obj["S2"]["C1"]["count"] = c1.count()
+                major_obj["S2"]["C1"]["stu_is_volunteer"] = c1.filter(stu_is_volunteer=True).count()
+                major_obj["S2"]["C1"]["stu_is_adjust"] = c1.filter(stu_is_adjust=True).count()
+                major_obj["S2"]["C1"]["stu_is_exemption"] = c1.filter(stu_is_exemption=True).count()
+                major_obj["S2"]["C1"]["stu_special_program"] = c1.filter(stu_special_program='S3').count()
+                aca_dict["academy_major"].append(major_obj)
             aca_res.append(aca_dict)
         return Response(aca_res)
 
