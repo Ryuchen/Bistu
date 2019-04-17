@@ -4,6 +4,7 @@
 .idea/
 __pycache__/
 venv/
+logs/
 
 # Ignore files
 *.pyc
@@ -13,3 +14,4 @@ media/students/*.png
 media/teachers/*.png
 migrations/*.py
 db.sqlite3
+document.xls
