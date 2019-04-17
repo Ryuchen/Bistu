@@ -8,6 +8,7 @@
 # @Desc : 
 # ==================================================
 import os
+import json
 import xlrd
 import xlwt
 from datetime import datetime
@@ -24,6 +25,7 @@ from core.decorators.excepts import excepts
 from apps.teachers.views import user_create
 from contrib.users.models import Student, Tutor
 from contrib.academy.models import Academy, Major
+from apps.settings.views import trans_choice
 from apps.students.serializers import StudentSerializers
 
 
@@ -135,9 +137,11 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         serializer.save()
         return Response(serializer.data)
 
+
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
+        trans = trans_choice()
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -152,33 +156,32 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["stu_candidate_number"] = rowx[2]
             student_dict["stu_card_type"] = rowx[3]
             student_dict["stu_cardID"] = rowx[4]
-            student_dict["stu_gender"] = rowx[5]
+            student_dict["stu_gender"] = trans[rowx[5]]
             student_dict["stu_birth_day"] = datetime.strptime(str(int(rowx[6])), '%Y%m%d').strftime('%Y-%m-%d')
             student_dict["stu_nation"] = rowx[7]
             student_dict["stu_source"] = rowx[8]
             student_dict["stu_is_village"] = True if rowx[9] == "是" else False
-            student_dict["stu_political"] = rowx[10]
+            student_dict["stu_political"] = trans[rowx[10]]
             student_dict["academy"] = Academy.objects.filter(aca_cname=rowx[11]).first()
             student_dict["major"] = Major.objects.filter(maj_name=rowx[12]).first()
-            student_dict["major_category"] = rowx[13]
+            student_dict["major_category"] = trans[rowx[13]]
             student_dict["stu_class"] = rowx[14]
-            student_dict["stu_status"] = rowx[15]
-            student_dict["tutor"] = Tutor.objects.filter(user__first_name=rowx[16][:1]).filter(
-                user__last_name=rowx[16][1:]).first()
-            student_dict["stu_type"] = rowx[17]
-            student_dict["stu_learn_type"] = rowx[18]
-            student_dict["stu_learn_status"] = rowx[19]
-            student_dict["stu_grade"] = rowx[20]
-            student_dict["stu_system"] = rowx[21]
-            student_dict["stu_entrance_time"] = datetime.strptime(str(int(rowx[22])), '%Y%m').strftime('%Y-%m-01')
-            student_dict["stu_cultivating_mode"] = rowx[23]
-            student_dict["stu_enrollment_category"] = rowx[24]
-            student_dict["stu_nationality"] = rowx[25]
-            student_dict["stu_special_program"] = rowx[26]
-            student_dict["stu_is_regular_income"] = True if rowx[27] == "是" else False
-            student_dict["stu_is_tuition_fees"] = True if rowx[28] == "是" else False
-            student_dict["stu_is_archives"] = True if rowx[29] == "是" else False
-            student_dict["stu_graduation_time"] = datetime.strptime(str(int(rowx[30])), '%Y%m').strftime('%Y-%m-01')
+            student_dict["stu_status"] = trans[rowx[15]]
+            student_dict["tutor"] = Tutor.objects.filter(tut_number=rowx[16]).first()
+            student_dict["stu_type"] = trans[rowx[18]]
+            student_dict["stu_learn_type"] = trans[rowx[19]]
+            student_dict["stu_learn_status"] = trans[rowx[20]]
+            student_dict["stu_grade"] = rowx[21]
+            student_dict["stu_system"] = rowx[22]
+            student_dict["stu_entrance_time"] = datetime.strptime(str(int(rowx[23])), '%Y%m').strftime('%Y-%m-01')
+            student_dict["stu_cultivating_mode"] = trans[rowx[24]]
+            student_dict["stu_enrollment_category"] = trans[rowx[25]]
+            student_dict["stu_nationality"] = rowx[26]
+            student_dict["stu_special_program"] = trans[rowx[27]]
+            student_dict["stu_is_regular_income"] = True if rowx[28] == "是" else False
+            student_dict["stu_is_tuition_fees"] = True if rowx[29] == "是" else False
+            student_dict["stu_is_archives"] = True if rowx[30] == "是" else False
+            student_dict["stu_graduation_time"] = datetime.strptime(str(int(rowx[31])), '%Y%m').strftime('%Y-%m-01')
             s_list.append(student_dict)
         serializer = self.get_serializer(data=s_list, many=True, context={"stu_academy": "", 'stu_user': "",
                                                                           "stu_major": "", "stu_tutor": ""})

@@ -31,3 +31,12 @@ def common_settings(request):
     res['major_type'] = {tag.name: tag.value for tag in MajorType}
     res['major_degree'] = {tag.name: tag.value for tag in MajorDegree}
     return Response(res)
+
+
+def trans_choice():
+    res = dict()
+    for item in [DegreeChoice, GenderChoice, TitleChoice, PoliticalChoice, StatusChoice, StudentCategory,
+                 CultivatingMode, EnrollmentCategory, SpecialProgram, MajorType, MajorDegree, StudentType]:
+        for tag in item:
+            res[tag.value] = tag.name
+    return res
