@@ -11,6 +11,8 @@ import uuid
 
 from django.db import models
 
+from contrib.users.models import Student
+
 
 class Thesis(models.Model):
     """
@@ -29,6 +31,8 @@ class Thesis(models.Model):
     the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
     the_is_delay = models.BooleanField(default=False, help_text="是否延期")
     the_delay_reason = models.TextField(null=True, help_text="延期原因")
+    student = models.OneToOneField(Student, null=True, related_name='thesis', on_delete=models.SET_NULL,
+                                   help_text="论文作者")
 
     def __str__(self):
         return "论文课题：{0}".format(self.the_title)
