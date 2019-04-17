@@ -11,5 +11,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r"^settings/$", views.common_settings, name="common-settings"),
+	url(r"^definitions/$", views.common_settings, name="common-settings"),
 ]

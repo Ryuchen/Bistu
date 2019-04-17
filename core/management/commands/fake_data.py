@@ -260,6 +260,14 @@ class Command(BaseCommand):
 
         return str(first)+str(second)+str(three)+str(four)+str(five)
 
+    @staticmethod
+    def create_birthday(entrance_year):
+        fake = Faker('zh_CN')
+        year = fake.random.choice([(entrance_year.year - 18), (entrance_year.year - 19), (entrance_year.year - 20)])
+        month = fake.random.choice([i for i in range(1, 13)])
+        day = fake.random.choice([i for i in range(1, 29)])
+        return entrance_year.replace(year=year, month=month, day=day).strftime("%Y-%m-%d")
+
     def fake_data(self):
         fake = Faker('zh_CN')
         self.stdout.write(self.style.SUCCESS('清除测试用的假数据~~~~~~'))
@@ -423,8 +431,8 @@ class Command(BaseCommand):
         for entrance_year in entrance_years:
             _student_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
-            if (2019 - entrance_year.year) >= 4:
-                graduate_year = entrance_year.replace(year=(entrance_year.year + 4))
+            if (2019 - entrance_year.year) >= 3:
+                graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
             else:
                 graduate_year = None
             for _ in range(int(students_num / 10)):
@@ -435,7 +443,7 @@ class Command(BaseCommand):
                     stu_card_type='身份证',
                     stu_cardID=self.create_card_id(),
                     stu_candidate_number=random.randint(12101000000000, 12201000000000),
-                    stu_birth_day=fake.date_of_birth(minimum_age=(entrance_year.year - 21), maximum_age=(entrance_year.year - 19)),
+                    stu_birth_day=self.create_birthday(entrance_year),
                     stu_nation=fake.random.choice(EthnicChoice),
                     stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
                     stu_is_village=fake.random.choice([True, False]),
