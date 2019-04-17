@@ -8,7 +8,6 @@
 # @Desc : 
 # ==================================================
 import os
-
 import xlrd
 import xlwt
 from datetime import datetime
@@ -16,8 +15,8 @@ from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.response import Response
-from rest_framework import mixins, generics, status
 from rest_framework.decorators import api_view
+from rest_framework import mixins, generics, status
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import LimitOffsetPagination
 
@@ -164,7 +163,8 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["major_category"] = rowx[13]
             student_dict["stu_class"] = rowx[14]
             student_dict["stu_status"] = rowx[15]
-            student_dict["tutor"] = Tutor.objects.filter(user__first_name=rowx[16][:1]).filter(user__last_name=rowx[16][1:]).first()
+            student_dict["tutor"] = Tutor.objects.filter(user__first_name=rowx[16][:1]).filter(
+                user__last_name=rowx[16][1:]).first()
             student_dict["stu_type"] = rowx[17]
             student_dict["stu_learn_type"] = rowx[18]
             student_dict["stu_learn_status"] = rowx[19]
@@ -196,31 +196,76 @@ class StudentStatistics(generics.GenericAPIView):
             student = Student.objects.filter(stu_entrance_time__year=year).all()
         else:
             student = Student.objects.all()
-        majors = Academy.objects.all().values('aca_cname', 'majors__maj_name', 'majors__maj_type', 'majors__maj_code')
-        s_list = list()
-        for item in majors:
-            s_dict = dict(name="", major={}, count=0)
-            s_dict['count'] = student.filter(academy__aca_cname=item['aca_cname']).count()
-            aca_student = student.filter(academy__aca_cname=item['aca_cname']).filter(major__maj_name=item['majors__maj_name'])
-            s_dict['name'] = item['aca_cname']
-            s_dict['code'] = item['majors__maj_code']
-            s_dict['major']['name'] = item['majors__maj_name']
-            s_dict['major']['type'] = item['majors__maj_type']
-            s_dict['major']['maj_code'] = item['majors__maj_code']
-            s_dict['major']['count'] = aca_student.count()
-            s_dict['major']['col_1'] = aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C2').count()
-            s_dict['major']['col_2'] = aca_student.filter(stu_learn_type='S1').filter(stu_learn_status='C1').count()
-            s_dict['major']['col_3'] = aca_student.filter(stu_learn_type='S2').filter(stu_learn_status='C1').count()
-            s_dict['major']['col_4'] = aca_student.filter(stu_is_volunteer=True).count()
-            s_dict['major']['col_5'] = aca_student.filter(stu_is_exemption=True).count()
-            s_dict['major']['col_6'] = aca_student.filter(stu_is_adjust=True).count()
-            s_dict['major']['col_7'] = aca_student.filter(stu_special_program='S3').count()
-            s_list.append(s_dict)
-        return Response(s_list)
+        aca_res = list()
+        # 获取所有的学院
+        acamadies = Academy.objects.values('uuid', 'aca_cname')
+        for academy in acamadies:
+            aca_dict = dict()
+            aca_student = student.filter(academy_id=academy["uuid"])
+            aca_dict[academy['aca_cname']] = dict()
+            aca_dict[academy['aca_cname']]["count"] = aca_student.count()
+            majors = Academy.objects. \
+                filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name', 'majors__maj_code')
+            for maj in majors:
+                maj_student = aca_student.filter(major_id=maj["majors__uuid"])
+
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["code"] = maj["majors__maj_code"]
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["count"] = maj_student.count()
+                # S1:全日制 S2:非全日制
+                # C2：学术型 C1:专业型
+                S1 = maj_student.filter(stu_learn_type='S1')
+                S2 = maj_student.filter(stu_learn_type='S2')
+
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["count"] = S1.count()
+                # 全日制学术型
+                C2 = S1.filter(stu_cultivating_mode='C2')
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["count"] = C2.count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_volunteer"] = C2.filter(
+                    stu_is_volunteer=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_adjust"] = C2.filter(
+                    stu_is_adjust=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_is_exemption"] = C2.filter(
+                    stu_is_exemption=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C2"]["stu_special_program"] = C2.filter(
+                    stu_special_program=True).count()
+                # 全日制专业型
+                C1 = S1.filter(stu_cultivating_mode='C1')
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["count"] = C1.count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_volunteer"] = C1.filter(
+                    stu_is_volunteer=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_adjust"] = C1.filter(
+                    stu_is_adjust=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_is_exemption"] = C1.filter(
+                    stu_is_exemption=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S1"]["C1"]["stu_special_program"] = C1.filter(
+                    stu_special_program=True).count()
+
+                # 非全日制
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["count"] = S2.count()
+                # 非全日制学术
+                S2_C1 = S1.filter(stu_cultivating_mode='C1')
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"] = dict()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["count"] = S2_C1.count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_volunteer"] = S2_C1.filter(
+                    stu_is_volunteer=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_adjust"] = S2_C1.filter(
+                    stu_is_adjust=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"]["stu_is_exemption"] = S2_C1.filter(
+                    stu_is_exemption=True).count()
+                aca_dict[academy['aca_cname']][maj["majors__maj_name"]]["S2"]["C1"][
+                    "stu_special_program"] = S2_C1.filter(
+                    stu_special_program=True).count()
+            aca_res.append(aca_dict)
+        return Response(aca_res)
 
 
-# @excepts
-# @csrf_exempt
+@excepts
+@csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
     year = request.GET.get("year", "")
@@ -305,7 +350,7 @@ def create_xls(request):
         row_end = row_start + len(majors)
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'], style=table_center_style)
         if year:
-            aca_student = Student.objects.filter(academy__uuid=aca["uuid"])\
+            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]) \
                 .filter(stu_entrance_time__year=year).all()
         else:
             aca_student = Student.objects.filter(academy__uuid=aca["uuid"]).all()
@@ -322,10 +367,14 @@ def create_xls(request):
                             .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
             worksheet.write(row_start, 7, label=maj_student.filter(stu_learn_type='S2')
                             .filter(stu_cultivating_mode='C1').count(), style=table_center_style)
-            worksheet.write(row_start, 8, label=maj_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
-            worksheet.write(row_start, 9, label=maj_student.filter(stu_is_exemption=True).count(), style=table_center_style)
-            worksheet.write(row_start, 10, label=maj_student.filter(stu_is_adjust=True).count(), style=table_center_style)
-            worksheet.write(row_start, 11, label=maj_student.filter(stu_special_program='S3').count(), style=table_center_style)
+            worksheet.write(row_start, 8, label=maj_student.filter(stu_is_volunteer=True).count(),
+                            style=table_center_style)
+            worksheet.write(row_start, 9, label=maj_student.filter(stu_is_exemption=True).count(),
+                            style=table_center_style)
+            worksheet.write(row_start, 10, label=maj_student.filter(stu_is_adjust=True).count(),
+                            style=table_center_style)
+            worksheet.write(row_start, 11, label=maj_student.filter(stu_special_program='S3').count(),
+                            style=table_center_style)
             row_start += 1
         # 学院汇总
         worksheet.write(row_start, 0, label='')
@@ -340,12 +389,15 @@ def create_xls(request):
         worksheet.write(row_start, 8, label=aca_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
         worksheet.write(row_start, 9, label=aca_student.filter(stu_is_exemption=True).count(), style=table_center_style)
         worksheet.write(row_start, 10, label=aca_student.filter(stu_is_adjust=True).count(), style=table_center_style)
-        worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count(), style=table_center_style)
+        worksheet.write(row_start, 11, label=aca_student.filter(stu_special_program='S3').count(),
+                        style=table_center_style)
         i = row_start
-
     # 总表统计
-    all_student = Student.objects.all()
-    i = i+1
+    if year:
+        all_student = Student.objects.all().filter(stu_entrance_time__year=year).all()
+    else:
+        all_student = Student.objects.all()
+    i = i + 1
     worksheet.write(i, 0, label='')
     worksheet.write(i, 1, label='')
     worksheet.write_merge(i, i, 2, 3, label='拟录取人数汇总', style=table_left_style)
@@ -359,8 +411,7 @@ def create_xls(request):
     worksheet.write(i, 8, label=all_student.filter(stu_is_volunteer=True).count(), style=table_center_style)
     worksheet.write(i, 9, label=all_student.filter(stu_is_exemption=True).count(), style=table_center_style)
     worksheet.write(i, 10, label=all_student.filter(stu_is_adjust=True).count(), style=table_center_style)
-    worksheet.write(i, 11, label=all_student.filter(stu_special_program='S3').count(),
-                    style=table_center_style)
+    worksheet.write(i, 11, label=all_student.filter(stu_special_program='S3').count(), style=table_center_style)
 
     # 保存
     workbook.save('document.xls')

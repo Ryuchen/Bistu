@@ -86,7 +86,8 @@ def current_user_view(request):
                 "email": user.email,
                 "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                 "title": "你是当前系统的最高管理员",
-                "group": "超级管理员"
+                "group": "超级管理员",
+                "academy": ""
             }
         else:
             if user.is_staff:
@@ -105,9 +106,9 @@ def current_user_view(request):
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "研究生导师",
-                    "group": "教师"
+                    "group": "教师",
+                    "academy": ""
                 }
         return JsonResponse(res)
     else:
         raise AuthenticateError("You need login first!")
-
