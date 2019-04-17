@@ -18,6 +18,7 @@ from faker import Faker
 from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
+from django.contrib.auth.hashers import make_password
 
 from contrib.users.models import *
 from contrib.academy.models import *
@@ -313,17 +314,20 @@ class Command(BaseCommand):
             teacher_list.append(teacher)
         # 生成研究生学生账户
         student_list = []
-        for _ in range(5000):
+        default_password = make_password('123456')
+        for _ in range(10000):
             student_username = fake.name()
-            student = User.objects.create_user(
+            student = User(
                 username='student-{0}'.format(_),
-                password='123456',
+                password=default_password,
                 first_name=student_username[:1],
                 last_name=student_username[1:],
                 email=fake.email(),
                 is_active=False
             )
             student_list.append(student)
+        User.objects.bulk_create(student_list)
+        student_list = list(User.objects.filter(username__contains='student', is_active=False).all())
         self.stdout.write(self.style.SUCCESS('账户相关数据生成完毕~~~~~~'))
 
         # 生成学院相关的数据
@@ -417,6 +421,7 @@ class Command(BaseCommand):
         entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
         entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
+            _student_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
             if (2019 - entrance_year.year) >= 4:
                 graduate_year = entrance_year.replace(year=(entrance_year.year + 4))
@@ -467,7 +472,8 @@ class Command(BaseCommand):
                 stu_major = fake.random.choice(stu_academy.majors.all())
                 student.major = stu_major
                 student.research = fake.random.choice(stu_major.research.all())
-                student.save()
+                _student_list.append(student)
+            Student.objects.bulk_create(_student_list)
         self.stdout.write(self.style.SUCCESS('用户相关数据生成完毕~~~~~~'))
 
     def handle(self, *args, **options):
