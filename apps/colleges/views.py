@@ -368,12 +368,12 @@ class OpeningReportList(generics.GenericAPIView):
                 else:
                     worksheet.write(line+2, index, label=data[value], style=table_center_style)
         # 合计汇总行
-        for value in enumerate([data_len+1, '合计',
-                                xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
-                                xlwt.Formula('SUM(D3:C{0})'.format(data_len+2)),
-                                xlwt.Formula('SUM(E3:C{0})'.format(data_len+2)),
-                                xlwt.Formula('SUM(F3:C{0})'.format(data_len+2))]):
-            worksheet.write(data_len + 3, 0, label=value, style=table_center_style)
+        for i, value in enumerate([data_len+1, '合计',
+                                   xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
+                                   xlwt.Formula('SUM(D3:D{0})'.format(data_len+2)),
+                                   xlwt.Formula('SUM(E3:E{0})'.format(data_len+2)),
+                                   xlwt.Formula('SUM(F3:F{0})'.format(data_len+2))]):
+            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
             
         # 保存
         workbook.save('opening_report.xls')
@@ -413,7 +413,7 @@ class ReformResultsList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(1, nrows):
+        for i in range(2, nrows):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[0]
@@ -424,7 +424,7 @@ class ReformResultsList(generics.GenericAPIView):
             file_dict["course_count"] = rowx[5]
             file_dict["base_count"] = rowx[6]
             file_dict["exchange_project_count"] = rowx[7]
-            file_dict["time"] = "2019"
+            file_dict["time"] = "2019-01-01"
             file_list.append(file_dict)
         serializer = self.get_serializer(data=file_list, many=True)
         serializer.is_valid(raise_exception=True)
@@ -440,42 +440,38 @@ class ReformResultsList(generics.GenericAPIView):
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
         
         worksheet.write_merge(0, 0, 0, 7, label='{0}年各学院研究生教育改革成果统计'.format(year), style=header_style)
+        
         # 表头
-        worksheet.write(1, 0, label='学院名称 ', style=header_style)
-        worksheet.write(1, 1, label='研究生教育相关教改项目立项', style=header_style)
-        worksheet.write(1, 2, label='发表研究生教育相关教改论文', style=header_style)
-        worksheet.write(1, 3, label='出版研究生教材', style=header_style)
-        worksheet.write(1, 4, label='研究生教育相关获奖', style=header_style)
-        worksheet.write(1, 5, label='精品/在线课程建设', style=header_style)
-        worksheet.write(1, 6, label='实践基地建设', style=header_style)
-        worksheet.write(1, 7, label='研究生国际交流', style=header_style)
+        for index, value in enumerate(['学院名称', '研究生教育相关教改项目立项', '发表研究生教育相关教改论文', '出版研究生教材',
+                                       '研究生教育相关获奖', '精品/在线课程建设', '实践基地建设', '研究生国际交流']):
+            worksheet.write(1, index, label=value, style=header_style)
+
         # 行高
         tall_style = xlwt.easyxf('font:height 240;')
         first_row = worksheet.row(1)
         first_row.set_style(tall_style)
         
         datas = ReformResults.objects.filter(time__year=year).all()
-        i = 2
-        for data in datas:
-            row_start = i
-            worksheet.write(row_start, 0, label=data["academy"], style=table_center_style)
-            worksheet.write(row_start, 1, label=data["project_count"], style=table_center_style)
-            worksheet.write(row_start, 2, label=data["paper_count"], style=table_center_style)
-            worksheet.write(row_start, 3, label=data["textbook_count"], style=table_center_style)
-            worksheet.write(row_start, 4, label=data["award_count"], style=table_center_style)
-            worksheet.write(row_start, 5, label=data["course_count"], style=table_center_style)
-            worksheet.write(row_start, 6, label=data["base_count"], style=table_center_style)
-            worksheet.write(row_start, 7, label=data["exchange_project_count"], style=table_center_style)
-            row_start += 1
-            i += 1
-        worksheet.write(i, 0, label='合计', style=table_center_style)
-        worksheet.write(i, 1, label=1, style=table_center_style)
-        worksheet.write(i, 2, label=1, style=table_center_style)
-        worksheet.write(i, 3, label=1, style=table_center_style)
-        worksheet.write(i, 4, label=1, style=table_center_style)
-        worksheet.write(i, 5, label=1, style=table_center_style)
-        worksheet.write(i, 6, label=1, style=table_center_style)
-        worksheet.write(i, 7, label=1, style=table_center_style)
+        data_len = len(datas)
+        for line, data in enumerate(datas):
+            for index, value in enumerate(["academy", "project_count", "paper_count", "textbook_count", "award_count",
+                                           "course_count", "base_count", "exchange_project_count"]):
+                if index == 0:
+                    worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
+                else:
+                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+
+        # 合计汇总行
+        for i, value in enumerate(['合计',
+                                   xlwt.Formula('SUM(B3:B{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(H3:H{0})'.format(data_len + 2))]):
+            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+        
         # 保存
         workbook.save('reform_results.xls')
         if os.path.exists(os.path.join(settings.BASE_DIR, 'reform_results.xls')):
@@ -514,7 +510,7 @@ class MidtermExamsList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(1, nrows):
+        for i in range(2, nrows):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -527,7 +523,7 @@ class MidtermExamsList(generics.GenericAPIView):
             file_dict["track_proportion"] = rowx[8]
             file_dict["fail_count"] = rowx[9]
             file_dict["fail_proportion"] = rowx[10]
-            file_dict["time"] = "2019"
+            file_dict["time"] = "2019-01-01"
             file_list.append(file_dict)
         serializer = self.get_serializer(data=file_list, many=True)
         serializer.is_valid(raise_exception=True)
@@ -554,13 +550,29 @@ class MidtermExamsList(generics.GenericAPIView):
         first_row.set_style(tall_style)
         
         datas = MidtermExams.objects.filter(time__year=year).all()
-        i = 2
-        for data in datas:
-            row_start = i
-            for index, value in enumerate(["academy", "project_count", "paper_count", "textbook_count", "award_count",
-                                           "course_count", "base_count", "exchange_project_count"]):
-                worksheet.write(row_start, index, label=data[value], style=table_center_style)
-            row_start += 1
+        data_len = len(datas)
+        for line, data in enumerate(datas):
+            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "delay_reason",
+                                           "delay_proportion", "track_count", "track_proportion", "fail_count",
+                                           "fail_proportion"]):
+                if index == 0:
+                    worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
+                else:
+                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+
+        # 合计汇总行
+        for i, value in enumerate(['合计',
+                                   xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(H3:H{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(J3:J{0})'.format(data_len + 2)),
+                                   xlwt.Formula('SUM(K3:k{0})'.format(data_len + 2))]):
+            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+
         # 保存
         workbook.save('midterm_exams.xls')
         if os.path.exists(os.path.join(settings.BASE_DIR, 'midterm_exams.xls')):
@@ -599,7 +611,7 @@ class PaperQualityList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(1, nrows):
+        for i in range(2, nrows):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -625,7 +637,7 @@ class PaperQualityList(generics.GenericAPIView):
             file_dict["graduate_proportion"] = rowx[21]
             file_dict["degree_count"] = rowx[22]
             file_dict["degree_proportion"] = rowx[23]
-            file_dict["time"] = "2019"
+            file_dict["time"] = "2019-01-01"
             file_list.append(file_dict)
         serializer = self.get_serializer(data=file_list, many=True)
         serializer.is_valid(raise_exception=True)
@@ -666,9 +678,8 @@ class PaperQualityList(generics.GenericAPIView):
         first_row.set_style(tall_style)
 
         datas = PaperQuality.objects.filter(time__year=year).all()
-        i = 3
-        for data in datas:
-            row_start = i
+        data_len = len(datas)
+        for line, data in enumerate(datas):
             for index, value in enumerate(["academy", "major", "full_time_count", "delay_count", "delay_reason",
                                            "paper_stu_count", "paper_pass_count", "paper_pass_proportion",
                                            "paper_fail_count", "paper_fail_proportion", "paper_fifteen_count",
@@ -677,10 +688,36 @@ class PaperQualityList(generics.GenericAPIView):
                                            "evaluation_count", "evaluation_result", "graduate_count",
                                            "graduate_proportion", "degree_count", "degree_proportion"]):
                 if index == 0:
-                    worksheet.write(row_start, 0, label=i-2, style=table_center_style)
+                    worksheet.write(line + 3, 0, label=line + 1, style=table_center_style)
                 else:
-                    worksheet.write(row_start, index, label=data[value], style=table_center_style)
-            row_start += 1
+                    worksheet.write(line + 3, index, label=data[value], style=table_center_style)
+
+        # 合计汇总行
+        for i, value in enumerate(['合计',
+                                   xlwt.Formula('SUM(C4:C{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(D4:D{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(E4:E{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(F4:F{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(G4:G{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(H4:H{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(I4:I{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(J4:J{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(K4:k{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(L4:L{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(M4:M{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(N4:N{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(O4:O{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(P4:P{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(Q4:Q{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(R4:R{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(S4:S{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(T4:T{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(U4:U{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(V4:V{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(W4:W{0})'.format(data_len + 3)),
+                                   xlwt.Formula('SUM(X4:X{0})'.format(data_len + 3))]):
+            worksheet.write(data_len + 4, i, label=value, style=table_center_style)
+
         # 保存
         workbook.save('paper_quality.xls')
         if os.path.exists(os.path.join(settings.BASE_DIR, 'paper_quality.xls')):
