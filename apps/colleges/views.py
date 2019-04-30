@@ -324,7 +324,7 @@ class OpeningReportList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(1, nrows):
+        for i in range(2, nrows):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -332,7 +332,7 @@ class OpeningReportList(generics.GenericAPIView):
             file_dict["schedule_count"] = rowx[3]
             file_dict["delay_count"] = rowx[4]
             file_dict["fail_count"] = rowx[5]
-            file_dict["time"] = "2019"
+            file_dict["time"] = "2019-01-01"
             file_list.append(file_dict)
         serializer = self.get_serializer(data=file_list, many=True)
         serializer.is_valid(raise_exception=True)
@@ -347,34 +347,34 @@ class OpeningReportList(generics.GenericAPIView):
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
         
+        # 标题
         worksheet.write_merge(0, 0, 0, 5, label='{0}届研究生开题情况统计-按学院'.format(year), style=header_style)
         
         # 表头
         for index, value in enumerate(['序号', '学院', '学生数', '按期开题人数', '延期开题人数', '开题不通过人数']):
             worksheet.write(1, index, label=value, style=header_style)
+            
         # 行高
         tall_style = xlwt.easyxf('font:height 240;')
         first_row = worksheet.row(1)
         first_row.set_style(tall_style)
         
         datas = OpeningReport.objects.filter(time__year=year).all()
-        i = 2
-        for data in datas:
-            row_start = i
-            worksheet.write(row_start, 0, label=(i-1), style=table_center_style)
-            worksheet.write(row_start, 1, label=data["academy"], style=table_center_style)
-            worksheet.write(row_start, 2, label=data["stu_count"], style=table_center_style)
-            worksheet.write(row_start, 3, label=data["schedule_count"], style=table_center_style)
-            worksheet.write(row_start, 4, label=data["delay_count"], style=table_center_style)
-            worksheet.write(row_start, 5, label=data["fail_count"], style=table_center_style)
-            row_start += 1
-            i += 1
-        worksheet.write(i, 0, label=(i - 1), style=table_center_style)
-        worksheet.write(i, 1, label='合计', style=table_center_style)
-        worksheet.write(i, 2, label=1, style=table_center_style)
-        worksheet.write(i, 3, label=1, style=table_center_style)
-        worksheet.write(i, 4, label=1, style=table_center_style)
-        worksheet.write(i, 5, label=1, style=table_center_style)
+        data_len = len(datas)
+        for line, data in enumerate(datas):
+            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
+                if index == 0:
+                    worksheet.write(line+2, 0, label=line+1, style=table_center_style)
+                else:
+                    worksheet.write(line+2, index, label=data[value], style=table_center_style)
+        # 合计汇总行
+        for value in enumerate([data_len+1, '合计',
+                                xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
+                                xlwt.Formula('SUM(D3:C{0})'.format(data_len+2)),
+                                xlwt.Formula('SUM(E3:C{0})'.format(data_len+2)),
+                                xlwt.Formula('SUM(F3:C{0})'.format(data_len+2))]):
+            worksheet.write(data_len + 3, 0, label=value, style=table_center_style)
+            
         # 保存
         workbook.save('opening_report.xls')
         if os.path.exists(os.path.join(settings.BASE_DIR, 'opening_report.xls')):
