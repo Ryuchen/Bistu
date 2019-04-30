@@ -23,7 +23,7 @@ urlpatterns = [
     
     url(r"^opening_report/$", OpeningReportList.as_view(), name="opening_report-list"),
     url(r"^reforms/$", ReformResultsList.as_view(), name="reform-list"),
-    url(r"mid_exams^/$", MidtermExamsList.as_view(), name="mid_exams-list"),
-    url(r"paper_quality^/$", PaperQualityList.as_view(), name="paper_quality-list"),
+    url(r"^mid_exams/$", MidtermExamsList.as_view(), name="mid_exams-list"),
+    url(r"^paper_quality/$", PaperQualityList.as_view(), name="paper_quality-list"),
     
 ]
