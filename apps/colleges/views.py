@@ -324,7 +324,7 @@ class OpeningReportList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(2, nrows):
+        for i in range(2, nrows-1):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -342,7 +342,7 @@ class OpeningReportList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
+        year = request.data.get("year", 2019)
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -362,18 +362,18 @@ class OpeningReportList(generics.GenericAPIView):
         datas = OpeningReport.objects.filter(time__year=year).all()
         data_len = len(datas)
         for line, data in enumerate(datas):
-            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
+            for index, value in enumerate(["", "academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
                 if index == 0:
                     worksheet.write(line+2, 0, label=line+1, style=table_center_style)
                 else:
-                    worksheet.write(line+2, index, label=data[value], style=table_center_style)
+                    worksheet.write(line+2, index, label=data.__dict__[value], style=table_center_style)
         # 合计汇总行
         for i, value in enumerate([data_len+1, '合计',
                                    xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len+2)),
                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len+2)),
                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len+2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 2, i, label=value, style=table_center_style)
             
         # 保存
         workbook.save('opening_report.xls')
@@ -413,7 +413,7 @@ class ReformResultsList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(2, nrows):
+        for i in range(2, nrows-1):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[0]
@@ -434,7 +434,7 @@ class ReformResultsList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
+        year = request.data.get("year", 2019)
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -456,10 +456,7 @@ class ReformResultsList(generics.GenericAPIView):
         for line, data in enumerate(datas):
             for index, value in enumerate(["academy", "project_count", "paper_count", "textbook_count", "award_count",
                                            "course_count", "base_count", "exchange_project_count"]):
-                if index == 0:
-                    worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
-                else:
-                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+                    worksheet.write(line + 2, index, label=data.__dict__[value], style=table_center_style)
 
         # 合计汇总行
         for i, value in enumerate(['合计',
@@ -470,7 +467,7 @@ class ReformResultsList(generics.GenericAPIView):
                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(H3:H{0})'.format(data_len + 2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 2, i, label=value, style=table_center_style)
         
         # 保存
         workbook.save('reform_results.xls')
@@ -510,7 +507,7 @@ class MidtermExamsList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(2, nrows):
+        for i in range(2, nrows-1):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -533,7 +530,7 @@ class MidtermExamsList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
+        year = request.data.get("year", 2019)
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -552,16 +549,16 @@ class MidtermExamsList(generics.GenericAPIView):
         datas = MidtermExams.objects.filter(time__year=year).all()
         data_len = len(datas)
         for line, data in enumerate(datas):
-            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "delay_reason",
+            for index, value in enumerate(["", "academy", "stu_count", "schedule_count", "delay_count", "delay_reason",
                                            "delay_proportion", "track_count", "track_proportion", "fail_count",
                                            "fail_proportion"]):
                 if index == 0:
                     worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
                 else:
-                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+                    worksheet.write(line + 2, index, label=data.__dict__[value], style=table_center_style)
 
         # 合计汇总行
-        for i, value in enumerate(['合计',
+        for i, value in enumerate([data_len+1, '合计',
                                    xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
@@ -571,7 +568,7 @@ class MidtermExamsList(generics.GenericAPIView):
                                    xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(J3:J{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(K3:k{0})'.format(data_len + 2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 
         # 保存
         workbook.save('midterm_exams.xls')
@@ -611,7 +608,7 @@ class PaperQualityList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         file_list = list()
-        for i in range(2, nrows):
+        for i in range(3, nrows-1):
             rowx = table.row_values(i)
             file_dict = dict()
             file_dict["academy"] = rowx[1]
@@ -647,7 +644,7 @@ class PaperQualityList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
+        year = request.data.get("year", 2019)
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -690,10 +687,10 @@ class PaperQualityList(generics.GenericAPIView):
                 if index == 0:
                     worksheet.write(line + 3, 0, label=line + 1, style=table_center_style)
                 else:
-                    worksheet.write(line + 3, index, label=data[value], style=table_center_style)
+                    worksheet.write(line + 3, index, label=data.__dict__[value], style=table_center_style)
 
         # 合计汇总行
-        for i, value in enumerate(['合计',
+        for i, value in enumerate([data_len+1, '合计',
                                    xlwt.Formula('SUM(C4:C{0})'.format(data_len + 3)),
                                    xlwt.Formula('SUM(D4:D{0})'.format(data_len + 3)),
                                    xlwt.Formula('SUM(E4:E{0})'.format(data_len + 3)),

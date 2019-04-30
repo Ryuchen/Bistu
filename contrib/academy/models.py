@@ -90,6 +90,9 @@ class OpeningReport(models.Model):
     fail_count = models.IntegerField(null=False, default=0, help_text="开题不通过人数")
     time = models.DateField(null=False, default='2019', help_text="入学年份")
 
+    def __str__(self):
+        return self.academy
+
     class Meta:
         verbose_name = "开题报告统计"
         verbose_name_plural = verbose_name
@@ -108,6 +111,9 @@ class ReformResults(models.Model):
     base_count = models.IntegerField(null=False, default=0, help_text="实践基地建设数量")
     exchange_project_count = models.IntegerField(null=False, default=0, help_text="研究生国际交流数量")
     time = models.DateField(null=False, default='2019', help_text="入学年份")
+
+    def __str__(self):
+        return self.academy
 
     class Meta:
         verbose_name = "教育改革成果统计"
@@ -129,6 +135,9 @@ class MidtermExams(models.Model):
     fail_count = models.IntegerField(null=False, default=0, help_text="不合格人数")
     fail_proportion = models.IntegerField(null=False, default=0, help_text="不合格比例")
     time = models.DateField(null=False, default='2019', help_text="入学年份")
+
+    def __str__(self):
+        return self.academy
 
     class Meta:
         verbose_name = "中期考核情况统计"
@@ -163,6 +172,9 @@ class PaperQuality(models.Model):
     degree_count = models.IntegerField(null=False, default=0, help_text="获学位人数")
     degree_proportion = models.IntegerField(null=False, default=0, help_text="获学位率")
     time = models.DateField(null=False, default='2019', help_text="入学年份")
+
+    def __str__(self):
+        return self.academy
 
     class Meta:
         verbose_name = "学位论文质量统计"
