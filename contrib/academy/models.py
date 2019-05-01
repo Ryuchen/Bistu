@@ -26,8 +26,16 @@ class Research(models.Model):
         return self.res_name
 
     class Meta:
+        db_table = 'research'
         verbose_name = "研究方向"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_research", "新增研究方向"),
+            ("can_delete_research", "删除研究方向"),
+            ("can_update_research", "修改研究方向"),
+            ("can_search_research", "查询研究方向")
+        ]
 
 
 class Major(models.Model):
@@ -49,8 +57,16 @@ class Major(models.Model):
         return str(self.maj_code) + self.maj_name
 
     class Meta:
+        db_table = 'major'
         verbose_name = "学科专业"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_major", "新增学科专业"),
+            ("can_delete_major", "删除学科专业"),
+            ("can_update_major", "修改学科专业"),
+            ("can_search_major", "查询学科专业")
+        ]
 
 
 class Academy(models.Model):
@@ -75,10 +91,19 @@ class Academy(models.Model):
         return str(self.aca_code) + self.aca_cname
 
     class Meta:
+        db_table = 'academy'
         verbose_name = "学院"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_academy", "新增学院"),
+            ("can_delete_academy", "删除学院"),
+            ("can_update_academy", "修改学院"),
+            ("can_search_academy", "查询学院")
+        ]
 
 
+# TODO: add this pages
 class OpeningReport(models.Model):
     """
     开题报告统计模型
