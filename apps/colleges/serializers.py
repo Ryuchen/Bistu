@@ -8,8 +8,9 @@
 # @Desc : 
 # ==================================================
 from rest_framework import serializers
-from contrib.academy.models import Major, Academy, Research
 from apps.accounts.serializers import UserSerializers
+from contrib.academy.models import Major, Academy, Research
+from contrib.academy.models import OpeningReport, ReformResults, MidtermExams, PaperQuality
 
 
 class ResearchSerializers(serializers.ModelSerializer):
@@ -53,3 +54,35 @@ class AcademySerializers(serializers.ModelSerializer):
         model = Academy
         fields = ('uuid', 'aca_avatar', 'aca_nickname', 'aca_cname', 'aca_ename', 'aca_code', 'aca_phone', 'aca_fax',
                   'aca_href', 'aca_brief', 'aca_user', 'majors', 'student_count')
+
+
+class OpeningReportSerializers(serializers.ModelSerializer):
+    """ 题情况统计 """
+
+    class Meta:
+        model = OpeningReport
+        fields = '__all__'
+
+
+class ReformResultsSerializers(serializers.ModelSerializer):
+    """ 研究生教育改革成果统计 """
+
+    class Meta:
+        model = ReformResults
+        fields = '__all__'
+
+
+class MidtermExamsSerializers(serializers.ModelSerializer):
+    """ 研究生中期考核情况统计 """
+
+    class Meta:
+        model = MidtermExams
+        fields = '__all__'
+
+
+class PaperQualitySerializers(serializers.ModelSerializer):
+    """ 研究生学位论文质量统计 """
+
+    class Meta:
+        model = PaperQuality
+        fields = '__all__'
