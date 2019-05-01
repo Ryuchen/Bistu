@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,7 +39,9 @@ INSTALLED_APPS = [
     'contrib.academy.apps.AcademyConfig',
     'contrib.cultivate.apps.CultivateConfig',
     'core',
-    'django_filters'
+    'django_filters',
+    'web.apps.SuitConfig',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [

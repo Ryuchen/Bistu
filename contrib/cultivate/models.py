@@ -38,5 +38,13 @@ class Thesis(models.Model):
         return "论文课题：{0}".format(self.the_title)
 
     class Meta:
-        verbose_name = "论文"
+        db_table = 'thesis'
+        verbose_name = "毕业论文"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_thesis", "新增毕业论文"),
+            ("can_delete_thesis", "删除毕业论文"),
+            ("can_update_thesis", "修改毕业论文"),
+            ("can_search_thesis", "查询毕业论文")
+        ]

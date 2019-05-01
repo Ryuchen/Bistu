@@ -12,5 +12,6 @@ from django.apps import AppConfig
 
 class CultivateConfig(AppConfig):
     name = 'contrib.cultivate'
-    verbose_name = '培养管理系统'
+    label = '培养管理'
+    verbose_name = '培养管理'
     verbose_name_plural = verbose_name

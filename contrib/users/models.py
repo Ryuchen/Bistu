@@ -17,7 +17,7 @@ from contrib.academy.models import Academy, Major, Research
 
 class Education(models.Model):
     """
-    学历模型
+    学习经历模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     edu_begin_time = models.DateField(help_text="开始时间")
@@ -30,8 +30,16 @@ class Education(models.Model):
         return "学校：{0}  专业：{1}".format(self.edu_school_name, self.edu_study_major)
 
     class Meta:
-        verbose_name = "学历"
+        db_table = 'education'
+        verbose_name = "学习经历"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_education", "新增学习经历"),
+            ("can_delete_education", "删除学习经历"),
+            ("can_update_education", "修改学习经历"),
+            ("can_search_education", "查询学习经历")
+        ]
 
 
 class Class(models.Model):
@@ -43,11 +51,19 @@ class Class(models.Model):
     cla_code = models.IntegerField(null=True, help_text="班级代码")
 
     def __str__(self):
-        return "代码：{0}  名称：{1}".format(self.cla_code, self.cla_name)
+        return "班级：{1}:{0}  ".format(self.cla_code, self.cla_name)
 
     class Meta:
+        db_table = 'class'
         verbose_name = "班级"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_class", "新增班级"),
+            ("can_delete_class", "删除班级"),
+            ("can_update_class", "修改班级"),
+            ("can_search_class", "查询班级")
+        ]
 
 
 class Tutor(models.Model):
@@ -78,8 +94,16 @@ class Tutor(models.Model):
         return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.first_name + self.user.last_name)
 
     class Meta:
+        db_table = 'teacher'
         verbose_name = "导师"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_tutor", "新增导师"),
+            ("can_delete_tutor", "删除导师"),
+            ("can_update_tutor", "修改导师"),
+            ("can_search_tutor", "查询导师")
+        ]
         ordering = ['tut_number']
 
 
@@ -131,8 +155,17 @@ class Student(models.Model):
     research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
 
     def __str__(self):
-        return "学生编号：{0}     学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
+        return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
 
     class Meta:
+        db_table = 'student'
         verbose_name = "学生"
         verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_student", "新增学生"),
+            ("can_delete_student", "删除学生"),
+            ("can_update_student", "修改学生"),
+            ("can_search_student", "查询学生")
+        ]
+        ordering = ['stu_number']
