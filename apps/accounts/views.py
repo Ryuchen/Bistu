@@ -46,7 +46,7 @@ def login_view(request):
             res["data"]["authority"] = list(request.user.groups.values_list('name', flat=True))
             res["data"]["permission"] = []
             for group in request.user.groups.all():
-                res["data"]["authority"].extend(list(group.permissions.values_list('codename', flat=True)))
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
             res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         elif user.is_staff:
             res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
