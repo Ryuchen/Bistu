@@ -20,6 +20,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 
+from django.contrib.auth.models import Group, Permission
 from contrib.users.models import *
 from contrib.academy.models import *
 
@@ -282,12 +283,18 @@ class Command(BaseCommand):
         Education.objects.all().delete()
         # 清除账户相关的假数据
         User.objects.all().delete()
+        Group.objects.all().delete()
         self.stdout.write(self.style.SUCCESS('清除完毕！'))
 
         self.stdout.write(self.style.SUCCESS('开始生成测试使用的假数据~~~~~~'))
+        permissions = Permission.objects.all()
+        # 生成超级管理员用户组
+        superuser_group = Group.objects.create(name='superuser')
+        for permission in permissions:
+            superuser_group.permissions.add(permission)
         # 生成超级管理员账户
         admin_username = fake.name()
-        User.objects.create_superuser(
+        superuser = User.objects.create_superuser(
             username='admin',
             password='ant.design',
             first_name=admin_username[:1],
@@ -295,6 +302,12 @@ class Command(BaseCommand):
             email=fake.email(),
             is_superuser=True
         )
+        superuser.groups.add(superuser_group)
+        # 生成学院管理员用户组
+        college_staff_group = Group.objects.create(name='staff')
+        for permission in permissions:
+            if any(item in permission.codename for item in ['search', 'delete', 'insert', 'update']):
+                college_staff_group.permissions.add(permission)
         # 生成学院管理员账户
         staff_user_list = []
         for _ in range(len(AcademiesList)):
@@ -307,7 +320,13 @@ class Command(BaseCommand):
                 email=fake.email(),
                 is_staff=True
             )
+            staff.groups.add(college_staff_group)
             staff_user_list.append(staff)
+        # 生成学院管理员用户组
+        teacher_group = Group.objects.create(name='teacher')
+        for permission in permissions:
+            if any(item in permission.codename for item in ['search', 'insert', 'update']):
+                teacher_group.permissions.add(permission)
         # 生成研究生导师账户
         teacher_list = []
         for _ in range(60):
@@ -319,6 +338,7 @@ class Command(BaseCommand):
                 last_name=teacher_username[1:],
                 email=fake.email()
             )
+            teacher.groups.add(teacher_group)
             teacher_list.append(teacher)
         # 生成研究生学生账户
         student_list = []

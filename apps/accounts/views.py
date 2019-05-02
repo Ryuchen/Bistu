@@ -43,11 +43,23 @@ def login_view(request):
         login(request, user)
         user = User.objects.filter(username=username).first()
         if user.is_superuser:
-            res["data"]["currentAuthority"] = "admin"
+            res["data"]["authority"] = list(request.user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["authority"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         elif user.is_staff:
-            res["data"]["currentAuthority"] = "staff"
+            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         else:
-            res["data"]["currentAuthority"] = "teacher"
+            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         return JsonResponse(res)
     else:
         raise AuthenticateError("Username or Password is incorrect!")
@@ -82,7 +94,7 @@ def current_user_view(request):
         user = User.objects.get(id=request.user.id)
         if user.is_superuser:
             res["data"]["profile"] = {
-                "name": user.username,
+                "name": '{0}{1}'.format(user.last_name, user.first_name),
                 "email": user.email,
                 "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                 "title": "你是当前系统的最高管理员",
@@ -93,7 +105,7 @@ def current_user_view(request):
             if user.is_staff:
                 academy = Academy.objects.filter(aca_user_id=user.id).first()
                 res["data"]["profile"] = {
-                    "name": user.username,
+                    "name": '{0}{1}'.format(user.last_name, user.first_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "你是{0}学院的管理员".format(academy.aca_cname),
@@ -102,7 +114,7 @@ def current_user_view(request):
                 }
             else:
                 res["data"]["profile"] = {
-                    "name": user.username,
+                    "name": '{0}{1}'.format(user.last_name, user.first_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "研究生导师",
