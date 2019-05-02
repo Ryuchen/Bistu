@@ -141,6 +141,7 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
 
 
 class MajorList(SimpleMajor, generics.GenericAPIView):
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
