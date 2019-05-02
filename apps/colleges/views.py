@@ -65,9 +65,8 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
             serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # 添加
     @excepts
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -79,7 +78,7 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
         return Response(serializer.data)
 
     @excepts
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
