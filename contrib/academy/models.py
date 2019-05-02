@@ -103,23 +103,6 @@ class Academy(models.Model):
         ]
 
 
-# TODO: add this pages
-class OpeningReport(models.Model):
-    """
-    开题报告统计模型
-    """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
-    stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
-    schedule_count = models.IntegerField(null=False, default=0, help_text="按期开题人数")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期开题人数")
-    fail_count = models.IntegerField(null=False, default=0, help_text="开题不通过人数")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
-
-    class Meta:
-        verbose_name = "开题报告统计"
-        verbose_name_plural = verbose_name
-        
-        
 class ReformResults(models.Model):
     """
     教育改革成果统计模型
@@ -135,60 +118,13 @@ class ReformResults(models.Model):
     time = models.DateField(null=False, default='2019', help_text="入学年份")
 
     class Meta:
+        db_table = 'reformResult'
         verbose_name = "教育改革成果统计"
         verbose_name_plural = verbose_name
-
-
-class MidtermExams(models.Model):
-    """
-    中期考核情况统计模型
-    """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
-    stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
-    schedule_count = models.IntegerField(null=False, default=0, help_text="按期考核人数")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
-    delay_reason = models.TextField(null=False, default="", help_text="延期考核原因")
-    delay_proportion = models.IntegerField(null=False, default=0, help_text="延期考核比例")
-    track_count = models.IntegerField(null=False, default=0, help_text="被跟踪人数")
-    track_proportion = models.IntegerField(null=False, default=0, help_text="被跟踪比例")
-    fail_count = models.IntegerField(null=False, default=0, help_text="不合格人数")
-    fail_proportion = models.IntegerField(null=False, default=0, help_text="不合格比例")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
-
-    class Meta:
-        verbose_name = "中期考核情况统计"
-        verbose_name_plural = verbose_name
-
-
-class PaperQuality(models.Model):
-    """
-    学位论文质量统计模型
-    """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
-    major = models.CharField(max_length=128, null=False, default="", help_text="专业名称")
-    full_time_count = models.IntegerField(null=False, default=0, help_text="全日制学生数量")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期人数")
-    delay_reason = models.TextField(null=False, default="", help_text="延期原因")
-    paper_stu_count = models.IntegerField(null=False, default=0, help_text="论文检测人数")
-    paper_pass_count = models.IntegerField(null=False, default=0, help_text="论文检测结果一次通过人数")
-    paper_pass_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果一次通过率")
-    paper_fail_count = models.IntegerField(null=False, default=0, help_text="论文检测结果不合格人数")
-    paper_fail_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果不合格占比")
-    paper_fifteen_count = models.IntegerField(null=False, default=0, help_text="论文检测结果15%以下人数")
-    paper_fifteen_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果15%以下占比")
-    paper_ten_count = models.IntegerField(null=False, default=0, help_text="论文检测结果10%以下人数")
-    paper_ten_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果10%以下占比")
-    blind_trial_proportion = models.IntegerField(null=False, default=0, help_text="盲审比例")
-    blind_trial_count = models.IntegerField(null=False, default=0, help_text="盲审未通过人数")
-    reply_count = models.IntegerField(null=False, default=0, help_text="答辩未通过人数")
-    evaluation_count = models.IntegerField(null=False, default=0, help_text="评优名额")
-    evaluation_result = models.IntegerField(null=False, default=0, help_text="评优评选结果")
-    graduate_count = models.IntegerField(null=False, default=0, help_text="毕业人数")
-    graduate_proportion = models.IntegerField(null=False, default=0, help_text="毕业率")
-    degree_count = models.IntegerField(null=False, default=0, help_text="获学位人数")
-    degree_proportion = models.IntegerField(null=False, default=0, help_text="获学位率")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
-
-    class Meta:
-        verbose_name = "学位论文质量统计"
-        verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_reformResult", "新增教改统计"),
+            ("can_delete_reformResult", "删除教改统计"),
+            ("can_update_reformResult", "修改教改统计"),
+            ("can_search_reformResult", "查询教改统计")
+        ]
