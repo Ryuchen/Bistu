@@ -94,7 +94,7 @@ def current_user_view(request):
         user = User.objects.get(id=request.user.id)
         if user.is_superuser:
             res["data"]["profile"] = {
-                "name": '{0}{1}'.format(user.last_name, user.first_name),
+                "name": '{0}{1}'.format(user.first_name, user.last_name),
                 "email": user.email,
                 "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                 "title": "你是当前系统的最高管理员",
@@ -105,7 +105,7 @@ def current_user_view(request):
             if user.is_staff:
                 academy = Academy.objects.filter(aca_user_id=user.id).first()
                 res["data"]["profile"] = {
-                    "name": '{0}{1}'.format(user.last_name, user.first_name),
+                    "name": '{0}{1}'.format(user.first_name, user.last_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "你是{0}学院的管理员".format(academy.aca_cname),
@@ -114,7 +114,7 @@ def current_user_view(request):
                 }
             else:
                 res["data"]["profile"] = {
-                    "name": '{0}{1}'.format(user.last_name, user.first_name),
+                    "name": '{0}{1}'.format(user.first_name, user.last_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "研究生导师",
