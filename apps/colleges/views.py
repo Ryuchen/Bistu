@@ -12,11 +12,11 @@ import xlrd
 import xlwt
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
 from core.decorators.excepts import excepts
-from django.contrib.auth.models import User
 from contrib.academy.models import Academy, Major, Research
 from contrib.academy.models import OpeningReport, ReformResults, MidtermExams, PaperQuality
 from .serializers import MajorSerializers, AcademySerializers, ResearchSerializers
@@ -33,14 +33,12 @@ class SimpleResearch(object):
 
 class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def put(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -50,7 +48,6 @@ class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
@@ -59,7 +56,6 @@ class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
 
 class ResearchList(SimpleResearch, generics.GenericAPIView):
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -71,7 +67,6 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
 
     # 添加
     @excepts
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
@@ -84,7 +79,6 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def put(self, request, *args, **kwargs):
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())

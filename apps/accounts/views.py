@@ -22,8 +22,8 @@ from core.exceptions.errors import *
 log = logging.getLogger('default')
 
 
-@csrf_exempt
 @excepts
+@csrf_exempt
 def login_view(request):
     res = {
         "code": "00000000",
@@ -65,7 +65,6 @@ def login_view(request):
         raise AuthenticateError("Username or Password is incorrect!")
 
 
-@csrf_exempt
 @excepts
 def logout_view(request):
     res = {
@@ -78,7 +77,6 @@ def logout_view(request):
     return JsonResponse(res)
 
 
-@csrf_exempt
 @excepts
 def current_user_view(request):
     res = {
