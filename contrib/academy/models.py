@@ -107,7 +107,8 @@ class ReformResults(models.Model):
     """
     教育改革成果统计模型
     """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.DateField(null=False, default='2019', help_text="年份")
     project_count = models.IntegerField(null=False, default=0, help_text="研究生教育相关教改项目立项数量")
     paper_count = models.IntegerField(null=False, default=0, help_text="发表研究生教育相关教改论文数量")
     textbook_count = models.IntegerField(null=False, default=0, help_text="出版研究生教材数量")
@@ -115,7 +116,7 @@ class ReformResults(models.Model):
     course_count = models.IntegerField(null=False, default=0, help_text="精品/在线课程建设数量")
     base_count = models.IntegerField(null=False, default=0, help_text="实践基地建设数量")
     exchange_project_count = models.IntegerField(null=False, default=0, help_text="研究生国际交流数量")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
+    academy = models.ForeignKey(Academy, null=True, related_name='rr_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
         db_table = 'reformResult'
