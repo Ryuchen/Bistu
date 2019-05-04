@@ -12,7 +12,7 @@ import uuid
 from django.db import models
 
 from contrib.users.models import Student
-from contrib.academy.models import Academy
+from contrib.academy.models import Academy, Major
 
 
 class Thesis(models.Model):
@@ -29,7 +29,7 @@ class Thesis(models.Model):
     the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
     the_is_delay = models.BooleanField(default=False, help_text="是否延期")
     the_delay_reason = models.TextField(null=True, help_text="延期原因")
-    student = models.OneToOneField(Student, null=True, related_name='student', on_delete=models.SET_NULL, help_text="课题学生")
+    student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, help_text="课题学生")
 
     def __str__(self):
         return "论文课题：{0}".format(self.the_title)
@@ -54,7 +54,7 @@ class PlaCheck(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     pla_result = models.CharField(max_length=128, null=False, help_text="查重结果")
     pla_rate = models.CharField(max_length=128, null=False, help_text="重复率")
-    thesis = models.OneToOneField(Thesis, null=True, related_name='thesis', on_delete=models.SET_NULL, help_text="论文课题")
+    thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, help_text="论文课题")
 
     def __str__(self):
         return "论文查重：{0}".format(self.thesis.the_title)
@@ -78,7 +78,7 @@ class BlindReview(models.Model):
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     bli_score = models.CharField(max_length=64, help_text="盲审结果")
-    thesis = models.OneToOneField(Thesis, null=True, related_name='thesis', on_delete=models.SET_NULL, help_text="论文课题")
+    thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, help_text="论文课题")
 
     def __str__(self):
         return "论文盲审：{0}".format(self.thesis.the_title)
@@ -100,12 +100,13 @@ class OpenThesisReport(models.Model):
     """
     开题统计模型
     """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.DateField(null=False, default='2019', help_text="年份")
     stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
     schedule_count = models.IntegerField(null=False, default=0, help_text="按期开题人数")
     delay_count = models.IntegerField(null=False, default=0, help_text="延期开题人数")
     fail_count = models.IntegerField(null=False, default=0, help_text="开题不通过人数")
-    time = models.DateField(null=False, default='2019', help_text="开题年份")
+    academy = models.ForeignKey(Academy, null=True, related_name='otr_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
         db_table = 'openThesisReport'
@@ -124,7 +125,8 @@ class MidThesisReport(models.Model):
     """
     中期考核统计模型
     """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.DateField(null=False, default='2019', help_text="年份")
     stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
     schedule_count = models.IntegerField(null=False, default=0, help_text="按期考核人数")
     delay_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
@@ -134,7 +136,7 @@ class MidThesisReport(models.Model):
     track_proportion = models.IntegerField(null=False, default=0, help_text="被跟踪比例")
     fail_count = models.IntegerField(null=False, default=0, help_text="不合格人数")
     fail_proportion = models.IntegerField(null=False, default=0, help_text="不合格比例")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
+    academy = models.ForeignKey(Academy, null=True, related_name='mtr_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
         db_table = 'midThesisReport'
@@ -153,8 +155,8 @@ class ThesisQuality(models.Model):
     """
     论文质量统计模型
     """
-    academy = models.CharField(max_length=128, null=False, default="", help_text="学院名称")
-    major = models.CharField(max_length=128, null=False, default="", help_text="专业名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.DateField(null=False, default='2019', help_text="年份")
     full_time_count = models.IntegerField(null=False, default=0, help_text="全日制学生数量")
     delay_count = models.IntegerField(null=False, default=0, help_text="延期人数")
     delay_reason = models.TextField(null=False, default="", help_text="延期原因")
@@ -176,7 +178,8 @@ class ThesisQuality(models.Model):
     graduate_proportion = models.IntegerField(null=False, default=0, help_text="毕业率")
     degree_count = models.IntegerField(null=False, default=0, help_text="获学位人数")
     degree_proportion = models.IntegerField(null=False, default=0, help_text="获学位率")
-    time = models.DateField(null=False, default='2019', help_text="入学年份")
+    major = models.ForeignKey(Major, null=True, related_name='major', on_delete=models.SET_NULL, help_text="学科专业")
+    academy = models.ForeignKey(Academy, null=True, related_name='tq_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
         db_table = 'thesisQuality'

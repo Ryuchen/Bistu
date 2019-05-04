@@ -8,8 +8,7 @@
 # @Desc : 
 # ==================================================
 from django.conf.urls import url
-from .views import MajorList, MajorDetail, AcademyList, AcademyDetail, ResearchList, ResearchDetail
-from .views import OpeningReportList, ReformResultsList, MidtermExamsList, PaperQualityList
+from .views import MajorList, MajorDetail, AcademyList, AcademyDetail, ResearchList, ResearchDetail, ReformResultsList
 
 
 urlpatterns = [
@@ -22,8 +21,8 @@ urlpatterns = [
     url(r"^academy/(?P<pk>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$", AcademyDetail.as_view(),
         name="academy-detail"),
     
-    url(r"^thesisReport/$", OpeningReportList.as_view(), name="opening_report-list"),
+    # url(r"^thesisReport/$", OpeningReportList.as_view(), name="opening_report-list"),
     url(r"^reforms/$", ReformResultsList.as_view(), name="reform-list"),
-    url(r"mid_exams^/$", MidtermExamsList.as_view(), name="mid_exams-list"),
-    url(r"paper_quality^/$", PaperQualityList.as_view(), name="paper_quality-list"),
+    # url(r"mid_exams^/$", MidtermExamsList.as_view(), name="mid_exams-list"),
+    # url(r"paper_quality^/$", PaperQualityList.as_view(), name="paper_quality-list"),
 ]
