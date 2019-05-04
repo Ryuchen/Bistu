@@ -237,7 +237,8 @@ class Command(BaseCommand):
                 aca_user=staff_user_list.pop(),
             )
             avatar_name = fake.random.choice(Avatars)
-            academy.aca_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
+            academy.aca_avatar.save(avatar_name, File(
+                open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
 
             maj_degree = fake.random.choice([tag.value for tag in MajorDegree])
             for _ in range(random.randint(2, 5)):
@@ -327,7 +328,8 @@ class Command(BaseCommand):
                 tut_degree=fake.random.choice([tag.value for tag in DegreeChoice]),
             )
             avatar_name = fake.random.choice(Avatars)
-            teacher.tut_avatar.save(avatar_name, File(open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
+            teacher.tut_avatar.save(avatar_name, File(
+                open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
             teacher.user = teacher_list.pop()
             teacher.tut_name = teacher.user.first_name + teacher.user.last_name
             teacher.education = education
@@ -374,7 +376,6 @@ class Command(BaseCommand):
                     stu_is_regular_income=fake.random.choice([True, False]),
                     stu_is_tuition_fees=fake.random.choice([True, False]),
                     stu_is_archives=fake.random.choice([True, False]),
-                    stu_is_superb=fake.random.choice([True, False]),
                     stu_is_exemption=fake.random.choice([True, False]),
                     stu_is_adjust=fake.random.choice([True, False]),
                     stu_is_volunteer=fake.random.choice([True, False]),
@@ -387,23 +388,67 @@ class Command(BaseCommand):
                 student.user = student_list.pop()
                 student.stu_name = student.user.first_name + student.user.last_name
                 student.tutor = fake.random.choice(tutors_list)
+                # 学生的学院/专业/班级信息
                 stu_academy = fake.random.choice(academy_list)
-                student.academy = stu_academy
+                student.academy = stu_academy  # 学院
                 stu_major = fake.random.choice(stu_academy.majors.all())
-                student.major = stu_major
+                student.major = stu_major  # 专业
                 student.research = fake.random.choice(stu_major.research.all())
-                if graduate_year:
-                    thesis = Thesis(
-                        the_title="关于{0}的研究".format(student.research.res_name),
-                        the_start_time=graduate_year.replace((graduate_year.month - 10)),
-                        the_start_result=fake.random.choice([True, False]),  # 课题开题结果
-                        the_mid_score=fake.random.choice([True, False]),  # 中期考核结果
-                        the_final_score=models.CharField(max_length=64, help_text="答辩成绩"),
-                        the_is_superb=models.BooleanField(default=False, help_text="是否优秀论文"),
-                        the_is_delay=models.BooleanField(default=False, help_text=""),  # 是否延期
-                        the_delay_reason=models.TextField(null=True, help_text="延期原因"),
-                        the_exam_count=models.IntegerField(null=False, default=0, help_text="论文查重次数")  # 通过随机次数计算
-                    )
+                student.stu_class = Class.objects.get_or_create(
+                    cla_name=stu_major.maj_name,
+                    cla_code='{}0{}}'.format(entrance_year[-2:], fake.random.randint(1, 3)),
+                    major=stu_major
+                )  # 班级
+
+                # 确定该学生今年是否需要准备论文
+                if entrance_year.year < 2018:
+
+                    # 中期考核确认状态
+                    student.stu_is_delay = fake.random.choice([True, False])
+                    if student.stu_is_delay:
+                        student.stu_delay_reason = fake.sentence()
+
+                    student.stu_mid_check = fake.random.choice([tag.value for tag in MidCheckChoice])  # 中期考核成绩
+
+                    # 确定该学生是否已经毕业
+                    if graduate_year:
+                        # 生成学生论文对象
+                        thesis = Thesis(
+                            the_title="关于{0}的研究".format(student.research.res_name),
+                            the_start_time=graduate_year.replace((graduate_year - datetime.timedelta(weeks=40))),
+                            # 毕业前10个月论文开题
+                            the_start_result=fake.random.choice([True, False]),  # 课题开题结果
+                            the_final_score=True if student.stu_gain_diploma else False
+                        )
+                        if not thesis.the_start_result:
+                            thesis.the_is_delay = True
+                            thesis.the_delay_reason = fake.sentence()
+                            thesis.the_is_superb = False
+                        else:
+                            if thesis.the_final_score:
+                                thesis.the_is_delay = False
+                                thesis.the_delay_reason = ''
+                                thesis.the_is_superb = fake.random.choice([True, False])
+                            else:
+                                thesis.the_is_delay = fake.random.choice([True, False])
+                                if thesis.the_is_delay:
+                                    thesis.the_delay_reason = fake.sentence()
+                                thesis.the_is_superb = False
+
+                        thesis.student = student
+                        thesis.save()
+
+                        # 生成论文查重次数
+                        for _ in range(random.randint(1, 3)):
+                            ThesisPlaCheck.objects.create(
+                                pla_date=graduate_year.replace(month=1, day=random.randint(1, 30)),
+                                pla_result=fake.random.choice([True, False]),
+                                pla_rate=(fake.random.randint(1, 30) / 100),
+                                thesis=thesis
+                            )
+
+                        student.stu_is_superb = thesis.the_is_superb
+
                 _student_list.append(student)
             Student.objects.bulk_create(_student_list)
         self.stdout.write(self.style.NOTICE('学生相关数据生成完毕~~~~~~'))
