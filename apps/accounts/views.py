@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 
-from contrib.academy.models import Academy
+from contrib.colleges.models import Academy
 from core.decorators.excepts import excepts
 from core.exceptions.errors import *
 

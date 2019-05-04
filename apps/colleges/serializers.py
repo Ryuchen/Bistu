@@ -9,8 +9,8 @@
 # ==================================================
 from rest_framework import serializers
 from apps.accounts.serializers import UserSerializers
-from contrib.academy.models import Major, Academy, Research
-from contrib.academy.models import ReformResults
+from contrib.colleges.models import Major, Academy, Research
+from contrib.colleges.models import ReformResults
 
 
 class ResearchSerializers(serializers.ModelSerializer):

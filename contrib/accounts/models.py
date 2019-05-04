@@ -12,7 +12,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from core.definition.enums import *
-from contrib.academy.models import Academy, Major, Research
+from contrib.colleges.models import Academy, Major, Research, Class
 
 
 class Education(models.Model):
@@ -39,30 +39,6 @@ class Education(models.Model):
             ("can_delete_education", "删除学习经历"),
             ("can_update_education", "修改学习经历"),
             ("can_search_education", "查询学习经历")
-        ]
-
-
-class Class(models.Model):
-    """
-    班级模型
-    """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    cla_name = models.CharField(max_length=128, null=True, help_text="班级名称")
-    cla_code = models.IntegerField(null=True, help_text="班级代码")
-
-    def __str__(self):
-        return "班级：{1}:{0}  ".format(self.cla_code, self.cla_name)
-
-    class Meta:
-        db_table = 'class'
-        verbose_name = "班级"
-        verbose_name_plural = verbose_name
-        default_permissions = ()
-        permissions = [
-            ("can_insert_class", "新增班级"),
-            ("can_delete_class", "删除班级"),
-            ("can_update_class", "修改班级"),
-            ("can_search_class", "查询班级")
         ]
 
 
@@ -117,6 +93,7 @@ class Student(models.Model):
     stu_number = models.IntegerField(null=True, unique=True, default='20190101', help_text="学号")
     stu_avatar = models.ImageField(null=True, upload_to="students", default='default.png', help_text="学生照片")
     stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], help_text="性别")
+    stu_telephone = models.IntegerField(null=True, help_text="电话号码")
     stu_card_type = models.CharField(max_length=128, null=True, help_text='身份证件类型', default="身份证")
     stu_cardID = models.CharField(max_length=128, null=True, unique=True, help_text="身份证号", default="")
     stu_candidate_number = models.CharField(max_length=128, null=True, help_text="考生号")
@@ -143,16 +120,17 @@ class Student(models.Model):
     stu_is_exemption = models.BooleanField(default=False, help_text="是否推免生")
     stu_is_adjust = models.BooleanField(default=False, help_text="是否调剂")
     stu_is_volunteer = models.BooleanField(default=True, help_text="是否第一志愿")
-    stu_telephone = models.IntegerField(null=True, help_text="电话号码")
+    stu_is_delay = models.BooleanField(default=True, help_text="是否延期（中期考核）")
+    stu_delay_reason = models.CharField(max_length=255, null=True, help_text="中期考核延期原因")
+    stu_mid_check = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in MidCheckChoice], help_text="中期考核结果")
     stu_status = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in StatusChoice], help_text="在学状态", default='S1')
-    stu_class = models.CharField(max_length=128, null=True, help_text="所属班级")
     stu_gain_diploma = models.BooleanField(null=True, default=False, help_text="学位证")
     stu_gain_cert = models.BooleanField(null=True, default=False, help_text="毕业证")
-    tutor = models.ForeignKey(Tutor, null=True, related_name='stu_tutor', on_delete=models.SET_NULL, help_text="指导老师")
-    academy = models.ForeignKey(Academy, null=True, related_name='stu_academy', on_delete=models.SET_NULL, help_text='所属学院')
-    major_category = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in MajorDegree], help_text='专业大类', default='D1')
-    major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="学科专业")
-    research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
+    stu_tutor = models.ForeignKey(Tutor, null=True, related_name='stu_tutor', on_delete=models.SET_NULL, help_text="指导老师")
+    stu_class = models.ForeignKey(Class, null=True, related_name='stu_class', on_delete=models.SET_NULL, help_text="所属班级")
+    stu_major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, help_text="所属专业")
+    stu_academy = models.ForeignKey(Academy, null=True, related_name='stu_academy', on_delete=models.SET_NULL, help_text='所属学院')
+    stu_research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, help_text="科研方向")
 
     def __str__(self):
         return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
@@ -169,3 +147,34 @@ class Student(models.Model):
             ("can_search_student", "查询学生")
         ]
         ordering = ['stu_number']
+
+
+class MidCheckReport(models.Model):
+    """
+    中期考核统计模型
+    """
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.DateField(null=False, default='2019', help_text="年份")
+    # stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")  # 根据学生查处来
+    schedule_count = models.IntegerField(null=False, default=0, help_text="按期考核人数")
+    pass_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
+    pass_proportion = models.IntegerField(null=False, default=0, help_text="延期考核比例")
+    delay_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
+    # delay_reason = models.TextField(null=False, default="", help_text="延期考核原因")  # 每个延期考核的学生都有自己的延期原因
+    delay_proportion = models.IntegerField(null=False, default=0, help_text="延期考核比例")
+    track_count = models.IntegerField(null=False, default=0, help_text="被跟踪人数")
+    track_proportion = models.IntegerField(null=False, default=0, help_text="被跟踪比例")
+    fail_count = models.IntegerField(null=False, default=0, help_text="不合格人数")
+    fail_proportion = models.IntegerField(null=False, default=0, help_text="不合格比例")
+
+    class Meta:
+        db_table = 'mid_check_report'
+        verbose_name = "中期考核统计"
+        verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_mid_check_report", "新增中期考核统计"),
+            ("can_delete_mid_check_report", "删除中期考核统计"),
+            ("can_update_mid_check_report", "修改中期考核统计"),
+            ("can_search_mid_check_report", "查询中期考核统计")
+        ]

@@ -9,7 +9,7 @@
 # ==================================================
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from contrib.users.models import Student
+from contrib.accounts.models import Student
 from apps.accounts.serializers import UserSerializers
 from apps.teachers.serializers import TutorSerializers
 from apps.colleges.serializers import AcademySerializers, MajorSerializers

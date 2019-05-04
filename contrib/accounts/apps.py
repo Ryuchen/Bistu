@@ -10,8 +10,9 @@
 from django.apps import AppConfig
 
 
-class AcademyConfig(AppConfig):
-    name = 'contrib.academy'
-    label = '学院管理'
-    verbose_name = '学院管理'
+class UsersConfig(AppConfig):
+    name = 'contrib.accounts'
+    label = '用户管理'
+    verbose_name = '用户管理'
     verbose_name_plural = verbose_name
+

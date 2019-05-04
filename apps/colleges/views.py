@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics, status
 from rest_framework.response import Response
 from core.decorators.excepts import excepts
-from contrib.academy.models import Academy, Major, Research, ReformResults
+from contrib.colleges.models import Academy, Major, Research, ReformResults
 from .serializers import MajorSerializers, AcademySerializers, ResearchSerializers
 from .serializers import ReformResultsSerializers
 
