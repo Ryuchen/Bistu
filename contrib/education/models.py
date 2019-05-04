@@ -11,8 +11,8 @@ import uuid
 
 from django.db import models
 
-from contrib.users.models import Student
-from contrib.academy.models import Academy, Major
+from contrib.accounts.models import Student
+from contrib.colleges.models import Academy, Major
 
 
 class Thesis(models.Model):
@@ -22,13 +22,12 @@ class Thesis(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     the_title = models.CharField(max_length=128, null=False, help_text="课题名称")
     the_start_time = models.DateField(help_text="开题时间")
-    the_mid_score = models.CharField(max_length=64, help_text="中期考核结果")
     the_start_result = models.BooleanField(null=False, default=True, help_text="开题结果")
-    the_exam_count = models.IntegerField(null=False, default=0, help_text="论文查重次数")
-    the_final_score = models.CharField(max_length=64, help_text="答辩成绩")
-    the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
+    # the_exam_count = models.IntegerField(null=False, default=0, help_text="论文查重次数")  # 这个数据应该从查重那张表统计出来
     the_is_delay = models.BooleanField(default=False, help_text="是否延期")
     the_delay_reason = models.TextField(null=True, help_text="延期原因")
+    the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
+    the_final_score = models.BooleanField(default=False, help_text="答辩成绩")  # 只存通过和不通过两种情况
     student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, help_text="课题学生")
 
     def __str__(self):
@@ -47,11 +46,12 @@ class Thesis(models.Model):
         ]
 
 
-class PlaCheck(models.Model):
+class ThesisPlaCheck(models.Model):
     """
     论文查重模型 Pla = Plagiarism
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    pla_date = models.DateField(null=False, help_text="查重时间")
     pla_result = models.CharField(max_length=128, null=False, help_text="查重结果")
     pla_rate = models.CharField(max_length=128, null=False, help_text="重复率")
     thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, help_text="论文课题")
@@ -60,23 +60,24 @@ class PlaCheck(models.Model):
         return "论文查重：{0}".format(self.thesis.the_title)
 
     class Meta:
-        db_table = 'plaCheck'
+        db_table = 'thesis_pla_check'
         verbose_name = "论文查重"
         verbose_name_plural = verbose_name
         default_permissions = ()
         permissions = [
-            ("can_insert_plaCheck", "新增查重结果"),
-            ("can_delete_plaCheck", "删除查重结果"),
-            ("can_update_plaCheck", "修改查重结果"),
-            ("can_search_plaCheck", "查询查重结果")
+            ("can_insert_thesis_pla_check", "新增查重结果"),
+            ("can_delete_thesis_pla_check", "删除查重结果"),
+            ("can_update_thesis_pla_check", "修改查重结果"),
+            ("can_search_thesis_pla_check", "查询查重结果")
         ]
 
 
-class BlindReview(models.Model):
+class ThesisBlindReview(models.Model):
     """
     论文盲审模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    bli_date = models.DateField(null=False, help_text="盲审时间")
     bli_score = models.CharField(max_length=64, help_text="盲审结果")
     thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, help_text="论文课题")
 
@@ -84,19 +85,19 @@ class BlindReview(models.Model):
         return "论文盲审：{0}".format(self.thesis.the_title)
 
     class Meta:
-        db_table = 'blindReview'
+        db_table = 'thesis_blind_review'
         verbose_name = "论文盲审"
         verbose_name_plural = verbose_name
         default_permissions = ()
         permissions = [
-            ("can_insert_blindReview", "新增盲审结果"),
-            ("can_delete_blindReview", "删除盲审结果"),
-            ("can_update_blindReview", "修改盲审结果"),
-            ("can_search_blindReview", "查询盲审结果")
+            ("can_insert_thesis_blind_review", "新增盲审结果"),
+            ("can_delete_thesis_blind_review", "删除盲审结果"),
+            ("can_update_thesis_blind_review", "修改盲审结果"),
+            ("can_search_thesis_blind_review", "查询盲审结果")
         ]
 
 
-class OpenThesisReport(models.Model):
+class ThesisOpenReport(models.Model):
     """
     开题统计模型
     """
@@ -109,49 +110,19 @@ class OpenThesisReport(models.Model):
     academy = models.ForeignKey(Academy, null=True, related_name='otr_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
-        db_table = 'openThesisReport'
+        db_table = 'thesis_open_report'
         verbose_name = "开题报告统计"
         verbose_name_plural = verbose_name
         default_permissions = ()
         permissions = [
-            ("can_insert_openThesisReport", "新增开题统计"),
-            ("can_delete_openThesisReport", "删除开题统计"),
-            ("can_update_openThesisReport", "修改开题统计"),
-            ("can_search_openThesisReport", "查询开题统计")
+            ("can_insert_thesis_open_report", "新增开题统计"),
+            ("can_delete_thesis_open_report", "删除开题统计"),
+            ("can_update_thesis_open_report", "修改开题统计"),
+            ("can_search_thesis_open_report", "查询开题统计")
         ]
 
 
-class MidThesisReport(models.Model):
-    """
-    中期考核统计模型
-    """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    time = models.DateField(null=False, default='2019', help_text="年份")
-    stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
-    schedule_count = models.IntegerField(null=False, default=0, help_text="按期考核人数")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
-    delay_reason = models.TextField(null=False, default="", help_text="延期考核原因")
-    delay_proportion = models.IntegerField(null=False, default=0, help_text="延期考核比例")
-    track_count = models.IntegerField(null=False, default=0, help_text="被跟踪人数")
-    track_proportion = models.IntegerField(null=False, default=0, help_text="被跟踪比例")
-    fail_count = models.IntegerField(null=False, default=0, help_text="不合格人数")
-    fail_proportion = models.IntegerField(null=False, default=0, help_text="不合格比例")
-    academy = models.ForeignKey(Academy, null=True, related_name='mtr_academy', on_delete=models.SET_NULL, help_text="学院名称")
-
-    class Meta:
-        db_table = 'midThesisReport'
-        verbose_name = "中期考核统计"
-        verbose_name_plural = verbose_name
-        default_permissions = ()
-        permissions = [
-            ("can_insert_midThesisReport", "新增中期考核统计"),
-            ("can_delete_midThesisReport", "删除中期考核统计"),
-            ("can_update_midThesisReport", "修改中期考核统计"),
-            ("can_search_midThesisReport", "查询中期考核统计")
-        ]
-
-
-class ThesisQuality(models.Model):
+class ThesisQualityReport(models.Model):
     """
     论文质量统计模型
     """
@@ -182,13 +153,13 @@ class ThesisQuality(models.Model):
     academy = models.ForeignKey(Academy, null=True, related_name='tq_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
-        db_table = 'thesisQuality'
+        db_table = 'thesis_quality_report'
         verbose_name = "论文质量统计"
         verbose_name_plural = verbose_name
         default_permissions = ()
         permissions = [
-            ("can_insert_thesisQuality", "新增论文质量统计"),
-            ("can_delete_thesisQuality", "删除论文质量统计"),
-            ("can_update_thesisQuality", "修改论文质量统计"),
-            ("can_search_thesisQuality", "查询论文质量统计")
+            ("can_insert_thesis_quality_report", "新增论文质量统计"),
+            ("can_delete_thesis_quality_report", "删除论文质量统计"),
+            ("can_update_thesis_quality_report", "修改论文质量统计"),
+            ("can_search_thesis_quality_report", "查询论文质量统计")
         ]

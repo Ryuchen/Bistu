@@ -10,8 +10,8 @@
 from django.apps import AppConfig
 
 
-class CultivateConfig(AppConfig):
-    name = 'contrib.cultivate'
-    label = '培养管理'
-    verbose_name = '培养管理'
+class AcademyConfig(AppConfig):
+    name = 'contrib.colleges'
+    label = '学院管理'
+    verbose_name = '学院管理'
     verbose_name_plural = verbose_name

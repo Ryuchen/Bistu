@@ -12,9 +12,13 @@ from . import models
 from django.contrib import admin
 
 
-class CultivateAdmin(admin.ModelAdmin):
+class AcademyAdmin(admin.ModelAdmin):
     empty_value_display = '--'
 
 
 # Register your models here.
-admin.site.register(models.Thesis, CultivateAdmin)
+admin.site.register(models.Research, AcademyAdmin)
+admin.site.register(models.Major, AcademyAdmin)
+admin.site.register(models.Class, AcademyAdmin)
+admin.site.register(models.Academy, AcademyAdmin)
+admin.site.register(models.Reform, AcademyAdmin)

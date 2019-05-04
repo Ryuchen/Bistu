@@ -69,13 +69,37 @@ class Major(models.Model):
         ]
 
 
+class Class(models.Model):
+    """
+    班级模型
+    """
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    cla_name = models.CharField(max_length=128, null=True, help_text="班级名称")
+    cla_code = models.IntegerField(null=True, help_text="班级代码")
+    major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL, help_text="专业名称")
+
+    def __str__(self):
+        return "{0} => {1}{2}  ".format(self.major.maj_name, self.cla_name, self.cla_code)
+
+    class Meta:
+        db_table = 'classes'
+        verbose_name = "班级"
+        verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_class", "新增班级"),
+            ("can_delete_class", "删除班级"),
+            ("can_update_class", "修改班级"),
+            ("can_search_class", "查询班级")
+        ]
+
+
 class Academy(models.Model):
     """
     学院模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     aca_avatar = models.ImageField(null=True, upload_to="academies", default='default.png', help_text="学院图标")
-    # aca_avatar = models.ImageField(max_length=128, help_text="学院图标", null=True)
     aca_nickname = models.CharField(max_length=128, null=True, help_text="学院简称")
     aca_cname = models.CharField(max_length=128, null=True, help_text="学院名称(中)")
     aca_ename = models.CharField(max_length=128, null=True, help_text="学院名称(英)")
@@ -103,12 +127,35 @@ class Academy(models.Model):
         ]
 
 
+class Reform(models.Model):
+    """
+    教育改革项目统计模型
+    """
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
+    time = models.IntegerField(null=False, help_text="年份")
+    ref_type = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in ReformType], help_text="教改成果类型")
+    ref_name = models.TextField(help_text="教改项目名称")
+    academy = models.ForeignKey(Academy, null=True, related_name='r_academy', on_delete=models.SET_NULL, help_text="学院名称")
+
+    class Meta:
+        db_table = 'reform'
+        verbose_name = "教育改革成果"
+        verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_reform", "新增教改成果"),
+            ("can_delete_reform", "删除教改成果"),
+            ("can_update_reform", "修改教改成果"),
+            ("can_search_reform", "查询教改成果")
+        ]
+
+
 class ReformResults(models.Model):
     """
     教育改革成果统计模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    time = models.DateField(null=False, default='2019', help_text="年份")
+    time = models.IntegerField(null=False, help_text="年份")
     project_count = models.IntegerField(null=False, default=0, help_text="研究生教育相关教改项目立项数量")
     paper_count = models.IntegerField(null=False, default=0, help_text="发表研究生教育相关教改论文数量")
     textbook_count = models.IntegerField(null=False, default=0, help_text="出版研究生教材数量")
@@ -119,13 +166,13 @@ class ReformResults(models.Model):
     academy = models.ForeignKey(Academy, null=True, related_name='rr_academy', on_delete=models.SET_NULL, help_text="学院名称")
 
     class Meta:
-        db_table = 'reformResult'
+        db_table = 'reform_result'
         verbose_name = "教育改革成果统计"
         verbose_name_plural = verbose_name
         default_permissions = ()
         permissions = [
-            ("can_insert_reformResult", "新增教改统计"),
-            ("can_delete_reformResult", "删除教改统计"),
-            ("can_update_reformResult", "修改教改统计"),
-            ("can_search_reformResult", "查询教改统计")
+            ("can_insert_reform_result", "新增教改统计"),
+            ("can_delete_reform_result", "删除教改统计"),
+            ("can_update_reform_result", "修改教改统计"),
+            ("can_search_reform_result", "查询教改统计")
         ]

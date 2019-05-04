@@ -12,8 +12,8 @@ from rest_framework.response import Response
 
 from django.views.decorators.csrf import csrf_exempt
 
-from contrib.users.models import Student
-from contrib.cultivate.models import Thesis
+from contrib.accounts.models import Student
+from contrib.education.models import Thesis
 from core.decorators.excepts import excepts
 from .serializers import ThesisSerializers
 

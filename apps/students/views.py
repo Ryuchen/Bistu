@@ -22,8 +22,8 @@ from rest_framework.pagination import LimitOffsetPagination
 
 from core.decorators.excepts import excepts
 from apps.teachers.views import user_create
-from contrib.users.models import Student, Tutor
-from contrib.academy.models import Academy, Major
+from contrib.accounts.models import Student, Tutor
+from contrib.colleges.models import Academy, Major
 from apps.settings.views import trans_choice
 from apps.students.serializers import StudentSerializers
 
