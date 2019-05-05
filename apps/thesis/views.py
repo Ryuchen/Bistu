@@ -7,14 +7,15 @@
 # @File : views.py
 # @Desc :
 # ==================================================
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.response import Response
+
 from django.views.decorators.csrf import csrf_exempt
 
+from contrib.accounts.models import Student
+from contrib.education.models import Thesis
 from core.decorators.excepts import excepts
-from contrib.cultivate.models import Thesis
 from .serializers import ThesisSerializers
-from contrib.users.models import Student
 
 
 class SimpleThesis(object):

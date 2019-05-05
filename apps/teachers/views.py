@@ -14,8 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import LimitOffsetPagination
 
-from contrib.users.models import Tutor
-from contrib.academy.models import Major
+from contrib.accounts.models import Tutor
+from contrib.colleges.models import Major
 from .serializers import TutorSerializers
 from core.decorators.excepts import excepts
 

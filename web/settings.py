@@ -30,20 +30,22 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'contrib.users.apps.UsersConfig',
-    'contrib.academy.apps.AcademyConfig',
-    'contrib.cultivate.apps.CultivateConfig',
+    'contrib.accounts.apps.UsersConfig',
+    'contrib.colleges.apps.AcademyConfig',
+    'contrib.education.apps.CultivateConfig',
     'core',
-    'django_filters'
+    'django_filters',
+    'web.apps.SuitConfig',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
+    'core.middleware.disableCSRFToken.DisableCSRF',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -81,6 +83,7 @@ DATABASES = {
     }
 }
 
+CSRF_COOKIE_SECURE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -99,7 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -177,3 +179,4 @@ REST_FRAMEWORK = {
     ),
 }
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
