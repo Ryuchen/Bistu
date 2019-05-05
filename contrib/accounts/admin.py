@@ -18,6 +18,6 @@ class UsersAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(models.Education, UsersAdmin)
-admin.site.register(models.Class, UsersAdmin)
 admin.site.register(models.Tutor, UsersAdmin)
 admin.site.register(models.Student, UsersAdmin)
+admin.site.register(models.MidCheckReport, UsersAdmin)

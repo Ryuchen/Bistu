@@ -15,15 +15,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 
-from contrib.academy.models import Academy
+from contrib.colleges.models import Academy
 from core.decorators.excepts import excepts
 from core.exceptions.errors import *
 
 log = logging.getLogger('default')
 
 
-@csrf_exempt
 @excepts
+@csrf_exempt
 def login_view(request):
     res = {
         "code": "00000000",
@@ -43,17 +43,28 @@ def login_view(request):
         login(request, user)
         user = User.objects.filter(username=username).first()
         if user.is_superuser:
-            res["data"]["currentAuthority"] = "admin"
+            res["data"]["authority"] = list(request.user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         elif user.is_staff:
-            res["data"]["currentAuthority"] = "staff"
+            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         else:
-            res["data"]["currentAuthority"] = "teacher"
+            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+            res["data"]["permission"] = []
+            for group in request.user.groups.all():
+                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
         return JsonResponse(res)
     else:
         raise AuthenticateError("Username or Password is incorrect!")
 
 
-@csrf_exempt
 @excepts
 def logout_view(request):
     res = {
@@ -66,7 +77,6 @@ def logout_view(request):
     return JsonResponse(res)
 
 
-@csrf_exempt
 @excepts
 def current_user_view(request):
     res = {
@@ -82,7 +92,7 @@ def current_user_view(request):
         user = User.objects.get(id=request.user.id)
         if user.is_superuser:
             res["data"]["profile"] = {
-                "name": user.username,
+                "name": '{0}{1}'.format(user.first_name, user.last_name),
                 "email": user.email,
                 "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                 "title": "你是当前系统的最高管理员",
@@ -93,7 +103,7 @@ def current_user_view(request):
             if user.is_staff:
                 academy = Academy.objects.filter(aca_user_id=user.id).first()
                 res["data"]["profile"] = {
-                    "name": user.username,
+                    "name": '{0}{1}'.format(user.first_name, user.last_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "你是{0}学院的管理员".format(academy.aca_cname),
@@ -102,7 +112,7 @@ def current_user_view(request):
                 }
             else:
                 res["data"]["profile"] = {
-                    "name": user.username,
+                    "name": '{0}{1}'.format(user.first_name, user.last_name),
                     "email": user.email,
                     "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
                     "title": "研究生导师",

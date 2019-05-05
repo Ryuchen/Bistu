@@ -8,7 +8,7 @@
 # @Desc :
 # ==================================================
 from rest_framework import serializers
-from contrib.cultivate.models import Thesis
+from contrib.education.models import Thesis
 from apps.students.serializers import StudentSerializers
 
 

@@ -10,17 +10,18 @@
 import os
 import xlrd
 import xlwt
+
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
 from core.decorators.excepts import excepts
-from django.contrib.auth.models import User
-from contrib.academy.models import Academy, Major, Research
-from contrib.academy.models import OpeningReport, ReformResults, MidtermExams, PaperQuality
+from contrib.colleges.models import Academy, Major, Research, ReformResults
 from .serializers import MajorSerializers, AcademySerializers, ResearchSerializers
-from .serializers import OpeningReportSerializers, ReformResultsSerializers, MidtermExamsSerializers, PaperQualitySerializers
+from .serializers import ReformResultsSerializers
 
 
 # 科研方向
@@ -33,14 +34,12 @@ class SimpleResearch(object):
 
 class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def put(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -50,7 +49,6 @@ class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
@@ -59,7 +57,6 @@ class ResearchDetail(SimpleResearch, generics.RetrieveUpdateDestroyAPIView):
 
 class ResearchList(SimpleResearch, generics.GenericAPIView):
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -69,10 +66,8 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
             serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # 添加
     @excepts
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -84,8 +79,7 @@ class ResearchList(SimpleResearch, generics.GenericAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -141,6 +135,7 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
 
 
 class MajorList(SimpleMajor, generics.GenericAPIView):
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
@@ -297,93 +292,93 @@ class TableStyle:
     table_center_style.alignment = alignment
 
 
-# 研究生开题情况统计
-class OpeningReportList(generics.GenericAPIView):
-    model = OpeningReport
-    queryset = OpeningReport.objects.all()
-    serializer_class = OpeningReportSerializers
-    pagination_class = None
-    
-    @excepts
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    # Excel上传
-    @excepts
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        file = request.data['file']
-        data = xlrd.open_workbook(filename=None, file_contents=file.read())
-        table = data.sheets()[0]
-        nrows = table.nrows
-        file_list = list()
-        for i in range(2, nrows):
-            rowx = table.row_values(i)
-            file_dict = dict()
-            file_dict["academy"] = rowx[1]
-            file_dict["stu_count"] = rowx[2]
-            file_dict["schedule_count"] = rowx[3]
-            file_dict["delay_count"] = rowx[4]
-            file_dict["fail_count"] = rowx[5]
-            file_dict["time"] = "2019-01-01"
-            file_list.append(file_dict)
-        serializer = self.get_serializer(data=file_list, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-    @excepts
-    @csrf_exempt
-    def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
-        workbook = xlwt.Workbook(encoding='utf-8')
-        worksheet = workbook.add_sheet('worksheet')
-        header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
-        
-        # 标题
-        worksheet.write_merge(0, 0, 0, 5, label='{0}届研究生开题情况统计-按学院'.format(year), style=header_style)
-        
-        # 表头
-        for index, value in enumerate(['序号', '学院', '学生数', '按期开题人数', '延期开题人数', '开题不通过人数']):
-            worksheet.write(1, index, label=value, style=header_style)
-            
-        # 行高
-        tall_style = xlwt.easyxf('font:height 240;')
-        first_row = worksheet.row(1)
-        first_row.set_style(tall_style)
-        
-        datas = OpeningReport.objects.filter(time__year=year).all()
-        data_len = len(datas)
-        for line, data in enumerate(datas):
-            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
-                if index == 0:
-                    worksheet.write(line+2, 0, label=line+1, style=table_center_style)
-                else:
-                    worksheet.write(line+2, index, label=data[value], style=table_center_style)
-        # 合计汇总行
-        for i, value in enumerate([data_len+1, '合计',
-                                   xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
-                                   xlwt.Formula('SUM(D3:D{0})'.format(data_len+2)),
-                                   xlwt.Formula('SUM(E3:E{0})'.format(data_len+2)),
-                                   xlwt.Formula('SUM(F3:F{0})'.format(data_len+2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
-            
-        # 保存
-        workbook.save('opening_report.xls')
-        if os.path.exists(os.path.join(settings.BASE_DIR, 'opening_report.xls')):
-            with open(os.path.join(settings.BASE_DIR, 'opening_report.xls'), 'rb') as excel:
-                response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
-                response['Content-Disposition'] = "attachment;filename={}".format('opening_report.xls')
-            return response
-        else:
-            raise FileNotFoundError
+# # 研究生开题情况统计
+# class OpeningReportList(generics.GenericAPIView):
+#     model = OpeningReport
+#     queryset = OpeningReport.objects.all()
+#     serializer_class = OpeningReportSerializers
+#     pagination_class = None
+#
+#     @excepts
+#     @csrf_exempt
+#     def get(self, request, *args, **kwargs):
+#         queryset = self.filter_queryset(self.get_queryset())
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serializer(page, many=True)
+#         else:
+#             serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     # Excel上传
+#     @excepts
+#     @csrf_exempt
+#     def post(self, request, *args, **kwargs):
+#         file = request.data['file']
+#         data = xlrd.open_workbook(filename=None, file_contents=file.read())
+#         table = data.sheets()[0]
+#         nrows = table.nrows
+#         file_list = list()
+#         for i in range(2, nrows):
+#             rowx = table.row_values(i)
+#             file_dict = dict()
+#             file_dict["academy"] = rowx[1]
+#             file_dict["stu_count"] = rowx[2]
+#             file_dict["schedule_count"] = rowx[3]
+#             file_dict["delay_count"] = rowx[4]
+#             file_dict["fail_count"] = rowx[5]
+#             file_dict["time"] = "2019-01-01"
+#             file_list.append(file_dict)
+#         serializer = self.get_serializer(data=file_list, many=True)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+#
+#     @excepts
+#     @csrf_exempt
+#     def patch(self, request, *args, **kwargs):
+#         year = request.data.get("year", "")
+#         workbook = xlwt.Workbook(encoding='utf-8')
+#         worksheet = workbook.add_sheet('worksheet')
+#         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
+#
+#         # 标题
+#         worksheet.write_merge(0, 0, 0, 5, label='{0}届研究生开题情况统计-按学院'.format(year), style=header_style)
+#
+#         # 表头
+#         for index, value in enumerate(['序号', '学院', '学生数', '按期开题人数', '延期开题人数', '开题不通过人数']):
+#             worksheet.write(1, index, label=value, style=header_style)
+#
+#         # 行高
+#         tall_style = xlwt.easyxf('font:height 240;')
+#         first_row = worksheet.row(1)
+#         first_row.set_style(tall_style)
+#
+#         datas = OpeningReport.objects.filter(time__year=year).all()
+#         data_len = len(datas)
+#         for line, data in enumerate(datas):
+#             for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
+#                 if index == 0:
+#                     worksheet.write(line+2, 0, label=line+1, style=table_center_style)
+#                 else:
+#                     worksheet.write(line+2, index, label=data[value], style=table_center_style)
+#         # 合计汇总行
+#         for i, value in enumerate([data_len+1, '合计',
+#                                    xlwt.Formula('SUM(C3:C{0})'.format(data_len+2)),
+#                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len+2)),
+#                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len+2)),
+#                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len+2))]):
+#             worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+#
+#         # 保存
+#         workbook.save('opening_report.xls')
+#         if os.path.exists(os.path.join(settings.BASE_DIR, 'opening_report.xls')):
+#             with open(os.path.join(settings.BASE_DIR, 'opening_report.xls'), 'rb') as excel:
+#                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
+#                 response['Content-Disposition'] = "attachment;filename={}".format('opening_report.xls')
+#             return response
+#         else:
+#             raise FileNotFoundError
 
 
 # 研究生教育改革成果统计
@@ -483,247 +478,247 @@ class ReformResultsList(generics.GenericAPIView):
             raise FileNotFoundError
 
 
-# 研究生中期考核情况统计
-class MidtermExamsList(generics.GenericAPIView):
-    model = MidtermExams
-    queryset = MidtermExams.objects.all()
-    serializer_class = MidtermExamsSerializers
-    pagination_class = None
-    
-    @excepts
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    # Excel上传
-    @excepts
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        file = request.data['file']
-        data = xlrd.open_workbook(filename=None, file_contents=file.read())
-        table = data.sheets()[0]
-        nrows = table.nrows
-        file_list = list()
-        for i in range(2, nrows):
-            rowx = table.row_values(i)
-            file_dict = dict()
-            file_dict["academy"] = rowx[1]
-            file_dict["stu_count"] = rowx[2]
-            file_dict["schedule_count"] = rowx[3]
-            file_dict["delay_count"] = rowx[4]
-            file_dict["delay_reason"] = rowx[5]
-            file_dict["delay_proportion"] = rowx[6]
-            file_dict["track_count"] = rowx[7]
-            file_dict["track_proportion"] = rowx[8]
-            file_dict["fail_count"] = rowx[9]
-            file_dict["fail_proportion"] = rowx[10]
-            file_dict["time"] = "2019-01-01"
-            file_list.append(file_dict)
-        serializer = self.get_serializer(data=file_list, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-    
-    @excepts
-    @csrf_exempt
-    def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
-        workbook = xlwt.Workbook(encoding='utf-8')
-        worksheet = workbook.add_sheet('worksheet')
-        header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
-        
-        worksheet.write_merge(0, 0, 0, 10, label='{0}届研究生中期考核情况统计'.format(year), style=header_style)
-        # 表头
-        for index, value in enumerate(['序号', '学院', '学生数', '按期考核人数', '延期考核人数', '延期考核原因',
-                                       '延期考核比例', '被跟踪人数', '被跟踪比例', '不合格人数', '不合格比例']):
-            worksheet.write(1, index, label=value, style=header_style)
-            
-        # 行高
-        tall_style = xlwt.easyxf('font:height 240;')
-        first_row = worksheet.row(1)
-        first_row.set_style(tall_style)
-        
-        datas = MidtermExams.objects.filter(time__year=year).all()
-        data_len = len(datas)
-        for line, data in enumerate(datas):
-            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "delay_reason",
-                                           "delay_proportion", "track_count", "track_proportion", "fail_count",
-                                           "fail_proportion"]):
-                if index == 0:
-                    worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
-                else:
-                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
-
-        # 合计汇总行
-        for i, value in enumerate(['合计',
-                                   xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(H3:H{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(J3:J{0})'.format(data_len + 2)),
-                                   xlwt.Formula('SUM(K3:k{0})'.format(data_len + 2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
-
-        # 保存
-        workbook.save('midterm_exams.xls')
-        if os.path.exists(os.path.join(settings.BASE_DIR, 'midterm_exams.xls')):
-            with open(os.path.join(settings.BASE_DIR, 'midterm_exams.xls'), 'rb') as excel:
-                response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
-                response['Content-Disposition'] = "attachment;filename={}".format('midterm_exams.xls')
-            return response
-        else:
-            raise FileNotFoundError
-
-
-# 学位论文质量统计
-class PaperQualityList(generics.GenericAPIView):
-    model = PaperQuality
-    queryset = PaperQuality.objects.all()
-    serializer_class = PaperQualitySerializers
-    pagination_class = None
-    
-    @excepts
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    # Excel上传
-    @excepts
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        file = request.data['file']
-        data = xlrd.open_workbook(filename=None, file_contents=file.read())
-        table = data.sheets()[0]
-        nrows = table.nrows
-        file_list = list()
-        for i in range(2, nrows):
-            rowx = table.row_values(i)
-            file_dict = dict()
-            file_dict["academy"] = rowx[1]
-            file_dict["major"] = rowx[2]
-            file_dict["full_time_count"] = rowx[3]
-            file_dict["delay_count"] = rowx[4]
-            file_dict["delay_reason"] = rowx[5]
-            file_dict["paper_stu_count"] = rowx[6]
-            file_dict["paper_pass_count"] = rowx[7]
-            file_dict["paper_pass_proportion"] = rowx[8]
-            file_dict["paper_fail_count"] = rowx[9]
-            file_dict["paper_fail_proportion"] = rowx[10]
-            file_dict["paper_fifteen_count"] = rowx[11]
-            file_dict["paper_fifteen_proportion"] = rowx[12]
-            file_dict["paper_ten_count"] = rowx[13]
-            file_dict["paper_ten_proportion"] = rowx[14]
-            file_dict["blind_trial_proportion"] = rowx[15]
-            file_dict["blind_trial_count"] = rowx[16]
-            file_dict["reply_count"] = rowx[17]
-            file_dict["evaluation_count"] = rowx[18]
-            file_dict["evaluation_result"] = rowx[19]
-            file_dict["graduate_count"] = rowx[20]
-            file_dict["graduate_proportion"] = rowx[21]
-            file_dict["degree_count"] = rowx[22]
-            file_dict["degree_proportion"] = rowx[23]
-            file_dict["time"] = "2019-01-01"
-            file_list.append(file_dict)
-        serializer = self.get_serializer(data=file_list, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-    
-    @excepts
-    @csrf_exempt
-    def patch(self, request, *args, **kwargs):
-        year = request.data.get("year", "")
-        workbook = xlwt.Workbook(encoding='utf-8')
-        worksheet = workbook.add_sheet('worksheet')
-        header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
-        
-        worksheet.write_merge(0, 0, 0, 10, label='{0}年研究生学位论文质量统计'.format(year), style=header_style)
-        # 表头
-        worksheet.write(1, 0, label='序号', style=header_style)
-        worksheet.write(1, 1, label='学院', style=header_style)
-        worksheet.write(1, 2, label='专业', style=header_style)
-        worksheet.write(1, 3, label='全日制学生数', style=header_style)
-        worksheet.write_merge(1, 1, 4, 5, label='延期', style=header_style)
-        worksheet.write_merge(1, 1, 6, 14, label='论文检测', style=header_style)
-        worksheet.write_merge(1, 1, 15, 16, label='盲审', style=header_style)
-        worksheet.write(1, 17, label='答辩', style=header_style)
-        worksheet.write_merge(1, 1, 18, 19, label='评优', style=header_style)
-        worksheet.write_merge(1, 1, 20, 21, label='毕业情况', style=header_style)
-        worksheet.write_merge(1, 1, 22, 23, label='获学位情况', style=header_style)
-        
-        for index, value in enumerate(['', '', '', '', '人数', '原因', '人数', '一次通过人数', '一次通过率', '不合格人数',
-                                       '不合格占比', '15%以下人数', '15%以下占比', '10%以下人数', '10%以下占比', '比例',
-                                       '未通过人数', '未通过人数', '名额', '评选结果', '毕业人数', '毕业率', '获学位人数',
-                                       '获学位率']):
-            worksheet.write(2, index, label=value, style=header_style)
-        
-        # 行高
-        tall_style = xlwt.easyxf('font:height 240;')
-        first_row = worksheet.row(1)
-        first_row.set_style(tall_style)
-
-        datas = PaperQuality.objects.filter(time__year=year).all()
-        data_len = len(datas)
-        for line, data in enumerate(datas):
-            for index, value in enumerate(["academy", "major", "full_time_count", "delay_count", "delay_reason",
-                                           "paper_stu_count", "paper_pass_count", "paper_pass_proportion",
-                                           "paper_fail_count", "paper_fail_proportion", "paper_fifteen_count",
-                                           "paper_fifteen_proportion", "paper_ten_count", "paper_ten_proportion",
-                                           "blind_trial_proportion", "blind_trial_count", "reply_count",
-                                           "evaluation_count", "evaluation_result", "graduate_count",
-                                           "graduate_proportion", "degree_count", "degree_proportion"]):
-                if index == 0:
-                    worksheet.write(line + 3, 0, label=line + 1, style=table_center_style)
-                else:
-                    worksheet.write(line + 3, index, label=data[value], style=table_center_style)
-
-        # 合计汇总行
-        for i, value in enumerate(['合计',
-                                   xlwt.Formula('SUM(C4:C{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(D4:D{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(E4:E{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(F4:F{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(G4:G{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(H4:H{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(I4:I{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(J4:J{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(K4:k{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(L4:L{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(M4:M{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(N4:N{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(O4:O{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(P4:P{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(Q4:Q{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(R4:R{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(S4:S{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(T4:T{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(U4:U{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(V4:V{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(W4:W{0})'.format(data_len + 3)),
-                                   xlwt.Formula('SUM(X4:X{0})'.format(data_len + 3))]):
-            worksheet.write(data_len + 4, i, label=value, style=table_center_style)
-
-        # 保存
-        workbook.save('paper_quality.xls')
-        if os.path.exists(os.path.join(settings.BASE_DIR, 'paper_quality.xls')):
-            with open(os.path.join(settings.BASE_DIR, 'paper_quality.xls'), 'rb') as excel:
-                response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
-                response['Content-Disposition'] = "attachment;filename={}".format('paper_quality.xls')
-            return response
-        else:
-            raise FileNotFoundError
+# # 研究生中期考核情况统计
+# class MidtermExamsList(generics.GenericAPIView):
+#     model = MidtermExams
+#     queryset = MidtermExams.objects.all()
+#     serializer_class = MidtermExamsSerializers
+#     pagination_class = None
+#
+#     @excepts
+#     @csrf_exempt
+#     def get(self, request, *args, **kwargs):
+#         queryset = self.filter_queryset(self.get_queryset())
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serializer(page, many=True)
+#         else:
+#             serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     # Excel上传
+#     @excepts
+#     @csrf_exempt
+#     def post(self, request, *args, **kwargs):
+#         file = request.data['file']
+#         data = xlrd.open_workbook(filename=None, file_contents=file.read())
+#         table = data.sheets()[0]
+#         nrows = table.nrows
+#         file_list = list()
+#         for i in range(2, nrows):
+#             rowx = table.row_values(i)
+#             file_dict = dict()
+#             file_dict["academy"] = rowx[1]
+#             file_dict["stu_count"] = rowx[2]
+#             file_dict["schedule_count"] = rowx[3]
+#             file_dict["delay_count"] = rowx[4]
+#             file_dict["delay_reason"] = rowx[5]
+#             file_dict["delay_proportion"] = rowx[6]
+#             file_dict["track_count"] = rowx[7]
+#             file_dict["track_proportion"] = rowx[8]
+#             file_dict["fail_count"] = rowx[9]
+#             file_dict["fail_proportion"] = rowx[10]
+#             file_dict["time"] = "2019-01-01"
+#             file_list.append(file_dict)
+#         serializer = self.get_serializer(data=file_list, many=True)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+#
+#     @excepts
+#     @csrf_exempt
+#     def patch(self, request, *args, **kwargs):
+#         year = request.data.get("year", "")
+#         workbook = xlwt.Workbook(encoding='utf-8')
+#         worksheet = workbook.add_sheet('worksheet')
+#         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
+#
+#         worksheet.write_merge(0, 0, 0, 10, label='{0}届研究生中期考核情况统计'.format(year), style=header_style)
+#         # 表头
+#         for index, value in enumerate(['序号', '学院', '学生数', '按期考核人数', '延期考核人数', '延期考核原因',
+#                                        '延期考核比例', '被跟踪人数', '被跟踪比例', '不合格人数', '不合格比例']):
+#             worksheet.write(1, index, label=value, style=header_style)
+#
+#         # 行高
+#         tall_style = xlwt.easyxf('font:height 240;')
+#         first_row = worksheet.row(1)
+#         first_row.set_style(tall_style)
+#
+#         datas = MidtermExams.objects.filter(time__year=year).all()
+#         data_len = len(datas)
+#         for line, data in enumerate(datas):
+#             for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "delay_reason",
+#                                            "delay_proportion", "track_count", "track_proportion", "fail_count",
+#                                            "fail_proportion"]):
+#                 if index == 0:
+#                     worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
+#                 else:
+#                     worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+#
+#         # 合计汇总行
+#         for i, value in enumerate(['合计',
+#                                    xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(H3:H{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(J3:J{0})'.format(data_len + 2)),
+#                                    xlwt.Formula('SUM(K3:k{0})'.format(data_len + 2))]):
+#             worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+#
+#         # 保存
+#         workbook.save('midterm_exams.xls')
+#         if os.path.exists(os.path.join(settings.BASE_DIR, 'midterm_exams.xls')):
+#             with open(os.path.join(settings.BASE_DIR, 'midterm_exams.xls'), 'rb') as excel:
+#                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
+#                 response['Content-Disposition'] = "attachment;filename={}".format('midterm_exams.xls')
+#             return response
+#         else:
+#             raise FileNotFoundError
+#
+#
+# # 学位论文质量统计
+# class PaperQualityList(generics.GenericAPIView):
+#     model = PaperQuality
+#     queryset = PaperQuality.objects.all()
+#     serializer_class = PaperQualitySerializers
+#     pagination_class = None
+#
+#     @excepts
+#     @csrf_exempt
+#     def get(self, request, *args, **kwargs):
+#         queryset = self.filter_queryset(self.get_queryset())
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serializer(page, many=True)
+#         else:
+#             serializer = self.get_serializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     # Excel上传
+#     @excepts
+#     @csrf_exempt
+#     def post(self, request, *args, **kwargs):
+#         file = request.data['file']
+#         data = xlrd.open_workbook(filename=None, file_contents=file.read())
+#         table = data.sheets()[0]
+#         nrows = table.nrows
+#         file_list = list()
+#         for i in range(2, nrows):
+#             rowx = table.row_values(i)
+#             file_dict = dict()
+#             file_dict["academy"] = rowx[1]
+#             file_dict["major"] = rowx[2]
+#             file_dict["full_time_count"] = rowx[3]
+#             file_dict["delay_count"] = rowx[4]
+#             file_dict["delay_reason"] = rowx[5]
+#             file_dict["paper_stu_count"] = rowx[6]
+#             file_dict["paper_pass_count"] = rowx[7]
+#             file_dict["paper_pass_proportion"] = rowx[8]
+#             file_dict["paper_fail_count"] = rowx[9]
+#             file_dict["paper_fail_proportion"] = rowx[10]
+#             file_dict["paper_fifteen_count"] = rowx[11]
+#             file_dict["paper_fifteen_proportion"] = rowx[12]
+#             file_dict["paper_ten_count"] = rowx[13]
+#             file_dict["paper_ten_proportion"] = rowx[14]
+#             file_dict["blind_trial_proportion"] = rowx[15]
+#             file_dict["blind_trial_count"] = rowx[16]
+#             file_dict["reply_count"] = rowx[17]
+#             file_dict["evaluation_count"] = rowx[18]
+#             file_dict["evaluation_result"] = rowx[19]
+#             file_dict["graduate_count"] = rowx[20]
+#             file_dict["graduate_proportion"] = rowx[21]
+#             file_dict["degree_count"] = rowx[22]
+#             file_dict["degree_proportion"] = rowx[23]
+#             file_dict["time"] = "2019-01-01"
+#             file_list.append(file_dict)
+#         serializer = self.get_serializer(data=file_list, many=True)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+#
+#     @excepts
+#     @csrf_exempt
+#     def patch(self, request, *args, **kwargs):
+#         year = request.data.get("year", "")
+#         workbook = xlwt.Workbook(encoding='utf-8')
+#         worksheet = workbook.add_sheet('worksheet')
+#         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
+#
+#         worksheet.write_merge(0, 0, 0, 10, label='{0}年研究生学位论文质量统计'.format(year), style=header_style)
+#         # 表头
+#         worksheet.write(1, 0, label='序号', style=header_style)
+#         worksheet.write(1, 1, label='学院', style=header_style)
+#         worksheet.write(1, 2, label='专业', style=header_style)
+#         worksheet.write(1, 3, label='全日制学生数', style=header_style)
+#         worksheet.write_merge(1, 1, 4, 5, label='延期', style=header_style)
+#         worksheet.write_merge(1, 1, 6, 14, label='论文检测', style=header_style)
+#         worksheet.write_merge(1, 1, 15, 16, label='盲审', style=header_style)
+#         worksheet.write(1, 17, label='答辩', style=header_style)
+#         worksheet.write_merge(1, 1, 18, 19, label='评优', style=header_style)
+#         worksheet.write_merge(1, 1, 20, 21, label='毕业情况', style=header_style)
+#         worksheet.write_merge(1, 1, 22, 23, label='获学位情况', style=header_style)
+#
+#         for index, value in enumerate(['', '', '', '', '人数', '原因', '人数', '一次通过人数', '一次通过率', '不合格人数',
+#                                        '不合格占比', '15%以下人数', '15%以下占比', '10%以下人数', '10%以下占比', '比例',
+#                                        '未通过人数', '未通过人数', '名额', '评选结果', '毕业人数', '毕业率', '获学位人数',
+#                                        '获学位率']):
+#             worksheet.write(2, index, label=value, style=header_style)
+#
+#         # 行高
+#         tall_style = xlwt.easyxf('font:height 240;')
+#         first_row = worksheet.row(1)
+#         first_row.set_style(tall_style)
+#
+#         datas = PaperQuality.objects.filter(time__year=year).all()
+#         data_len = len(datas)
+#         for line, data in enumerate(datas):
+#             for index, value in enumerate(["academy", "major", "full_time_count", "delay_count", "delay_reason",
+#                                            "paper_stu_count", "paper_pass_count", "paper_pass_proportion",
+#                                            "paper_fail_count", "paper_fail_proportion", "paper_fifteen_count",
+#                                            "paper_fifteen_proportion", "paper_ten_count", "paper_ten_proportion",
+#                                            "blind_trial_proportion", "blind_trial_count", "reply_count",
+#                                            "evaluation_count", "evaluation_result", "graduate_count",
+#                                            "graduate_proportion", "degree_count", "degree_proportion"]):
+#                 if index == 0:
+#                     worksheet.write(line + 3, 0, label=line + 1, style=table_center_style)
+#                 else:
+#                     worksheet.write(line + 3, index, label=data[value], style=table_center_style)
+#
+#         # 合计汇总行
+#         for i, value in enumerate(['合计',
+#                                    xlwt.Formula('SUM(C4:C{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(D4:D{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(E4:E{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(F4:F{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(G4:G{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(H4:H{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(I4:I{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(J4:J{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(K4:k{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(L4:L{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(M4:M{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(N4:N{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(O4:O{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(P4:P{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(Q4:Q{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(R4:R{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(S4:S{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(T4:T{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(U4:U{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(V4:V{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(W4:W{0})'.format(data_len + 3)),
+#                                    xlwt.Formula('SUM(X4:X{0})'.format(data_len + 3))]):
+#             worksheet.write(data_len + 4, i, label=value, style=table_center_style)
+#
+#         # 保存
+#         workbook.save('paper_quality.xls')
+#         if os.path.exists(os.path.join(settings.BASE_DIR, 'paper_quality.xls')):
+#             with open(os.path.join(settings.BASE_DIR, 'paper_quality.xls'), 'rb') as excel:
+#                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
+#                 response['Content-Disposition'] = "attachment;filename={}".format('paper_quality.xls')
+#             return response
+#         else:
+#             raise FileNotFoundError
