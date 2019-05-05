@@ -11,6 +11,7 @@ from django.apps import AppConfig
 
 
 class AcademyConfig(AppConfig):
-    name = 'contrib.academy'
-    verbose_name = '学院管理系统'
+    name = 'contrib.colleges'
+    label = '学院管理'
+    verbose_name = '学院管理'
     verbose_name_plural = verbose_name
