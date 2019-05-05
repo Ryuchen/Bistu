@@ -43,6 +43,12 @@ class StatusChoice(Enum):
     S3 = "留校"
 
 
+class MidCheckChoice(Enum):
+    S1 = "合格"
+    S2 = "跟踪"
+    S3 = "不合格"
+
+
 class StudentType(Enum):
     S1 = "硕士"
     S2 = "博士"
@@ -97,3 +103,13 @@ class MajorDegree(Enum):
     D11 = "军事学"
     D12 = "管理学"
     D13 = "艺术学"
+
+
+class ReformType(Enum):
+    RT1 = "研究生教改项目立项"
+    RT2 = "研究生教改论文发表"
+    RT3 = "研究生课程教材出版"
+    RT4 = "研究生教育相关获奖"
+    RT5 = "精品/在线课程建设"
+    RT6 = "研究生实践基地建设"
+    RT7 = "研究生国际交流项目"
