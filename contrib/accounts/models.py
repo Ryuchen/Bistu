@@ -154,10 +154,10 @@ class MidCheckReport(models.Model):
     中期考核统计模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    time = models.DateField(null=False, default='2019', help_text="年份")
+    time = models.DateField(null=False, default='2019-01-01', help_text="年份")
     # stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")  # 根据学生查处来
     schedule_count = models.IntegerField(null=False, default=0, help_text="按期考核人数")
-    pass_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
+    pass_count = models.IntegerField(null=False, default=0, help_text="通过考核人数")
     pass_proportion = models.IntegerField(null=False, default=0, help_text="延期考核比例")
     delay_count = models.IntegerField(null=False, default=0, help_text="延期考核人数")
     # delay_reason = models.TextField(null=False, default="", help_text="延期考核原因")  # 每个延期考核的学生都有自己的延期原因
