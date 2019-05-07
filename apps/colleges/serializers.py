@@ -10,7 +10,7 @@
 from rest_framework import serializers
 from apps.accounts.serializers import UserSerializers
 from contrib.colleges.models import Major, Academy, Research
-from contrib.colleges.models import ReformResults
+from contrib.colleges.models import ReformResults, Reform
 
 
 class ResearchSerializers(serializers.ModelSerializer):
@@ -56,12 +56,12 @@ class AcademySerializers(serializers.ModelSerializer):
                   'aca_href', 'aca_brief', 'aca_user', 'majors', 'student_count')
 
 
-# class OpeningReportSerializers(serializers.ModelSerializer):
-#     """ 题情况统计 """
-#
-#     class Meta:
-#         model = OpeningReport
-#         fields = '__all__'
+class ReformSerializers(serializers.ModelSerializer):
+    """ 研究生教育改革成果记录 """
+
+    class Meta:
+        model = Reform
+        fields = '__all__'
 
 
 class ReformResultsSerializers(serializers.ModelSerializer):
@@ -71,18 +71,3 @@ class ReformResultsSerializers(serializers.ModelSerializer):
         model = ReformResults
         fields = '__all__'
 
-
-# class MidtermExamsSerializers(serializers.ModelSerializer):
-#     """ 研究生中期考核情况统计 """
-#
-#     class Meta:
-#         model = MidtermExams
-#         fields = '__all__'
-#
-#
-# class PaperQualitySerializers(serializers.ModelSerializer):
-#     """ 研究生学位论文质量统计 """
-#
-#     class Meta:
-#         model = PaperQuality
-#         fields = '__all__'

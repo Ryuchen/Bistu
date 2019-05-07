@@ -22,13 +22,14 @@ class Thesis(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
     the_title = models.CharField(max_length=128, null=False, help_text="课题名称")
     the_start_time = models.DateField(help_text="开题时间")
+    the_start_delay = models.BooleanField(null=False, default=False, help_text="开题是否延期")
     the_start_result = models.BooleanField(null=False, default=True, help_text="开题结果")
     # the_exam_count = models.IntegerField(null=False, default=0, help_text="论文查重次数")  # 这个数据应该从查重那张表统计出来
     the_is_delay = models.BooleanField(default=False, help_text="是否延期")
     the_delay_reason = models.TextField(null=True, help_text="延期原因")
     the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
     the_final_score = models.BooleanField(default=False, help_text="答辩成绩")  # 只存通过和不通过两种情况
-    student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, help_text="课题学生")
+    student = models.ForeignKey(Student, null=True, related_name='thesis_student', on_delete=models.SET_NULL, help_text="课题学生")
 
     def __str__(self):
         return "论文课题：{0}".format(self.the_title)
