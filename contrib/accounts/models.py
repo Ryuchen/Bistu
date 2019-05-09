@@ -100,7 +100,7 @@ class Student(models.Model):
     学生模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user')
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user', verbose_name="账户信息")
     stu_name = models.CharField(null=True, max_length=64, verbose_name="学生名称")
     stu_number = models.IntegerField(null=True, unique=True, default='20190101', verbose_name="学号")
     stu_avatar = models.ImageField(null=True, upload_to="students", default='default.png', verbose_name="学生照片")
