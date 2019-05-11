@@ -224,10 +224,10 @@ class Command(BaseCommand):
         research_list = []
         major_list = []
         academy_list = []
-        for _ in AcademiesList:
+        for item in AcademiesList:
             academy = Academy.objects.create(
                 aca_nickname=''.join(random.sample(string.ascii_letters + string.digits, 8)),
-                aca_cname=_,
+                aca_cname=item,
                 aca_ename=''.join(random.sample(string.ascii_letters + string.digits, 8)),
                 aca_code=random.randint(100, 999),
                 aca_phone=self.create_phone(),
@@ -300,7 +300,7 @@ class Command(BaseCommand):
                     academy=academy
                 )
             academy.save()
-            self.stdout.write(self.style.SUCCESS('生成{}相关数据'.format(_)))
+            self.stdout.write(self.style.SUCCESS('生成{}相关数据'.format(item)))
             academy_list.append(academy)
         self.stdout.write(self.style.NOTICE('学院相关数据生成完毕~~~~~~'))
 
@@ -344,6 +344,7 @@ class Command(BaseCommand):
         entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
             _student_list = []
+            _thesis_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
             if (2019 - entrance_year.year) >= 3:
                 graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
@@ -383,7 +384,6 @@ class Command(BaseCommand):
                     stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
                     stu_telephone=self.create_telephone(),
                     stu_status=fake.random.choice([tag.value for tag in StatusChoice]),
-                    stu_class='信管1201'
                 )
                 student.user = student_list.pop()
                 student.stu_name = student.user.first_name + student.user.last_name
@@ -394,13 +394,16 @@ class Command(BaseCommand):
                 stu_major = fake.random.choice(stu_academy.majors.all())
                 student.major = stu_major  # 专业
                 student.research = fake.random.choice(stu_major.research.all())
-                student.stu_class = Class.objects.get_or_create(
+                Class.objects.get_or_create(
                     cla_name=stu_major.maj_name,
-                    cla_code='{}0{}}'.format(entrance_year[-2:], fake.random.randint(1, 3)),
+                    cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3)),
                     major=stu_major
                 )  # 班级
 
-                # 确定该学生今年是否需要准备论文
+                student.stu_class = Class.objects.filter(
+                    cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3))).first()
+
+                # 入学在2018年之前的都需要有对应的中期考核成绩
                 if entrance_year.year < 2018:
 
                     # 中期考核确认状态
@@ -410,47 +413,61 @@ class Command(BaseCommand):
 
                     student.stu_mid_check = fake.random.choice([tag.value for tag in MidCheckChoice])  # 中期考核成绩
 
-                    # 确定该学生是否已经毕业
-                    if graduate_year:
+                    if entrance_year.year < 2017:
                         # 生成学生论文对象
-                        thesis = Thesis(
-                            the_title="关于{0}的研究".format(student.research.res_name),
-                            the_start_time=graduate_year.replace((graduate_year - datetime.timedelta(weeks=40))),
-                            # 毕业前10个月论文开题
-                            the_start_result=fake.random.choice([True, False]),  # 课题开题结果
-                            the_final_score=True if student.stu_gain_diploma else False
-                        )
-                        if not thesis.the_start_result:
-                            thesis.the_is_delay = True
+                        if graduate_year:
+                            # 毕业前40周论文开题
+                            thesis = Thesis(
+                                the_title="关于{0}的研究".format(student.research.res_name),
+                                the_start_time=(graduate_year - datetime.timedelta(weeks=40)),
+                                the_start_result=fake.random.choice([True, False]),  # 课题开题结果
+                                the_final_score=True if student.stu_gain_diploma else False,  # 已经毕业的才能有毕设最终成绩
+                            )
+                        else:
+                            # 入学后92周论文开题
+                            thesis = Thesis(
+                                the_title="关于{0}的研究".format(student.research.res_name),
+                                the_start_time=(entrance_year + datetime.timedelta(weeks=92)),
+                                the_start_result=fake.random.choice([True, False]),  # 课题开题结果
+                            )
+
+                        thesis.the_is_delay = fake.random.choice([True, False])  # 毕设开题是否延期
+                        if thesis.the_is_delay:
                             thesis.the_delay_reason = fake.sentence()
                             thesis.the_is_superb = False
                         else:
                             if thesis.the_final_score:
                                 thesis.the_is_delay = False
-                                thesis.the_delay_reason = ''
                                 thesis.the_is_superb = fake.random.choice([True, False])
-                            else:
-                                thesis.the_is_delay = fake.random.choice([True, False])
-                                if thesis.the_is_delay:
-                                    thesis.the_delay_reason = fake.sentence()
-                                thesis.the_is_superb = False
 
                         thesis.student = student
-                        thesis.save()
+                        _thesis_list.append(thesis)
 
                         # 生成论文查重次数
                         for _ in range(random.randint(1, 3)):
-                            ThesisPlaCheck.objects.create(
-                                pla_date=graduate_year.replace(month=1, day=random.randint(1, 30)),
+                            placheck = ThesisPlaCheck.objects.create(
+                                pla_date=entrance_year.replace(year=entrance_year.year + 1, month=9,
+                                                               day=random.randint(1, 30)),
                                 pla_result=fake.random.choice([True, False]),
                                 pla_rate=(fake.random.randint(1, 30) / 100),
-                                thesis=thesis
                             )
+                            placheck.thesis = thesis
+
+                        # 生成论文盲审成绩
+                        for _ in range(random.randint(1, 3)):
+                            blindcheck = ThesisBlindReview.objects.create(
+                                bli_date=entrance_year.replace(year=entrance_year.year + 1, month=12,
+                                                               day=random.randint(1, 30)),
+                                bli_score=fake.random.choice(['合格', '不合格', '再审查']),
+
+                            )
+                            blindcheck.thesis = thesis
 
                         student.stu_is_superb = thesis.the_is_superb
 
                 _student_list.append(student)
             Student.objects.bulk_create(_student_list)
+            Thesis.objects.bulk_create(_thesis_list)
         self.stdout.write(self.style.NOTICE('学生相关数据生成完毕~~~~~~'))
 
     def handle(self, *args, **options):

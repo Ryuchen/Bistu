@@ -19,16 +19,16 @@ class Thesis(models.Model):
     """
     毕业论文模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    the_title = models.CharField(max_length=128, null=False, help_text="课题名称")
-    the_start_time = models.DateField(help_text="开题时间")
-    the_start_result = models.BooleanField(null=False, default=True, help_text="开题结果")
-    # the_exam_count = models.IntegerField(null=False, default=0, help_text="论文查重次数")  # 这个数据应该从查重那张表统计出来
-    the_is_delay = models.BooleanField(default=False, help_text="是否延期")
-    the_delay_reason = models.TextField(null=True, help_text="延期原因")
-    the_is_superb = models.BooleanField(default=False, help_text="是否优秀论文")
-    the_final_score = models.BooleanField(default=False, help_text="答辩成绩")  # 只存通过和不通过两种情况
-    student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, help_text="课题学生")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    the_title = models.CharField(max_length=128, null=False, verbose_name="课题名称")
+    the_start_time = models.DateField(verbose_name="开题时间")
+    the_start_result = models.BooleanField(null=False, default=True, verbose_name="开题结果")
+    # the_exam_count = models.IntegerField(null=False, default=0, verbose_name="论文查重次数")  # 这个数据应该从查重那张表统计出来
+    the_is_delay = models.BooleanField(default=False, verbose_name="是否延期")
+    the_delay_reason = models.TextField(null=True, verbose_name="延期原因")
+    the_is_superb = models.BooleanField(default=False, verbose_name="是否优秀论文")
+    the_final_score = models.BooleanField(default=False, verbose_name="答辩成绩")  # 只存通过和不通过两种情况
+    student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, verbose_name="课题学生")
 
     def __str__(self):
         return "论文课题：{0}".format(self.the_title)
@@ -50,11 +50,11 @@ class ThesisPlaCheck(models.Model):
     """
     论文查重模型 Pla = Plagiarism
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    pla_date = models.DateField(null=False, help_text="查重时间")
-    pla_result = models.CharField(max_length=128, null=False, help_text="查重结果")
-    pla_rate = models.CharField(max_length=128, null=False, help_text="重复率")
-    thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, help_text="论文课题")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    pla_date = models.DateField(null=False, verbose_name="查重时间")
+    pla_result = models.CharField(max_length=128, null=False, verbose_name="查重结果")
+    pla_rate = models.CharField(max_length=128, null=False, verbose_name="重复率")
+    thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
 
     def __str__(self):
         return "论文查重：{0}".format(self.thesis.the_title)
@@ -76,10 +76,10 @@ class ThesisBlindReview(models.Model):
     """
     论文盲审模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    bli_date = models.DateField(null=False, help_text="盲审时间")
-    bli_score = models.CharField(max_length=64, help_text="盲审结果")
-    thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, help_text="论文课题")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    bli_date = models.DateField(null=False, verbose_name="盲审时间")
+    bli_score = models.CharField(max_length=64, verbose_name="盲审结果")
+    thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
 
     def __str__(self):
         return "论文盲审：{0}".format(self.thesis.the_title)
@@ -101,13 +101,13 @@ class ThesisOpenReport(models.Model):
     """
     开题统计模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    time = models.DateField(null=False, default='2019', help_text="年份")
-    stu_count = models.IntegerField(null=False, default=0, help_text="学生数量")
-    schedule_count = models.IntegerField(null=False, default=0, help_text="按期开题人数")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期开题人数")
-    fail_count = models.IntegerField(null=False, default=0, help_text="开题不通过人数")
-    academy = models.ForeignKey(Academy, null=True, related_name='otr_academy', on_delete=models.SET_NULL, help_text="学院名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    time = models.DateField(null=False, default='2019', verbose_name="年份")
+    stu_count = models.IntegerField(null=False, default=0, verbose_name="学生数量")
+    schedule_count = models.IntegerField(null=False, default=0, verbose_name="按期开题人数")
+    delay_count = models.IntegerField(null=False, default=0, verbose_name="延期开题人数")
+    fail_count = models.IntegerField(null=False, default=0, verbose_name="开题不通过人数")
+    academy = models.ForeignKey(Academy, null=True, related_name='otr_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
 
     class Meta:
         db_table = 'thesis_open_report'
@@ -126,31 +126,31 @@ class ThesisQualityReport(models.Model):
     """
     论文质量统计模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, help_text="唯一标识ID")
-    time = models.DateField(null=False, default='2019', help_text="年份")
-    full_time_count = models.IntegerField(null=False, default=0, help_text="全日制学生数量")
-    delay_count = models.IntegerField(null=False, default=0, help_text="延期人数")
-    delay_reason = models.TextField(null=False, default="", help_text="延期原因")
-    paper_stu_count = models.IntegerField(null=False, default=0, help_text="论文检测人数")
-    paper_pass_count = models.IntegerField(null=False, default=0, help_text="论文检测结果一次通过人数")
-    paper_pass_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果一次通过率")
-    paper_fail_count = models.IntegerField(null=False, default=0, help_text="论文检测结果不合格人数")
-    paper_fail_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果不合格占比")
-    paper_fifteen_count = models.IntegerField(null=False, default=0, help_text="论文检测结果15%以下人数")
-    paper_fifteen_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果15%以下占比")
-    paper_ten_count = models.IntegerField(null=False, default=0, help_text="论文检测结果10%以下人数")
-    paper_ten_proportion = models.IntegerField(null=False, default=0, help_text="论文检测结果10%以下占比")
-    blind_trial_proportion = models.IntegerField(null=False, default=0, help_text="盲审比例")
-    blind_trial_count = models.IntegerField(null=False, default=0, help_text="盲审未通过人数")
-    reply_count = models.IntegerField(null=False, default=0, help_text="答辩未通过人数")
-    evaluation_count = models.IntegerField(null=False, default=0, help_text="评优名额")
-    evaluation_result = models.IntegerField(null=False, default=0, help_text="评优评选结果")
-    graduate_count = models.IntegerField(null=False, default=0, help_text="毕业人数")
-    graduate_proportion = models.IntegerField(null=False, default=0, help_text="毕业率")
-    degree_count = models.IntegerField(null=False, default=0, help_text="获学位人数")
-    degree_proportion = models.IntegerField(null=False, default=0, help_text="获学位率")
-    major = models.ForeignKey(Major, null=True, related_name='major', on_delete=models.SET_NULL, help_text="学科专业")
-    academy = models.ForeignKey(Academy, null=True, related_name='tq_academy', on_delete=models.SET_NULL, help_text="学院名称")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    time = models.DateField(null=False, default='2019', verbose_name="年份")
+    full_time_count = models.IntegerField(null=False, default=0, verbose_name="全日制学生数量")
+    delay_count = models.IntegerField(null=False, default=0, verbose_name="延期人数")
+    delay_reason = models.TextField(null=False, default="", verbose_name="延期原因")
+    paper_stu_count = models.IntegerField(null=False, default=0, verbose_name="论文检测人数")
+    paper_pass_count = models.IntegerField(null=False, default=0, verbose_name="论文检测结果一次通过人数")
+    paper_pass_proportion = models.IntegerField(null=False, default=0, verbose_name="论文检测结果一次通过率")
+    paper_fail_count = models.IntegerField(null=False, default=0, verbose_name="论文检测结果不合格人数")
+    paper_fail_proportion = models.IntegerField(null=False, default=0, verbose_name="论文检测结果不合格占比")
+    paper_fifteen_count = models.IntegerField(null=False, default=0, verbose_name="论文检测结果15%以下人数")
+    paper_fifteen_proportion = models.IntegerField(null=False, default=0, verbose_name="论文检测结果15%以下占比")
+    paper_ten_count = models.IntegerField(null=False, default=0, verbose_name="论文检测结果10%以下人数")
+    paper_ten_proportion = models.IntegerField(null=False, default=0, verbose_name="论文检测结果10%以下占比")
+    blind_trial_proportion = models.IntegerField(null=False, default=0, verbose_name="盲审比例")
+    blind_trial_count = models.IntegerField(null=False, default=0, verbose_name="盲审未通过人数")
+    reply_count = models.IntegerField(null=False, default=0, verbose_name="答辩未通过人数")
+    evaluation_count = models.IntegerField(null=False, default=0, verbose_name="评优名额")
+    evaluation_result = models.IntegerField(null=False, default=0, verbose_name="评优评选结果")
+    graduate_count = models.IntegerField(null=False, default=0, verbose_name="毕业人数")
+    graduate_proportion = models.IntegerField(null=False, default=0, verbose_name="毕业率")
+    degree_count = models.IntegerField(null=False, default=0, verbose_name="获学位人数")
+    degree_proportion = models.IntegerField(null=False, default=0, verbose_name="获学位率")
+    major = models.ForeignKey(Major, null=True, related_name='major', on_delete=models.SET_NULL, verbose_name="学科专业")
+    academy = models.ForeignKey(Academy, null=True, related_name='tq_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
 
     class Meta:
         db_table = 'thesis_quality_report'
