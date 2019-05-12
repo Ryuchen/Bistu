@@ -23,7 +23,7 @@ class Research(models.Model):
     res_name = models.CharField(max_length=128, null=True, verbose_name="研究方向")
 
     def __str__(self):
-        return self.res_name
+        return '研究方向: {0}'.format(self.res_name)
 
     class Meta:
         db_table = 'research'
@@ -48,13 +48,20 @@ class Major(models.Model):
     maj_type = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in MajorType], verbose_name="学科类型")
     maj_first = models.BooleanField(verbose_name="是否一级学科")
     maj_second = models.BooleanField(verbose_name="是否二级学科")
-    maj_first_uuid = models.UUIDField(null=True, verbose_name="所属一级学科")
     maj_setup_time = models.DateField(verbose_name="获批时间")
     maj_degree = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in MajorDegree], verbose_name="学位类型")
     research = models.ManyToManyField(Research, related_name='research', verbose_name="科研方向")
 
+    def get_major_type(self):
+        return self.maj_type
+    get_major_type.short_description = '学科类型'
+
+    def get_major_degree(self):
+        return self.maj_degree
+    get_major_degree.short_description = '学位类型'
+
     def __str__(self):
-        return str(self.maj_code) + self.maj_name
+        return '专业编码: {0} 专业名称: {1}'.format(self.maj_code, self.maj_name)
 
     class Meta:
         db_table = 'major'
@@ -79,7 +86,7 @@ class Class(models.Model):
     major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL, verbose_name="专业名称")
 
     def __str__(self):
-        return "{0} => {1}{2}  ".format(self.major.maj_name, self.cla_name, self.cla_code)
+        return "专业名称: {0} => {1}{2}  ".format(self.major.maj_name, self.cla_name, self.cla_code)
 
     class Meta:
         db_table = 'classes'
