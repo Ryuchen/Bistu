@@ -72,7 +72,7 @@ class EnrollmentCategory(Enum):
     E2 = "非定向"
 
 
-class SpecialProgram(Enum):
+class SpecialProgramChoice(Enum):
     S1 = '无'
     S2 = '少数民族高层次骨干计划'
     S3 = '强军计划'

@@ -105,9 +105,7 @@ class Command(BaseCommand):
         day = fake.random.choice([i for i in range(1, 29)])
         return entrance_year.replace(year=year, month=month, day=day).strftime("%Y-%m-%d")
 
-    def fake_data(self):
-        fake = Faker('zh_CN')
-
+    def clear_all_data(self):
         self.stdout.write(self.style.NOTICE('清除测试用的假数据~~~~~~'))
         # 清除用户相关的假数据
         Education.objects.all().delete()
@@ -136,6 +134,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("User/Group/Permission 相关内容清除完毕！"))
         self.stdout.write(self.style.NOTICE('清除完毕！'))
 
+    def fake_data(self):
+        self.clear_all_data()
+        fake = Faker('zh_CN')
         self.stdout.write(self.style.NOTICE('开始生成测试使用的假数据~~~~~~'))
         permissions = Permission.objects.all()
 
@@ -240,12 +241,12 @@ class Command(BaseCommand):
             academy.aca_avatar.save(avatar_name, File(
                 open(os.path.join(settings.MEDIA_ROOT, "avatar", fake.random.choice(Avatars)), "rb")))
 
-            maj_degree = fake.random.choice([tag.value for tag in MajorDegree])
+            maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(2, 5)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(AcademyOfDegree),
                     maj_code=random.randint(10000, 99999),
-                    maj_type=fake.random.choice([tag.value for tag in MajorType]),
+                    maj_type=fake.random.choice([tag.name for tag in MajorType]),
                     maj_first=fake.random.choice([True, False]),
                     maj_second=fake.random.choice([True, False]),
                     maj_setup_time=fake.date(),
@@ -257,12 +258,12 @@ class Command(BaseCommand):
                     major.research.add(research)
                 academy.majors.add(major)
 
-            maj_degree = fake.random.choice([tag.value for tag in MajorDegree])
+            maj_degree = fake.random.choice([tag.name for tag in MajorDegree])
             for _ in range(random.randint(1, 3)):
                 major = Major.objects.create(
                     maj_name=fake.random.choice(ProfessionalOfDegree),
                     maj_code=random.randint(10000, 99999),
-                    maj_type=fake.random.choice([tag.value for tag in MajorType]),
+                    maj_type=fake.random.choice([tag.name for tag in MajorType]),
                     maj_first=fake.random.choice([True, False]),
                     maj_second=fake.random.choice([True, False]),
                     maj_setup_time=fake.date(),
@@ -278,7 +279,7 @@ class Command(BaseCommand):
             for _ in range(10):
                 reforms_data = []
                 reform_time = datetime.datetime.now().replace(year=(2019 - _)).year
-                for reform in [tag.value for tag in ReformType]:
+                for reform in [tag.name for tag in ReformType]:
                     counts = random.randint(10, 30)
                     reforms_data.append(counts)
                     for count in range(counts):
@@ -318,14 +319,14 @@ class Command(BaseCommand):
 
             teacher = Tutor(
                 tut_number=random.randint(197901010000, 201901010000),
-                tut_gender=fake.random.choice([tag.value for tag in GenderChoice]),
-                tut_title=fake.random.choice([tag.value for tag in TitleChoice]),
+                tut_gender=fake.random.choice([tag.name for tag in GenderChoice]),
+                tut_title=fake.random.choice([tag.name for tag in TitleChoice]),
                 tut_cardID=self.create_card_id(),
                 tut_birth_day=fake.date_of_birth(minimum_age=32, maximum_age=65),
                 tut_entry_day=fake.date(),
-                tut_political=fake.random.choice([tag.value for tag in PoliticalChoice]),
+                tut_political=fake.random.choice([tag.name for tag in PoliticalChoice]),
                 tut_telephone=self.create_telephone(),
-                tut_degree=fake.random.choice([tag.value for tag in DegreeChoice]),
+                tut_degree=fake.random.choice([tag.name for tag in DegreeChoice]),
             )
             avatar_name = fake.random.choice(Avatars)
             teacher.tut_avatar.save(avatar_name, File(
@@ -354,7 +355,7 @@ class Command(BaseCommand):
                 student_num += 1
                 student = Student(
                     stu_number=student_num,
-                    stu_gender=fake.random.choice([tag.value for tag in GenderChoice]),
+                    stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
                     stu_card_type='身份证',
                     stu_cardID=self.create_card_id(),
                     stu_candidate_number=random.randint(12101000000000, 12201000000000),
@@ -362,18 +363,18 @@ class Command(BaseCommand):
                     stu_nation=fake.random.choice(EthnicChoice),
                     stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
                     stu_is_village=fake.random.choice([True, False]),
-                    stu_political=fake.random.choice([tag.value for tag in PoliticalChoice]),  # 政治面貌
-                    stu_type=fake.random.choice([tag.value for tag in StudentType]),  # 学生类型
-                    stu_learn_type=fake.random.choice([tag.value for tag in StudentCategory]),  # 学习类型
-                    stu_learn_status=fake.random.choice([tag.value for tag in DegreeChoice]),  # 学习阶段
+                    stu_political=fake.random.choice([tag.name for tag in PoliticalChoice]),  # 政治面貌
+                    stu_type=fake.random.choice([tag.name for tag in StudentType]),  # 学生类型
+                    stu_learn_type=fake.random.choice([tag.name for tag in StudentCategory]),  # 学习类型
+                    stu_learn_status=fake.random.choice([tag.name for tag in DegreeChoice]),  # 学习阶段
                     stu_grade=random.randint(1, 3),  # 年级
                     stu_system=3,
                     stu_entrance_time=entrance_year,
                     stu_graduation_time=graduate_year,
-                    stu_cultivating_mode=fake.random.choice([tag.value for tag in CultivatingMode]),
-                    stu_enrollment_category=fake.random.choice([tag.value for tag in EnrollmentCategory]),
+                    stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingMode]),
+                    stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategory]),
                     stu_nationality='中国',
-                    stu_special_program=fake.random.choice([tag.value for tag in SpecialProgram]),
+                    stu_special_program=fake.random.choice([tag.name for tag in SpecialProgramChoice]),
                     stu_is_regular_income=fake.random.choice([True, False]),
                     stu_is_tuition_fees=fake.random.choice([True, False]),
                     stu_is_archives=fake.random.choice([True, False]),
@@ -383,7 +384,7 @@ class Command(BaseCommand):
                     stu_gain_diploma=fake.random.choice([True, False]) if graduate_year else False,
                     stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
                     stu_telephone=self.create_telephone(),
-                    stu_status=fake.random.choice([tag.value for tag in StatusChoice]),
+                    stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
                 )
                 student.user = student_list.pop()
                 student.stu_name = student.user.first_name + student.user.last_name
@@ -411,7 +412,7 @@ class Command(BaseCommand):
                     if student.stu_is_delay:
                         student.stu_delay_reason = fake.sentence()
 
-                    student.stu_mid_check = fake.random.choice([tag.value for tag in MidCheckChoice])  # 中期考核成绩
+                    student.stu_mid_check = fake.random.choice([tag.name for tag in MidCheckChoice])  # 中期考核成绩
 
                     if entrance_year.year < 2017:
                         # 生成学生论文对象

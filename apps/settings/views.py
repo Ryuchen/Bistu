@@ -27,7 +27,7 @@ def common_settings(request):
     res['student_category'] = {tag.name: tag.value for tag in StudentCategory}
     res['cultivating_mode'] = {tag.name: tag.value for tag in CultivatingMode}
     res['enrollment_category'] = {tag.name: tag.value for tag in EnrollmentCategory}
-    res['special_program'] = {tag.name: tag.value for tag in SpecialProgram}
+    res['special_program'] = {tag.name: tag.value for tag in SpecialProgramChoice}
     res['major_type'] = {tag.name: tag.value for tag in MajorType}
     res['major_degree'] = {tag.name: tag.value for tag in MajorDegree}
     return Response(res)
@@ -36,7 +36,7 @@ def common_settings(request):
 def trans_choice():
     res = dict()
     for item in [DegreeChoice, GenderChoice, TitleChoice, PoliticalChoice, StatusChoice, StudentCategory,
-                 CultivatingMode, EnrollmentCategory, SpecialProgram, MajorType, MajorDegree, StudentType]:
+                 CultivatingMode, EnrollmentCategory, SpecialProgramChoice, MajorType, MajorDegree, StudentType]:
         for tag in item:
             res[tag.value] = tag.name
     return res
