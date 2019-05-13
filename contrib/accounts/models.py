@@ -12,6 +12,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from core.definition.enums import *
+from contrib.education.models import Thesis
 from contrib.colleges.models import Academy, Major, Research, Class
 
 
@@ -143,6 +144,8 @@ class Student(models.Model):
     stu_major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, verbose_name="所属专业")
     stu_academy = models.ForeignKey(Academy, null=True, related_name='stu_academy', on_delete=models.SET_NULL, verbose_name='所属学院')
     stu_research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, verbose_name="科研方向")
+    stu_thesis = models.ForeignKey(Thesis, null=True, related_name='stu_thesis', on_delete=models.SET_NULL,
+                                   verbose_name="毕业论文")
 
     def get_gender(self):
         return self.stu_gender
