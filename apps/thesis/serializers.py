@@ -14,13 +14,13 @@ from apps.students.serializers import StudentSerializers
 
 class ThesisSerializers(serializers.ModelSerializer):
     """ 论文 """
-    student = StudentSerializers(many=False)
+    # student = StudentSerializers(many=False)
 
     class Meta:
         model = Thesis
         fields = '__all__'
 
-    def create(self, validated_data):
-        student = validated_data.pop("student")
-        thesis = Thesis.objects.create(student=student, **validated_data)
-        return thesis
+    # def create(self, validated_data):
+    #     student = validated_data.pop("student")
+    #     thesis = Thesis.objects.create(student=student, **validated_data)
+    #     return thesis

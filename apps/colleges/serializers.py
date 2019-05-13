@@ -41,10 +41,19 @@ class MajorSerializers(serializers.ModelSerializer):
         return data
 
 
+class ReformSerializers(serializers.ModelSerializer):
+    """ 研究生教育改革成果记录 """
+
+    class Meta:
+        model = Reform
+        fields = '__all__'
+
+
 class AcademySerializers(serializers.ModelSerializer):
     """ 学院 """
     majors = MajorSerializers(many=True)
     aca_user = UserSerializers(many=False)
+    reforms = ReformSerializers(many=True)
     student_count = serializers.SerializerMethodField(read_only=True)
 
     def get_student_count(self, academy):
@@ -53,15 +62,7 @@ class AcademySerializers(serializers.ModelSerializer):
     class Meta:
         model = Academy
         fields = ('uuid', 'aca_avatar', 'aca_nickname', 'aca_cname', 'aca_ename', 'aca_code', 'aca_phone', 'aca_fax',
-                  'aca_href', 'aca_brief', 'aca_user', 'majors', 'student_count')
-
-
-class ReformSerializers(serializers.ModelSerializer):
-    """ 研究生教育改革成果记录 """
-
-    class Meta:
-        model = Reform
-        fields = '__all__'
+                  'aca_href', 'aca_brief', 'aca_user', 'majors', 'student_count', 'reforms')
 
 
 class ReformResultsSerializers(serializers.ModelSerializer):

@@ -32,14 +32,14 @@ class MidCheckReportList(generics.GenericAPIView):
 		mid_check_list = list()
 		# 输出每个学院的统计数
 		if academy:
-			academies = Academy.objects.filter(aca_cname=academy).values('name')
+			academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
 		else:
-			academies = Academy.objects.values('name')
+			academies = Academy.objects.values('uuid', 'aca_cname')
+
 		for academy in academies:
 			aca_dict = dict()
-			aca_dict["academy"] = academy["name"]
-			academy_stu = Student.objects.filter(stu_graduation_time__year=year) \
-				.filter(stu_academy__aca_cname=academy["name"])
+			aca_dict["academy"] = academy["aca_cname"]
+			academy_stu = Student.objects.filter(stu_entrance_time__year=year).filter(stu_academy_id=academy["uuid"])
 			stu_count = academy_stu.count()
 			delay_count = academy_stu.filter(stu_is_delay=False).count()
 			track_count = academy_stu.filter(stu_mid_check='S2').count()
@@ -69,14 +69,14 @@ class MidCheckReportUpload(generics.GenericAPIView):
 		mid_check_list = list()
 		# 输出每个学院的统计数
 		if academy:
-			academies = Academy.objects.filter(aca_cname=academy).values('name')
+			academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
 		else:
-			academies = Academy.objects.values('name')
+			academies = Academy.objects.values('uuid', 'aca_cname')
+
 		for academy in academies:
 			aca_dict = dict()
-			aca_dict["academy"] = academy["name"]
-			academy_stu = Student.objects.filter(stu_graduation_time__year=year)\
-				.filter(stu_academy__aca_cname=academy["name"])
+			aca_dict["academy"] = academy["aca_cname"]
+			academy_stu = Student.objects.filter(stu_entrance_time__year=year).filter(stu_academy_id=academy["uuid"])
 			stu_count = academy_stu.count()
 			delay_count = academy_stu.filter(stu_is_delay=False).count()
 			track_count = academy_stu.filter(stu_mid_check='S2').count()
@@ -104,12 +104,13 @@ class MidCheckReportUpload(generics.GenericAPIView):
 		
 		data_len = len(mid_check_list)
 		for line, data in enumerate(mid_check_list):
-			for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "delay_proportion",
-										   "track_count", "track_proportion", "fail_count", "fail_proportion"]):
+			for index, value in enumerate(["", "academy", "stu_count", "schedule_count", "delay_count",
+										   "delay_proportion", "track_count", "track_proportion", "fail_count",
+										   "fail_proportion"]):
 				if index == 0:
 					worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
 				else:
-					worksheet.write(line + 2, index, label=value, style=table_center_style)
+					worksheet.write(line + 2, index, label=data[value], style=table_center_style)
 		
 		# 合计汇总行
 		for i, value in enumerate([data_len+1, '合计',
@@ -121,7 +122,7 @@ class MidCheckReportUpload(generics.GenericAPIView):
 								   xlwt.Formula('G{0}*100/C{0}%'.format(data_len + 2)),
 								   xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
 								   xlwt.Formula('I{0}*100/C{0}%'.format(data_len + 2))]):
-			worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+			worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 		
 		# 保存
 		workbook.save('midterm_exams.xls')

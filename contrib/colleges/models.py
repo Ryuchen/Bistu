@@ -101,6 +101,29 @@ class Class(models.Model):
         ]
 
 
+class Reform(models.Model):
+    """
+    教育改革项目统计模型
+    """
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
+    time = models.IntegerField(null=False, verbose_name="年份")
+    ref_type = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in ReformType],
+                                verbose_name="教改成果类型")
+    ref_name = models.TextField(verbose_name="教改项目名称")
+
+    class Meta:
+        db_table = 'reform'
+        verbose_name = "教育改革成果"
+        verbose_name_plural = verbose_name
+        default_permissions = ()
+        permissions = [
+            ("can_insert_reform", "新增教改成果"),
+            ("can_delete_reform", "删除教改成果"),
+            ("can_update_reform", "修改教改成果"),
+            ("can_search_reform", "查询教改成果")
+        ]
+
+
 class Academy(models.Model):
     """
     学院模型
@@ -115,8 +138,10 @@ class Academy(models.Model):
     aca_fax = models.CharField(max_length=128, null=True, verbose_name="学院传真")
     aca_href = models.URLField(max_length=256, null=True, verbose_name="学院网址")
     aca_brief = models.TextField(verbose_name="学院简介")
-    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="学院负责人", related_name="aca_user")
+    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="学院负责人",
+                                 related_name="aca_user")
     majors = models.ManyToManyField(Major, related_name='majors')
+    reforms = models.ManyToManyField(Reform, related_name='reform')
 
     def __str__(self):
         return str(self.aca_code) + self.aca_cname
@@ -131,29 +156,6 @@ class Academy(models.Model):
             ("can_delete_academy", "删除学院"),
             ("can_update_academy", "修改学院"),
             ("can_search_academy", "查询学院")
-        ]
-
-
-class Reform(models.Model):
-    """
-    教育改革项目统计模型
-    """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    time = models.IntegerField(null=False, verbose_name="年份")
-    ref_type = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in ReformType], verbose_name="教改成果类型")
-    ref_name = models.TextField(verbose_name="教改项目名称")
-    academy = models.ForeignKey(Academy, null=True, related_name='r_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
-
-    class Meta:
-        db_table = 'reform'
-        verbose_name = "教育改革成果"
-        verbose_name_plural = verbose_name
-        default_permissions = ()
-        permissions = [
-            ("can_insert_reform", "新增教改成果"),
-            ("can_delete_reform", "删除教改成果"),
-            ("can_update_reform", "修改教改成果"),
-            ("can_search_reform", "查询教改成果")
         ]
 
 
