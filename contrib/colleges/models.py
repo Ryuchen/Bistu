@@ -53,11 +53,11 @@ class Major(models.Model):
     research = models.ManyToManyField(Research, related_name='research', verbose_name="科研方向")
 
     def get_major_type(self):
-        return self.maj_type
+        return MajorType[self.maj_type].value
     get_major_type.short_description = '学科类型'
 
     def get_major_degree(self):
-        return self.maj_degree
+        return MajorDegree[self.maj_degree].value
     get_major_degree.short_description = '学位类型'
 
     def __str__(self):
@@ -86,7 +86,7 @@ class Class(models.Model):
     major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL, verbose_name="专业名称")
 
     def __str__(self):
-        return "专业名称: {0} => {1}{2}  ".format(self.major.maj_name, self.cla_name, self.cla_code)
+        return "专业名称: {0} => {1} {2}  ".format(self.major.maj_name, self.cla_name, self.cla_code)
 
     class Meta:
         db_table = 'classes'
@@ -119,7 +119,7 @@ class Academy(models.Model):
     majors = models.ManyToManyField(Major, related_name='majors')
 
     def __str__(self):
-        return str(self.aca_code) + self.aca_cname
+        return '学院编码: {0} 学院名称: {1}'.format(self.aca_code, self.aca_cname)
 
     class Meta:
         db_table = 'academy'
@@ -143,6 +143,9 @@ class Reform(models.Model):
     ref_type = models.CharField(max_length=128, choices=[(tag.name, tag.value) for tag in ReformType], verbose_name="教改成果类型")
     ref_name = models.TextField(verbose_name="教改项目名称")
     academy = models.ForeignKey(Academy, null=True, related_name='r_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
+
+    def __str__(self):
+        return '项目名称: 《{0}》 立项年份: {1}'.format(self.ref_name, self.time)
 
     class Meta:
         db_table = 'reform'

@@ -346,6 +346,8 @@ class Command(BaseCommand):
         for entrance_year in entrance_years:
             _student_list = []
             _thesis_list = []
+            _plaCheck_list = []
+            _blindCheck_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
             if (2019 - entrance_year.year) >= 3:
                 graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
@@ -446,29 +448,32 @@ class Command(BaseCommand):
 
                         # 生成论文查重次数
                         for _ in range(random.randint(1, 3)):
-                            placheck = ThesisPlaCheck.objects.create(
+                            placheck = ThesisPlaCheck(
                                 pla_date=entrance_year.replace(year=entrance_year.year + 1, month=9,
                                                                day=random.randint(1, 30)),
                                 pla_result=fake.random.choice([True, False]),
                                 pla_rate=(fake.random.randint(1, 30) / 100),
                             )
                             placheck.thesis = thesis
+                            _plaCheck_list.append(placheck)
 
                         # 生成论文盲审成绩
                         for _ in range(random.randint(1, 3)):
-                            blindcheck = ThesisBlindReview.objects.create(
+                            blindcheck = ThesisBlindReview(
                                 bli_date=entrance_year.replace(year=entrance_year.year + 1, month=12,
                                                                day=random.randint(1, 30)),
                                 bli_score=fake.random.choice(['合格', '不合格', '再审查']),
-
                             )
                             blindcheck.thesis = thesis
+                            _blindCheck_list.append(blindcheck)
 
                         student.stu_is_superb = thesis.the_is_superb
 
                 _student_list.append(student)
             Student.objects.bulk_create(_student_list)
             Thesis.objects.bulk_create(_thesis_list)
+            ThesisPlaCheck.objects.bulk_create(_plaCheck_list)
+            ThesisBlindReview.objects.bulk_create(_blindCheck_list)
         self.stdout.write(self.style.NOTICE('学生相关数据生成完毕~~~~~~'))
 
     def handle(self, *args, **options):
