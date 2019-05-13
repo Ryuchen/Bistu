@@ -10,7 +10,7 @@
 from django.apps import AppConfig
 
 
-class AcademyConfig(AppConfig):
+class CollegeConfig(AppConfig):
     name = 'contrib.colleges'
     label = '学院管理'
     verbose_name = '学院管理'
