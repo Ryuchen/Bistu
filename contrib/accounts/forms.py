@@ -26,7 +26,6 @@ class TutorForm(ModelForm):
         super(TutorForm, self).__init__(*args, **kwargs)
         self.fields['tut_gender'].choices = GenderChoice
         self.fields['academy'].choices = [(academy.uuid, academy.aca_cname) for academy in Academy.objects.all()]
-        self.fields['education'].choices = [(education.uuid, education.edu_study_major) for education in Education.objects.all()]
 
     class Meta:
         model = Tutor
