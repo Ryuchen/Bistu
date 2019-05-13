@@ -35,6 +35,7 @@ class TutorAdmin(admin.ModelAdmin):
         'get_degree', 'get_political', 'tut_birth_day', 'tut_entry_day'
     )
     empty_value_display = '--'
+    change_list_template = 'admin/web/Tutor/change_list.html'
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -73,6 +74,7 @@ class StudentAdmin(admin.ModelAdmin):
         'get_stu_type', 'stu_entrance_time',
     )
     empty_value_display = '--'
+    change_list_template = 'admin/web/Student/change_list.html'
 
 
 # Register your models here.
