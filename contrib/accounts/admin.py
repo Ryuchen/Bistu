@@ -21,12 +21,25 @@ class EntranceTimeFilter(admin.SimpleListFilter):
     parameter_name = 'stu_entrance_time'
 
     def lookups(self, request, model_admin):
-        start_year = set([c.stu_entrance_time.year for c in model_admin.model.objects.all()])
-        return sorted([(year, year) for year in start_year])
+        choices = set([c.stu_entrance_time.year for c in model_admin.model.objects.all()])
+        return sorted([(choice, choice) for choice in choices])
 
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(stu_entrance_time__year=self.value())
+
+
+class AcademyFilter(admin.SimpleListFilter):
+    title = '所属学院'
+    parameter_name = 'stu_academy'
+
+    def lookups(self, request, model_admin):
+        choices = set([c.stu_academy.aca_cname for c in model_admin.model.objects.all()])
+        return sorted([(choice, choice) for choice in choices])
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(stu_academy__aca_cname=self.value())
 
 
 class TutorAdmin(admin.ModelAdmin):
@@ -73,7 +86,6 @@ class StudentAdmin(admin.ModelAdmin):
 
         writer.writerow(field_names)
         for obj in queryset:
-            print(obj.export_row())
             writer.writerow(obj.export_row())
 
         return response
@@ -110,7 +122,8 @@ class StudentAdmin(admin.ModelAdmin):
         }),
     )
     list_filter = [
-        EntranceTimeFilter
+        EntranceTimeFilter,
+        AcademyFilter
     ]
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
