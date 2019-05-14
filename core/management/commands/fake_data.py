@@ -204,7 +204,7 @@ class Command(BaseCommand):
         # 生成研究生学生账户
         student_list = []
         default_password = make_password('123456')
-        for _ in range(10000):
+        for _ in range(400):
             student_username = fake.name()
             student = User(
                 username='student-{0}'.format(_),
@@ -366,8 +366,9 @@ class Command(BaseCommand):
                     pla_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
                     pla_result=fake.random.choice([True, False]),
                     pla_rate=(fake.random.randint(1, 30) / 100),
+                    thesis=thesis
                 )
-                placheck.thesis = thesis
+                # placheck.thesis = thesis
                 _plaCheck_list.append(placheck)
 
             # 生成论文盲审成绩
@@ -375,19 +376,16 @@ class Command(BaseCommand):
                 blindcheck = ThesisBlindReview.objects.create(
                     bli_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
                     bli_score=fake.random.choice(['合格', '不合格', '再审查']),
-
+                    thesis=thesis
                 )
-                blindcheck.thesis = thesis
+                # blindcheck.thesis = thesis
                 _blindCheck_list.append(blindcheck)
-            ThesisPlaCheck.objects.bulk_create(_plaCheck_list)
-            ThesisBlindReview.objects.bulk_create(_blindCheck_list)
         # TODO: rebuild reducer the mock students method
         students_num = len(student_list)
         entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
         entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
             _student_list = []
-            _thesis_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
             if (2019 - entrance_year.year) >= 3:
                 graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
