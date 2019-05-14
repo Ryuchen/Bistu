@@ -204,7 +204,7 @@ class Command(BaseCommand):
         # 生成研究生学生账户
         student_list = []
         default_password = make_password('123456')
-        for _ in range(400):
+        for _ in range(10000):
             student_username = fake.name()
             student = User(
                 username='student-{0}'.format(_),
@@ -276,29 +276,30 @@ class Command(BaseCommand):
                     major.research.add(research)
                 academy.majors.add(major)
 
-            # for _ in range(10):
-            #     reforms_data = []
-            #     reform_time = datetime.datetime.now().replace(year=(2019 - _)).year
-            #     for reform in [tag.name for tag in ReformType]:
-            #         counts = random.randint(10, 30)
-            #         reforms_data.append(counts)
-            #         for count in range(counts):
-            #             Reform.objects.create(
-            #                 time=reform_time,
-            #                 ref_type=reform,
-            #                 ref_name=fake.sentence()
-            #             )
-                # ReformResults.objects.create(
-                #     time=reform_time,
-                #     project_count=reforms_data[0],
-                #     paper_count=reforms_data[1],
-                #     textbook_count=reforms_data[2],
-                #     award_count=reforms_data[3],
-                #     course_count=reforms_data[4],
-                #     base_count=reforms_data[5],
-                #     exchange_project_count=reforms_data[6],
-                #     academy=academy
-                # )
+            for _ in range(10):
+                reforms_data = []
+                reform_time = datetime.datetime.now().replace(year=(2019 - _)).year
+                for reform in [tag.name for tag in ReformType]:
+                    counts = random.randint(10, 30)
+                    reforms_data.append(counts)
+                    for count in range(counts):
+                        Reform.objects.create(
+                            time=reform_time,
+                            ref_type=reform,
+                            ref_name=fake.sentence(),
+                            academy=academy
+                        )
+                ReformResults.objects.create(
+                    time=reform_time,
+                    project_count=reforms_data[0],
+                    paper_count=reforms_data[1],
+                    textbook_count=reforms_data[2],
+                    award_count=reforms_data[3],
+                    course_count=reforms_data[4],
+                    base_count=reforms_data[5],
+                    exchange_project_count=reforms_data[6],
+                    academy=academy
+                )
             academy.save()
             self.stdout.write(self.style.SUCCESS('生成{}相关数据'.format(item)))
             academy_list.append(academy)
@@ -340,6 +341,8 @@ class Command(BaseCommand):
 
         # 论文相关数据
         _thesis_list = []
+        _plaCheck_list = []
+        _blindCheck_list = []
         for t_name in range(100):
             the_final_score = fake.random.choice([True, False])
             thesis = Thesis(
@@ -367,6 +370,7 @@ class Command(BaseCommand):
                     pla_rate=(fake.random.randint(1, 30) / 100),
                 )
                 placheck.thesis = thesis
+                _plaCheck_list.append(placheck)
 
             # 生成论文盲审成绩
             for _ in range(random.randint(1, 3)):
@@ -376,13 +380,16 @@ class Command(BaseCommand):
 
                 )
                 blindcheck.thesis = thesis
-
+                _blindCheck_list.append(blindcheck)
+            ThesisPlaCheck.objects.bulk_create(_plaCheck_list)
+            ThesisBlindReview.objects.bulk_create(_blindCheck_list)
         # TODO: rebuild reducer the mock students method
         students_num = len(student_list)
         entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
         entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
             _student_list = []
+            _thesis_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
             if (2019 - entrance_year.year) >= 3:
                 graduate_year = entrance_year.replace(year=(entrance_year.year + 3))

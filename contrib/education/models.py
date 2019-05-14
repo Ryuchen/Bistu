@@ -30,8 +30,12 @@ class Thesis(models.Model):
     the_final_score = models.BooleanField(default=False, verbose_name="答辩成绩")  # 只存通过和不通过两种情况
     # student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, verbose_name="课题学生")
 
+    def get_thesis_title(self):
+        return '《{0}》'.format(self.the_title)
+    get_thesis_title.short_description = '标题'
+
     def __str__(self):
-        return "论文课题：{0}".format(self.the_title)
+        return "论文课题：《{0}》".format(self.the_title)
 
     class Meta:
         db_table = 'thesis'
@@ -57,7 +61,7 @@ class ThesisPlaCheck(models.Model):
     thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
 
     def __str__(self):
-        return "论文查重：{0}".format(self.thesis.the_title)
+        return "查重:《{0}》".format(self.thesis.the_title)
 
     class Meta:
         db_table = 'thesis_pla_check'
@@ -82,7 +86,7 @@ class ThesisBlindReview(models.Model):
     thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
 
     def __str__(self):
-        return "论文盲审：{0}".format(self.thesis.the_title)
+        return "盲审:《{0}》".format(self.thesis.the_title)
 
     class Meta:
         db_table = 'thesis_blind_review'

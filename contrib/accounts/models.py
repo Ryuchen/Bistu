@@ -68,15 +68,15 @@ class Tutor(models.Model):
     academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', verbose_name="所属学院")
 
     def get_gender(self):
-        return self.tut_gender
+        return GenderChoice[self.tut_gender].value
     get_gender.short_description = '性别'
 
     def get_degree(self):
-        return self.tut_degree
+        return DegreeChoice[self.tut_degree].value
     get_degree.short_description = '学历'
 
     def get_political(self):
-        return self.tut_political
+        return PoliticalChoice[self.tut_political].value
     get_political.short_description = '政治面貌'
 
     def __str__(self):
@@ -148,15 +148,15 @@ class Student(models.Model):
                                    verbose_name="毕业论文")
 
     def get_gender(self):
-        return self.stu_gender
+        return GenderChoice[self.stu_gender].value
     get_gender.short_description = '性别'
 
     def get_political(self):
-        return self.stu_political
+        return PoliticalChoice[self.stu_political].value
     get_political.short_description = '政治面貌'
 
     def get_stu_type(self):
-        return self.stu_type
+        return StudentType[self.stu_type].value
     get_stu_type.short_description = '学生类型'
 
     def __str__(self):
