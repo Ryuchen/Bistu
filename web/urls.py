@@ -29,9 +29,9 @@ urlpatterns = [
     path("", admin.site.urls)
 ]
 
-admin.sites.AdminSite.site_header = 'Bistu'
-admin.sites.AdminSite.site_title = 'Bistu'
-admin.sites.AdminSite.index_title = 'Bistu'
+admin.sites.AdminSite.site_header = '研究生管理系统'
+admin.sites.AdminSite.site_title = '研究生管理系统'
+admin.sites.AdminSite.index_title = '研究生管理系统'
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

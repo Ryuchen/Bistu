@@ -175,6 +175,23 @@ class Student(models.Model):
         ]
         ordering = ['stu_number']
 
+    def export_row(self):
+        field_names = [
+            "姓名", "学号", "考生号", "身份证件类型", "身份证号",
+            "性别", "出生日期", "民族", "生源地", "是否农村学生",
+            "政治面貌", "学院", "专业", "专业大类", "班级", "在学状态",
+            "导师工号", "导师", "学生类型", "	学习形式", "学习阶段",
+            "年级", "学制	", "入学日期", "培养方式", "录取类别",
+            "国籍", "专项计划", "是否有固定收入", "是否欠缴学费",
+            "档案是否转到学校", "毕业日期"
+        ]
+        field_data = [
+            self.stu_name, self.stu_number, self.stu_candidate_number, self.stu_card_type, self.stu_cardID,
+            self.get_gender(), self.stu_birth_day, self.stu_nation, self.stu_source, self.stu_is_village,
+            self.get_political(), self.stu_academy.aca_cname, self.stu_major.maj_name, self.stu_major.get_major_type()
+        ]
+        return field_data
+
 
 class MidCheckReport(models.Model):
     """
