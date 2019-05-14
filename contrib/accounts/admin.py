@@ -61,7 +61,7 @@ class StudentAdmin(admin.ModelAdmin):
                 'stu_is_volunteer', 'stu_is_adjust', 'stu_is_exemption', 'stu_is_archives',
                 'stu_is_tuition_fees', 'stu_special_program', 'stu_political', 'stu_type',
                 'stu_learn_type', 'stu_learn_status', 'stu_grade', 'stu_system', 'stu_cultivating_mode',
-                'stu_enrollment_category'
+                'stu_enrollment_category', 'stu_thesis'
             ),
         }),
         ('中期考核', {

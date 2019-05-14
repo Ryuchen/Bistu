@@ -172,7 +172,7 @@ class ReformResults(models.Model):
     course_count = models.IntegerField(null=False, default=0, verbose_name="精品/在线课程建设数量")
     base_count = models.IntegerField(null=False, default=0, verbose_name="实践基地建设数量")
     exchange_project_count = models.IntegerField(null=False, default=0, verbose_name="研究生国际交流数量")
-    academy = models.ForeignKey(Academy, null=True, related_name='rr_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
+    # academy = models.ForeignKey(Academy, null=True, related_name='rr_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
 
     class Meta:
         db_table = 'reform_result'
