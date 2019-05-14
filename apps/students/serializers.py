@@ -17,9 +17,9 @@ from apps.colleges.serializers import AcademySerializers, MajorSerializers
 
 class StudentSerializers(serializers.ModelSerializer):
     user = UserSerializers(many=False)
-    academy = AcademySerializers(many=False)
-    major = MajorSerializers(many=False)
-    tutor = TutorSerializers(many=False)
+    stu_academy = AcademySerializers(many=False)
+    stu_major = MajorSerializers(many=False)
+    stu_tutor = TutorSerializers(many=False)
 
     class Meta:
         model = Student
@@ -36,7 +36,8 @@ class StudentSerializers(serializers.ModelSerializer):
         instance.stu_enrollment_category = instance.get_stu_enrollment_category_display()
         instance.stu_special_program = instance.get_stu_special_program_display()
         instance.stu_status = instance.get_stu_status_display()
-        instance.major_category = instance.get_major_category_display()
+        # instance.maj_type = instance.get_maj_type_display()
+        # instance.maj_degree = instance.get_maj_degree_display()
         data = super(StudentSerializers, self).to_representation(instance)
         return data
 
@@ -45,14 +46,14 @@ class StudentSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = validated_data.pop('user')
-        major = validated_data.pop('major')
-        tutor = validated_data.pop('tutor')
-        academy = validated_data.pop('academy')
+        major = validated_data.pop('stu_major')
+        tutor = validated_data.pop('stu_tutor')
+        academy = validated_data.pop('stu_academy')
         if not User.objects.filter(first_name=user.get('first_name')).count():
             user = User.objects.create(**user)
         else:
             user = User.objects.filter(first_name=user['first_name']).first()
-        new_tutor = Student.objects.create(user=user, academy=academy, major=major, tutor=tutor, **validated_data)
+        new_tutor = Student.objects.create(user=user, stu_academy=academy, stu_major=major, stu_tutor=tutor, **validated_data)
         return new_tutor
 
     def update(self, instance, validated_data):
