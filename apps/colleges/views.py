@@ -299,8 +299,8 @@ class OpeningReportList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         opening_list = list()
         # 输出每个学院的统计数
         if academy:
@@ -325,8 +325,8 @@ class OpeningReportUpload(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -375,7 +375,7 @@ class OpeningReportUpload(generics.GenericAPIView):
             worksheet.write(data_len + 2, i, label=value, style=table_center_style)
     
         # 保存
-        workbook.save('opening_report.xls')
+        workbook.save(os.path.join(settings.BASE_DIR, 'opening_report.xls'))
         if os.path.exists(os.path.join(settings.BASE_DIR, 'opening_report.xls')):
             with open(os.path.join(settings.BASE_DIR, 'opening_report.xls'), 'rb') as excel:
                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
@@ -394,8 +394,8 @@ class ReformList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         reform_list = list()
         # 输出每个学院的统计数
         if academy:
@@ -428,6 +428,7 @@ class ReformList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
+        res = {}
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -468,13 +469,7 @@ class ReformList(generics.GenericAPIView):
             for x in reform_list:
                 academy.reforms.add(x)
 
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(res, status=status.HTTP_200_OK)
 
 
 class ReformUpload(generics.GenericAPIView):
@@ -482,8 +477,8 @@ class ReformUpload(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -498,19 +493,19 @@ class ReformUpload(generics.GenericAPIView):
             reform_dict = dict()
             reform_dict["academy"] = academy["aca_cname"]
             reform = Reform.objects.filter(reform__uuid=academy["uuid"])
-            reform_dict["project"] = ",".join(
+            reform_dict["project"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT1").values("ref_name")])
-            reform_dict["paper"] = ",".join(
+            reform_dict["paper"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT2").values("ref_name")])
-            reform_dict["textbook"] = ",".join(
+            reform_dict["textbook"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT3").values("ref_name")])
-            reform_dict["award"] = ",".join(
+            reform_dict["award"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT4").values("ref_name")])
-            reform_dict["course"] = ",".join(
+            reform_dict["course"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT5").values("ref_name")])
-            reform_dict["base"] = ",".join(
+            reform_dict["base"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT6").values("ref_name")])
-            reform_dict["exchange_project"] = ",".join(
+            reform_dict["exchange_project"] = "\n".join(
                 [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
         
@@ -545,7 +540,7 @@ class ReformUpload(generics.GenericAPIView):
             worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 
         # 保存
-        workbook.save('reform_results.xls')
+        workbook.save(os.path.join(settings.BASE_DIR, 'reform_results.xls'))
         if os.path.exists(os.path.join(settings.BASE_DIR, 'reform_results.xls')):
             with open(os.path.join(settings.BASE_DIR, 'reform_results.xls'), 'rb') as excel:
                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
@@ -555,61 +550,92 @@ class ReformUpload(generics.GenericAPIView):
             raise FileNotFoundError
 
 
+def get_paper(year=None, academy=None):
+    paper_list = list()
+    # 输出每个学院的统计数
+    if academy:
+        academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
+    else:
+        academies = Academy.objects.values('uuid', 'aca_cname')
+
+    for academy in academies:
+        paper_dict = dict()
+        paper_dict["academy"] = academy["aca_cname"]
+        if year:
+            student_data = Student.objects.filter(stu_entrance_time__year=year).all()
+        else:
+            student_data = Student.objects.all()
+        academy_stu = student_data.filter(stu_academy_id=academy["uuid"])
+
+        # 每届各个学院的人数
+        graduate_stu_count = academy_stu.count()
+        paper_dict["full_time_count"] = academy_stu.filter(stu_learn_type="S1").count()
+
+        # 延期
+        paper_dict["delay_count"] = academy_stu.filter(stu_thesis__the_is_delay=True).count()
+        paper_dict["delay_reason"] = ""
+
+        # 论文查重结果
+        paper_deteck_count = academy_stu.filter(stu_thesis__pla_thesis__pla_result__isnull=False).count()
+        paper_dict["paper_stu_count"] = paper_deteck_count  # 获取论文检测总数
+
+        # 论文检测一次性通过人数
+        paper_one_pass = academy_stu.filter(stu_thesis__the_exam_count=1).count()
+        paper_dict["paper_pass_count"] = paper_one_pass
+        paper_dict["paper_pass_proportion"] = '{:.0%}'.format(paper_one_pass / paper_deteck_count)
+
+        # 论文检测不合格人数
+        paper_fail_count = academy_stu.filter(stu_thesis__pla_thesis__pla_result=False).count()
+        paper_dict["paper_fail_count"] = paper_fail_count
+        paper_dict["paper_fail_proportion"] = '{:.0%}'.format(paper_fail_count / paper_deteck_count)
+
+        # 论文查重15%以下的人数
+        paper_fifteen_count = academy_stu.filter(stu_thesis__pla_thesis__pla_rate__lt=15).count()
+        paper_dict["paper_fifteen_count"] = paper_fifteen_count
+        paper_dict["paper_fifteen_proportion"] = '{:.0%}'.format(paper_fifteen_count / paper_deteck_count)
+
+        # 论文查重10%以下的人数
+        paper_ten_count = academy_stu.filter(stu_thesis__pla_thesis__pla_rate__lt=10).count()
+        paper_dict["paper_ten_count"] = paper_ten_count
+        paper_dict["paper_ten_proportion"] = '{:.0%}'.format(paper_ten_count / paper_deteck_count)
+
+        # 盲审
+        blind_trial_count = academy_stu.filter(stu_thesis__bli_thesis__bli_date__year=year).count()  # TODO 查看盲审的比例
+        blind_trial_fail_count = academy_stu.filter(stu_thesis__bli_thesis__bli_score="不合格").count()
+        paper_dict["blind_trial_proportion"] = '{:.0%}'.format(blind_trial_count / graduate_stu_count)
+        paper_dict["blind_trial_count"] = blind_trial_fail_count
+
+        # 答辩
+        paper_dict["reply_count"] = academy_stu.filter(stu_thesis__the_final_score=False).count()
+
+        # 论文评优
+        paper_dict["evaluation_count"] = 12  # TODO 论文评优的名额总数
+        paper_dict["evaluation_result"] = academy_stu.filter(stu_thesis__the_is_superb=True).count()
+
+        # 毕业情况
+        graduate_pass_count = academy_stu.filter(stu_gain_cert=True).count()
+        paper_dict["graduate_count"] = graduate_stu_count
+        paper_dict["graduate_proportion"] = '{:.0%}'.format(graduate_pass_count / graduate_stu_count)
+
+        # 获学位情况
+        degree_count = academy_stu.filter(stu_gain_diploma=True).count()
+        paper_dict["degree_count"] = degree_count
+        paper_dict["degree_proportion"] = '{:.0%}'.format(degree_count / graduate_stu_count)
+
+        paper_list.append(paper_dict)
+    return paper_list
+
+
 # 学位论文质量统计
 class PaperList(generics.GenericAPIView):
 
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    # Excel上传
-    @excepts
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        file = request.data['file']
-        data = xlrd.open_workbook(filename=None, file_contents=file.read())
-        table = data.sheets()[0]
-        nrows = table.nrows
-        file_list = list()
-        for i in range(2, nrows):
-            rowx = table.row_values(i)
-            file_dict = dict()
-            file_dict["academy"] = rowx[1]
-            file_dict["major"] = rowx[2]
-            file_dict["full_time_count"] = rowx[3]
-            file_dict["delay_count"] = rowx[4]
-            file_dict["delay_reason"] = rowx[5]
-            file_dict["paper_stu_count"] = rowx[6]
-            file_dict["paper_pass_count"] = rowx[7]
-            file_dict["paper_pass_proportion"] = rowx[8]
-            file_dict["paper_fail_count"] = rowx[9]
-            file_dict["paper_fail_proportion"] = rowx[10]
-            file_dict["paper_fifteen_count"] = rowx[11]
-            file_dict["paper_fifteen_proportion"] = rowx[12]
-            file_dict["paper_ten_count"] = rowx[13]
-            file_dict["paper_ten_proportion"] = rowx[14]
-            file_dict["blind_trial_proportion"] = rowx[15]
-            file_dict["blind_trial_count"] = rowx[16]
-            file_dict["reply_count"] = rowx[17]
-            file_dict["evaluation_count"] = rowx[18]
-            file_dict["evaluation_result"] = rowx[19]
-            file_dict["graduate_count"] = rowx[20]
-            file_dict["graduate_proportion"] = rowx[21]
-            file_dict["degree_count"] = rowx[22]
-            file_dict["degree_proportion"] = rowx[23]
-            file_dict["time"] = "2019-01-01"
-            file_list.append(file_dict)
-        serializer = self.get_serializer(data=file_list, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
+        paper_list = get_paper(year=year, academy=academy)
+        return Response(paper_list)
 
 
 class PaperUpload(generics.GenericAPIView):
@@ -617,97 +643,34 @@ class PaperUpload(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
-        paper_list = list()
-        # 输出每个学院的统计数
-        if academy:
-            academies = Academy.objects.filter(aca_cname=academy).values('name')
-        else:
-            academies = Academy.objects.values('name')
-        student_data = Student.objects.filter(stu_graduation_time__year=year)
-        for academy in academies:
-            paper_dict = dict()
-            paper_dict["academy"] = academy["name"]
-            academy_stu = student_data.filter(stu_academy__aca_cname=academy["name"])
-            
-            # 每届各个学院的人数
-            graduate_stu_count = academy_stu.count()
-            paper_dict["full_time_count"] = academy_stu.filter(stu_learn_type="S1").count()
-            
-            # 延期
-            paper_dict["delay_count"] = academy_stu.filter(thesis_student__the_start_delay=True).count()
-            paper_dict["delay_reason"] = ""
-            
-            # 论文查重结果
-            paper_deteck_count = academy_stu.count()
-            paper_dict["paper_stu_count"] = paper_deteck_count  # 获取论文检测总数
-            
-            # 论文检测一次性通过人数
-            paper_one_pass = academy_stu.filter(thesis_student__pla_thesis__pla_result='一次性').count()
-            paper_dict["paper_pass_count"] = paper_one_pass
-            paper_dict["paper_pass_proportion"] = '{:.2%}'.format(paper_one_pass / paper_deteck_count)
-            
-            # 论文检测不合格人数
-            paper_fail_count = academy_stu.filter(thesis_student__pla_thesis__pla_result='不合格').count()
-            paper_dict["paper_fail_count"] = paper_fail_count
-            paper_dict["paper_fail_proportion"] = '{:.2%}'.format(paper_fail_count / paper_deteck_count)
-            
-            # 论文查重15%以下的人数
-            paper_fifteen_count = academy_stu.filter(thesis_student__pla_thesis__pla_rate__lt=15).count()
-            paper_dict["paper_fifteen_count"] = paper_fifteen_count
-            paper_dict["paper_fifteen_proportion"] = '{:.2%}'.format(paper_fifteen_count / paper_deteck_count)
 
-            # 论文查重10%以下的人数
-            paper_ten_count = academy_stu.filter(thesis_student__pla_thesis__pla_rate__lt=10).count()
-            paper_dict["paper_ten_count"] = paper_ten_count
-            paper_dict["paper_ten_proportion"] = '{:.2%}'.format(paper_ten_count / paper_deteck_count)
-            
-            # 盲审
-            blind_trial_count = academy_stu.filter(thesis_student__bli_thesis__bli_score__isnull=False).count()
-            blind_trial_fail_count = academy_stu.filter(thesis_student__bli_thesis__bli_score=False).count()
-            paper_dict["blind_trial_proportion"] = '{:.2%}'.format(blind_trial_count / graduate_stu_count)
-            paper_dict["blind_trial_count"] = blind_trial_fail_count
-            
-            # 答辩
-            paper_dict["reply_count"] = academy_stu.filter(thesis_student__the_final_score=False).count()
-            
-            # 论文评优
-            paper_dict["evaluation_count"] = 12  # 论文评优的名额总数
-            paper_dict["evaluation_result"] = academy_stu.filter(thesis_student__the_is_superb=True).count()
-            
-            # 毕业情况
-            graduate_pass_count = academy_stu.filter(stu_gain_cert=True).count()
-            paper_dict["graduate_count"] = graduate_stu_count
-            paper_dict["graduate_proportion"] = '{:.2%}'.format(graduate_pass_count / graduate_stu_count)
-            
-            # 获学位情况
-            degree_count = academy_stu.filter(stu_gain_diploma=True).count()
-            paper_dict["degree_count"] = degree_count
-            paper_dict["degree_proportion"] = '{:.2%}'.format(degree_count / graduate_stu_count)
-            
-            paper_list.append(paper_dict)
-        
+        # get paper data
+        paper_list = get_paper(year=year, academy=academy)
+        if year:
+            student_data = Student.objects.filter(stu_entrance_time__year=year)
+        else:
+            student_data = Student.objects.all()
         # 表名
-        worksheet.write_merge(0, 0, 0, 10, label='{0}年研究生学位论文质量统计'.format(year), style=header_style)
+        worksheet.write_merge(0, 0, 0, 21, label='{0}年研究生学位论文质量统计'.format(year), style=header_style)
         
         # 表头
         worksheet.write(1, 0, label='序号', style=header_style)
         worksheet.write(1, 1, label='学院', style=header_style)
-        worksheet.write(1, 2, label='专业', style=header_style)
-        worksheet.write(1, 3, label='全日制学生数', style=header_style)
-        worksheet.write_merge(1, 1, 4, 5, label='延期', style=header_style)
-        worksheet.write_merge(1, 1, 6, 14, label='论文检测', style=header_style)
-        worksheet.write_merge(1, 1, 15, 16, label='盲审', style=header_style)
-        worksheet.write(1, 17, label='答辩', style=header_style)
-        worksheet.write_merge(1, 1, 18, 19, label='评优', style=header_style)
-        worksheet.write_merge(1, 1, 20, 21, label='毕业情况', style=header_style)
-        worksheet.write_merge(1, 1, 22, 23, label='获学位情况', style=header_style)
+        worksheet.write(1, 2, label='全日制学生数', style=header_style)
+        worksheet.write(1, 3, label='延期人数', style=header_style)
+        worksheet.write_merge(1, 1, 4, 12, label='论文检测', style=header_style)
+        worksheet.write_merge(1, 1, 13, 14, label='盲审', style=header_style)
+        worksheet.write(1, 15, label='答辩', style=header_style)
+        worksheet.write_merge(1, 1, 16, 17, label='评优', style=header_style)
+        worksheet.write_merge(1, 1, 18, 19, label='毕业情况', style=header_style)
+        worksheet.write_merge(1, 1, 20, 21, label='获学位情况', style=header_style)
 
-        for index, value in enumerate(['', '', '', '', '人数', '原因', '人数', '一次通过人数', '一次通过率', '不合格人数',
+        for index, value in enumerate(['', '', '', '人数', '人数', '一次通过人数', '一次通过率', '不合格人数',
                                        '不合格占比', '15%以下人数', '15%以下占比', '10%以下人数', '10%以下占比', '比例',
                                        '未通过人数', '未通过人数', '名额', '评选结果', '毕业人数', '毕业率', '获学位人数',
                                        '获学位率']):
@@ -720,13 +683,13 @@ class PaperUpload(generics.GenericAPIView):
 
         data_len = len(paper_list)
         for line, data in enumerate(paper_list):
-            for index, value in enumerate(["academy", "major", "full_time_count", "delay_count", "delay_reason",
-                                           "paper_stu_count", "paper_pass_count", "paper_pass_proportion",
-                                           "paper_fail_count", "paper_fail_proportion", "paper_fifteen_count",
-                                           "paper_fifteen_proportion", "paper_ten_count", "paper_ten_proportion",
-                                           "blind_trial_proportion", "blind_trial_count", "reply_count",
-                                           "evaluation_count", "evaluation_result", "graduate_count",
-                                           "graduate_proportion", "degree_count", "degree_proportion"]):
+            for index, value in enumerate(["", "academy", "full_time_count", "delay_count", "paper_stu_count",
+                                           "paper_pass_count", "paper_pass_proportion", "paper_fail_count",
+                                           "paper_fail_proportion", "paper_fifteen_count", "paper_fifteen_proportion",
+                                           "paper_ten_count", "paper_ten_proportion", "blind_trial_proportion",
+                                           "blind_trial_count", "reply_count", "evaluation_count", "evaluation_result",
+                                           "graduate_count", "graduate_proportion", "degree_count",
+                                           "degree_proportion"]):
                 if index == 0:
                     worksheet.write(line + 3, 0, label=line + 1, style=table_center_style)
                 else:
@@ -734,35 +697,35 @@ class PaperUpload(generics.GenericAPIView):
 
         # 合计汇总行
         full_time_all_count = student_data.filter(stu_learn_type="S1").count()
-        delay_all_count = student_data.filter(thesis_student__the_start_delay=True).count()
+        delay_all_count = student_data.filter(stu_thesis__the_is_delay=True).count()
         student_all_count = student_data.count()
-        paper_one_pass_all_count = student_data.filter(thesis_student__pla_thesis__pla_result='一次性').count()
-        paper_fail_all_count = student_data.filter(thesis_student__pla_thesis__pla_result='不合格').count()
-        paper_fifteen_all_count = student_data.filter(thesis_student__pla_thesis__pla_rate__lt=15).count()
-        paper_ten_all_count = student_data.filter(thesis_student__pla_thesis__pla_rate__lt=10).count()
+        paper_one_pass_all_count = student_data.filter(stu_thesis__the_exam_count=1).count()
+        paper_fail_all_count = student_data.filter(stu_thesis__pla_thesis__pla_result=False).count()
+        paper_fifteen_all_count = student_data.filter(stu_thesis__pla_thesis__pla_rate__lt=15).count()
+        paper_ten_all_count = student_data.filter(stu_thesis__pla_thesis__pla_rate__lt=10).count()
         
-        blind_trial_all_count = student_data.filter(thesis_student__bli_thesis__bli_score__isnull=False).count()
-        blind_trial_fail_all_count = student_data.filter(thesis_student__bli_thesis__bli_score=False).count()
-        final_fail_all_count = student_data.filter(thesis_student__the_final_score=False).count()
-        ia_superb_all_count = student_data.filter(thesis_student__the_is_superb=True).count()
+        blind_trial_all_count = student_data.filter(stu_thesis__bli_thesis__bli_date__year=year).count()
+        blind_trial_fail_all_count = student_data.filter(stu_thesis__bli_thesis__bli_score="不合格").count()
+        final_fail_all_count = student_data.filter(stu_thesis__the_final_score=False).count()
+        ia_superb_all_count = student_data.filter(stu_thesis__the_is_superb=True).count()
         graduate_pass_all_count = student_data.filter(stu_gain_cert=True).count()
         degree_all_count = student_data.filter(stu_gain_diploma=True).count()
         
-        for i, value in enumerate([data_len + 1, '合计', full_time_all_count, delay_all_count, "", student_all_count,
+        for i, value in enumerate([data_len + 1, '合计', full_time_all_count, delay_all_count, student_all_count,
                                    paper_one_pass_all_count,
-                                   '{:.2%}'.format(paper_one_pass_all_count / student_all_count), paper_fail_all_count,
-                                   '{:.2%}'.format(paper_fail_all_count / student_all_count), paper_fifteen_all_count,
-                                   '{:.2%}'.format(paper_fifteen_all_count / student_all_count), paper_ten_all_count,
-                                   '{:.2%}'.format(paper_ten_all_count / student_all_count),
-                                   '{:.2%}'.format(blind_trial_all_count / student_all_count),
+                                   '{:.0%}'.format(paper_one_pass_all_count / student_all_count), paper_fail_all_count,
+                                   '{:.0%}'.format(paper_fail_all_count / student_all_count), paper_fifteen_all_count,
+                                   '{:.0%}'.format(paper_fifteen_all_count / student_all_count), paper_ten_all_count,
+                                   '{:.0%}'.format(paper_ten_all_count / student_all_count),
+                                   '{:.0%}'.format(blind_trial_all_count / student_all_count),
                                    blind_trial_fail_all_count, final_fail_all_count, 123, ia_superb_all_count,
-                                   graduate_pass_all_count, '{:.2%}'.format(graduate_pass_all_count / student_all_count),
-                                   degree_all_count, '{:.2%}'.format(degree_all_count / student_all_count),
+                                   graduate_pass_all_count, '{:.0%}'.format(graduate_pass_all_count / student_all_count),
+                                   degree_all_count, '{:.0%}'.format(degree_all_count / student_all_count),
                                    ]):
-            worksheet.write(data_len + 4, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
 
         # 保存
-        workbook.save('paper_quality.xls')
+        workbook.save(os.path.join(settings.BASE_DIR, 'paper_quality.xls'))
         if os.path.exists(os.path.join(settings.BASE_DIR, 'paper_quality.xls')):
             with open(os.path.join(settings.BASE_DIR, 'paper_quality.xls'), 'rb') as excel:
                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')

@@ -23,7 +23,7 @@ class Thesis(models.Model):
     the_title = models.CharField(max_length=128, null=False, verbose_name="课题名称")
     the_start_time = models.DateField(verbose_name="开题时间")
     the_start_result = models.BooleanField(null=False, default=True, verbose_name="开题结果")
-    # the_exam_count = models.IntegerField(null=False, default=0, verbose_name="论文查重次数")  # 这个数据应该从查重那张表统计出来
+    the_exam_count = models.IntegerField(null=False, default=0, verbose_name="论文查重次数")  # 这个数据应该从查重那张表统计出来
     the_is_delay = models.BooleanField(default=False, verbose_name="是否延期")
     the_delay_reason = models.TextField(null=True, verbose_name="延期原因")
     the_is_superb = models.BooleanField(default=False, verbose_name="是否优秀论文")

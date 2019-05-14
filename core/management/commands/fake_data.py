@@ -204,7 +204,7 @@ class Command(BaseCommand):
         # 生成研究生学生账户
         student_list = []
         default_password = make_password('123456')
-        for _ in range(400):
+        for _ in range(1000):
             student_username = fake.name()
             student = User(
                 username='student-{0}'.format(_),
@@ -347,7 +347,8 @@ class Command(BaseCommand):
                 the_title="关于{0}的研究".format(t_name),
                 the_start_time="2019-09-01",
                 the_final_score=the_final_score,
-                the_start_result=fake.random.choice([True, False])
+                the_start_result=fake.random.choice([True, False]),
+                the_exam_count=fake.random.choice([1, 2, 3])
             )
             the_is_delay = fake.random.choice([True, False])
             thesis.the_is_delay = the_is_delay  # 毕设开题是否延期
@@ -362,13 +363,14 @@ class Command(BaseCommand):
             _thesis_list.append(thesis)
             # 生成论文查重次数
             for _ in range(random.randint(1, 3)):
+                pla_rate = fake.random.randint(1, 100)
+                pla_result = False if pla_rate >= 30 else True
                 placheck = ThesisPlaCheck.objects.create(
                     pla_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
-                    pla_result=fake.random.choice([True, False]),
-                    pla_rate=(fake.random.randint(1, 30) / 100),
+                    pla_result=pla_result,
+                    pla_rate=pla_rate,
                     thesis=thesis
                 )
-                # placheck.thesis = thesis
                 _plaCheck_list.append(placheck)
 
             # 生成论文盲审成绩
@@ -378,7 +380,6 @@ class Command(BaseCommand):
                     bli_score=fake.random.choice(['合格', '不合格', '再审查']),
                     thesis=thesis
                 )
-                # blindcheck.thesis = thesis
                 _blindCheck_list.append(blindcheck)
         # TODO: rebuild reducer the mock students method
         students_num = len(student_list)
