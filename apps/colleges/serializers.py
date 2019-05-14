@@ -31,7 +31,7 @@ class MajorSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Major
-        fields = ('uuid', 'maj_name', 'maj_code', 'maj_type', 'maj_first', 'maj_second', 'maj_first_uuid',
+        fields = ('uuid', 'maj_name', 'maj_code', 'maj_type', 'maj_first', 'maj_second',
                   'maj_setup_time', 'maj_degree', 'research', 'student_count')
 
     def to_representation(self, instance):
