@@ -26,7 +26,8 @@ urlpatterns = [
     path("settings/", include("apps.settings.urls")),
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
-    path("", admin.site.urls)
+    path("", admin.site.urls),
+    path("advanced_filters/", include('advanced_filters.urls'))
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'

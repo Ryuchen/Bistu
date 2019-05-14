@@ -15,44 +15,24 @@ from . import models
 from django.contrib import admin
 from django.http import HttpResponse
 
-
-class StudentEntranceTimeFilter(admin.SimpleListFilter):
-    title = '入学年份'
-    parameter_name = 'stu_entrance_time'
-
-    def lookups(self, request, model_admin):
-        choices = set([c.stu_entrance_time.year for c in model_admin.model.objects.all()])
-        return sorted([(choice, choice) for choice in choices])
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(stu_entrance_time__year=self.value())
+from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedDropdownFilter, ChoiceDropdownFilter
 
 
-class StudentAcademyFilter(admin.SimpleListFilter):
-    title = '所属学院'
-    parameter_name = 'stu_academy'
-
-    def lookups(self, request, model_admin):
-        choices = set([c.stu_academy.aca_cname for c in model_admin.model.objects.all()])
-        return sorted([(choice, choice) for choice in choices])
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(stu_academy__aca_cname=self.value())
-
-
-class TeacherAcademyFilter(admin.SimpleListFilter):
-    title = '所属学院'
-    parameter_name = 'academy'
-
-    def lookups(self, request, model_admin):
-        choices = set([c.academy.aca_cname for c in model_admin.model.objects.all()])
-        return sorted([(choice, choice) for choice in choices])
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(academy__aca_cname=self.value())
+class StudentInline(admin.TabularInline):
+    verbose_name = '指导学生'
+    verbose_name_plural = verbose_name
+    model = models.Student
+    fields = (
+        'stu_number', 'stu_name', 'stu_telephone', 'stu_birth_day', 'stu_nation', 'stu_source', 'stu_entrance_time',
+        'stu_academy', 'stu_major', 'stu_research'
+    )
+    readonly_fields = (
+        'stu_number', 'stu_name', 'stu_telephone', 'stu_birth_day', 'stu_nation', 'stu_source', 'stu_entrance_time',
+        'stu_academy', 'stu_major', 'stu_research'
+    )
+    can_delete = False
+    show_change_link = False
+    extra = 0
 
 
 class TutorAdmin(admin.ModelAdmin):
@@ -76,6 +56,7 @@ class TutorAdmin(admin.ModelAdmin):
     export_as_csv.short_description = "导出所选的 教师"
 
     form = forms.TutorForm
+    inlines = [StudentInline]
     actions = ["export_as_csv"]
     fieldsets = (
         ('关联账户', {
@@ -92,13 +73,16 @@ class TutorAdmin(admin.ModelAdmin):
             'fields': ('academy', ),
         })
     )
+    list_filter = [
+        ('academy', RelatedDropdownFilter),
+        # for choice fields
+        ('tut_political', ChoiceDropdownFilter),
+    ]
     list_display = (
         'tut_number', 'tut_name', 'get_gender', 'tut_telephone', 'tut_cardID',
         'get_degree', 'get_political', 'tut_birth_day', 'tut_entry_day'
     )
-    list_filter = [
-        TeacherAcademyFilter
-    ]
+
     empty_value_display = '--'
     change_list_template = 'admin/web/Tutor/change_list.html'
 
@@ -158,14 +142,25 @@ class StudentAdmin(admin.ModelAdmin):
         }),
     )
     list_filter = [
-        StudentEntranceTimeFilter,
-        StudentAcademyFilter
+        # for choice fields
+        ('stu_special_program', ChoiceDropdownFilter),
+        # for choice fields
+        ('stu_cultivating_mode', ChoiceDropdownFilter),
+        # for choice fields
+        ('stu_enrollment_category', ChoiceDropdownFilter),
+        ('stu_entrance_time', DropdownFilter),
+        ('stu_academy', RelatedDropdownFilter),
+        # for related fields
+        ('stu_major', RelatedDropdownFilter),
+        # for choice fields
+        ('stu_political', ChoiceDropdownFilter),
     ]
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
         'stu_birth_day', 'stu_nation', 'stu_source', 'stu_is_village', 'get_political',
         'get_stu_type', 'stu_entrance_time',
     )
+    search_fields = ('stu_name',)
     empty_value_display = '--'
     change_list_template = 'admin/web/Student/change_list.html'
 
