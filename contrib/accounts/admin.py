@@ -16,7 +16,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 
 
-class EntranceTimeFilter(admin.SimpleListFilter):
+class StudentEntranceTimeFilter(admin.SimpleListFilter):
     title = '入学年份'
     parameter_name = 'stu_entrance_time'
 
@@ -29,7 +29,7 @@ class EntranceTimeFilter(admin.SimpleListFilter):
             return queryset.filter(stu_entrance_time__year=self.value())
 
 
-class AcademyFilter(admin.SimpleListFilter):
+class StudentAcademyFilter(admin.SimpleListFilter):
     title = '所属学院'
     parameter_name = 'stu_academy'
 
@@ -40,6 +40,19 @@ class AcademyFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(stu_academy__aca_cname=self.value())
+
+
+class TeacherAcademyFilter(admin.SimpleListFilter):
+    title = '所属学院'
+    parameter_name = 'academy'
+
+    def lookups(self, request, model_admin):
+        choices = set([c.academy.aca_cname for c in model_admin.model.objects.all()])
+        return sorted([(choice, choice) for choice in choices])
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(academy__aca_cname=self.value())
 
 
 class TutorAdmin(admin.ModelAdmin):
@@ -63,6 +76,9 @@ class TutorAdmin(admin.ModelAdmin):
         'tut_number', 'tut_name', 'get_gender', 'tut_telephone', 'tut_cardID',
         'get_degree', 'get_political', 'tut_birth_day', 'tut_entry_day'
     )
+    list_filter = [
+        TeacherAcademyFilter
+    ]
     empty_value_display = '--'
     change_list_template = 'admin/web/Tutor/change_list.html'
 
@@ -122,8 +138,8 @@ class StudentAdmin(admin.ModelAdmin):
         }),
     )
     list_filter = [
-        EntranceTimeFilter,
-        AcademyFilter
+        StudentEntranceTimeFilter,
+        StudentAcademyFilter
     ]
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
