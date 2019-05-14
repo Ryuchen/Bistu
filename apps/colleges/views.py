@@ -609,7 +609,7 @@ def get_paper(year=None, academy=None):
         paper_dict["reply_count"] = academy_stu.filter(stu_thesis__the_final_score=False).count()
 
         # 论文评优
-        paper_dict["evaluation_count"] = 12  # TODO 论文评优的名额总数
+        paper_dict["evaluation_count"] = ''  # TODO 论文评优的名额总数
         paper_dict["evaluation_result"] = academy_stu.filter(stu_thesis__the_is_superb=True).count()
 
         # 毕业情况
@@ -718,7 +718,7 @@ class PaperUpload(generics.GenericAPIView):
                                    '{:.0%}'.format(paper_fifteen_all_count / student_all_count), paper_ten_all_count,
                                    '{:.0%}'.format(paper_ten_all_count / student_all_count),
                                    '{:.0%}'.format(blind_trial_all_count / student_all_count),
-                                   blind_trial_fail_all_count, final_fail_all_count, 123, ia_superb_all_count,
+                                   blind_trial_fail_all_count, final_fail_all_count, '', ia_superb_all_count,
                                    graduate_pass_all_count, '{:.0%}'.format(graduate_pass_all_count / student_all_count),
                                    degree_all_count, '{:.0%}'.format(degree_all_count / student_all_count),
                                    ]):

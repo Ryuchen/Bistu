@@ -23,7 +23,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.decorators.excepts import excepts
 from apps.teachers.views import user_create
 from contrib.accounts.models import Student, Tutor
-from contrib.colleges.models import Academy, Major
+from contrib.colleges.models import Academy, Major, Class
 from apps.settings.views import trans_choice
 from apps.students.serializers import StudentSerializers
 
@@ -136,7 +136,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         serializer.save()
         return Response(serializer.data)
 
-
     @excepts
     @csrf_exempt
     def post(self, request, *args, **kwargs):
@@ -161,12 +160,12 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["stu_source"] = rowx[8]
             student_dict["stu_is_village"] = True if rowx[9] == "是" else False
             student_dict["stu_political"] = trans[rowx[10]]
-            student_dict["academy"] = Academy.objects.filter(aca_cname=rowx[11]).first()
-            student_dict["major"] = Major.objects.filter(maj_name=rowx[12]).first()
-            student_dict["major_category"] = trans[rowx[13]]
-            student_dict["stu_class"] = rowx[14]
+            student_dict["stu_academy"] = Academy.objects.filter(aca_cname=rowx[11]).first()
+            student_dict["stu_major"] = Major.objects.filter(maj_name=rowx[12]).first()
+            # student_dict["major_category"] = trans[rowx[13]]
+            student_dict["stu_class"] = Class.objects.filter(cla_name=rowx[14]).first()
             student_dict["stu_status"] = trans[rowx[15]]
-            student_dict["tutor"] = Tutor.objects.filter(tut_number=rowx[16]).first()
+            student_dict["stu_tutor"] = Tutor.objects.filter(tut_number=rowx[16]).first()
             student_dict["stu_type"] = trans[rowx[18]]
             student_dict["stu_learn_type"] = trans[rowx[19]]
             student_dict["stu_learn_status"] = trans[rowx[20]]
@@ -203,14 +202,15 @@ class StudentStatistics(generics.GenericAPIView):
         academies = Academy.objects.values('uuid', 'aca_cname')
         for academy in academies:
             aca_dict = dict()
-            aca_student = student.filter(academy_id=academy["uuid"])
+            aca_student = student.filter(stu_academy__uuid=academy["uuid"])
             aca_dict["academy_name"] = academy["aca_cname"]
             aca_dict["academy_total"] = aca_student.count()
-            majors = Academy.objects.filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name', 'majors__maj_code', 'majors__maj_type')
+            majors = Academy.objects.filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name',
+                                                                         'majors__maj_code', 'majors__maj_type')
             aca_dict["academy_major"] = list()
             for maj in majors:
                 major_obj = dict()
-                maj_student = aca_student.filter(major_id=maj["majors__uuid"])
+                maj_student = aca_student.filter(stu_major_id=maj["majors__uuid"])
                 major_obj["major_name"] = maj["majors__maj_name"]
                 major_obj["major_code"] = maj["majors__maj_code"]
                 major_obj["major_type"] = maj["majors__maj_type"]
@@ -265,7 +265,7 @@ class StudentStatistics(generics.GenericAPIView):
 @csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
-    year = request.GET.get("year", "")
+    year = request.GET.get("year", 2019)
 
     # 创建一个workbook 设置编码
     workbook = xlwt.Workbook(encoding='utf-8')
@@ -347,14 +347,14 @@ def create_xls(request):
         row_end = row_start + len(majors)
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'], style=table_center_style)
         if year:
-            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]) \
+            aca_student = Student.objects.filter(stu_academy__uuid=aca["uuid"]) \
                 .filter(stu_entrance_time__year=year).all()
         else:
-            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]).all()
+            aca_student = Student.objects.filter(stu_academy__uuid=aca["uuid"]).all()
 
         worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count(), style=table_center_style)
         for major in majors:
-            maj_student = aca_student.filter(major_id=major["majors__uuid"])
+            maj_student = aca_student.filter(stu_major__uuid=major["majors__uuid"])
             worksheet.write(row_start, 0, label=major['majors__maj_code'], style=table_center_style)
             worksheet.write(row_start, 1, label=major['majors__maj_name'])
             worksheet.write(row_start, 4, label=maj_student.count(), style=table_center_style)
@@ -411,7 +411,7 @@ def create_xls(request):
     worksheet.write(i, 11, label=all_student.filter(stu_special_program='S3').count(), style=table_center_style)
 
     # 保存
-    workbook.save('document.xls')
+    workbook.save(os.path.join(settings.BASE_DIR, 'document.xls'))
     if os.path.exists(os.path.join(settings.BASE_DIR, 'document.xls')):
         with open(os.path.join(settings.BASE_DIR, 'document.xls'), 'rb') as excel:
             response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
