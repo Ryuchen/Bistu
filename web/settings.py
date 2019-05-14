@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'contrib.education.apps.CultivateConfig',
     'core',
     'django_filters',
+    'django_admin_listfilter_dropdown',
     'web.apps.SuitConfig',
     'django.contrib.admin',
 ]
