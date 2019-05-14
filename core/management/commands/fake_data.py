@@ -287,7 +287,6 @@ class Command(BaseCommand):
                             time=reform_time,
                             ref_type=reform,
                             ref_name=fake.sentence(),
-                            academy=academy
                         )
                 ReformResults.objects.create(
                     time=reform_time,
@@ -298,7 +297,6 @@ class Command(BaseCommand):
                     course_count=reforms_data[4],
                     base_count=reforms_data[5],
                     exchange_project_count=reforms_data[6],
-                    academy=academy
                 )
             academy.save()
             self.stdout.write(self.style.SUCCESS('生成{}相关数据'.format(item)))

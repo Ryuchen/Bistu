@@ -58,7 +58,7 @@ class AcademyAdmin(admin.ModelAdmin):
 
 class ReformAdmin(admin.ModelAdmin):
     list_display = (
-        'ref_name', 'ref_type', 'time', 'academy'
+        'ref_name', 'ref_type', 'time'
     )
     empty_value_display = '--'
 

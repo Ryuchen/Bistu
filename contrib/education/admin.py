@@ -44,7 +44,7 @@ class ThesisAdmin(admin.ModelAdmin):
     search_fields = ('the_title', )
     list_display = (
         'get_thesis_title', 'the_start_time', 'the_start_result', 'the_is_delay', 'the_delay_reason',
-        'the_is_superb', 'the_final_score', 'student'
+        'the_is_superb', 'the_final_score'
     )
     list_filter = [
         StartTimeFilter
