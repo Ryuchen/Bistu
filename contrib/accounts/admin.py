@@ -17,17 +17,17 @@ class TutorAdmin(admin.ModelAdmin):
     form = forms.TutorForm
     fieldsets = (
         ('关联账户', {
-            'fields': ('user',)
+            'fields': ('user', )
         }),
         ('基本信息', {
             'fields': (
                 'tut_number', 'tut_name', 'tut_avatar', 'tut_gender', 'tut_cardID',
                 'tut_birth_day', 'tut_telephone', 'tut_title', 'tut_political',
-                'tut_degree', 'tut_entry_day'
+                'tut_degree', 'tut_entry_day', 'education'
             )
         }),
         ('学院资料', {
-            'fields': ('education', 'academy'),
+            'fields': ('academy', ),
         })
     )
     list_display = (
@@ -35,6 +35,7 @@ class TutorAdmin(admin.ModelAdmin):
         'get_degree', 'get_political', 'tut_birth_day', 'tut_entry_day'
     )
     empty_value_display = '--'
+    change_list_template = 'admin/web/Tutor/change_list.html'
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -73,8 +74,9 @@ class StudentAdmin(admin.ModelAdmin):
         'get_stu_type', 'stu_entrance_time',
     )
     empty_value_display = '--'
+    change_list_template = 'admin/web/Student/change_list.html'
 
 
 # Register your models here.
-admin.site.register(models.Tutor, TutorAdmin)
 admin.site.register(models.Student, StudentAdmin)
+admin.site.register(models.Tutor, TutorAdmin)

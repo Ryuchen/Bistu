@@ -27,13 +27,6 @@ class MajorInline(admin.TabularInline):
     extra = 0
 
 
-class ResearchesAdmin(admin.ModelAdmin):
-    inlines = [
-        ResearchInline,
-    ]
-    empty_value_display = '--'
-
-
 class MajorsAdmin(admin.ModelAdmin):
     form = forms.MajorForm
     inlines = [
@@ -63,13 +56,15 @@ class AcademyAdmin(admin.ModelAdmin):
     empty_value_display = '--'
 
 
-class CommonAdmin(admin.ModelAdmin):
+class ReformAdmin(admin.ModelAdmin):
+    list_display = (
+        'ref_name', 'ref_type', 'time', 'academy'
+    )
     empty_value_display = '--'
 
 
 # Register your models here.
-admin.site.register(models.Research, ResearchesAdmin)
 admin.site.register(models.Major, MajorsAdmin)
 admin.site.register(models.Class, ClassAdmin)
 admin.site.register(models.Academy, AcademyAdmin)
-admin.site.register(models.Reform, CommonAdmin)
+admin.site.register(models.Reform, ReformAdmin)
