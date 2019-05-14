@@ -204,7 +204,7 @@ class Command(BaseCommand):
         # 生成研究生学生账户
         student_list = []
         default_password = make_password('123456')
-        for _ in range(400):
+        for _ in range(2000):
             student_username = fake.name()
             student = User(
                 username='student-{0}'.format(_),
