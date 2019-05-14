@@ -64,8 +64,10 @@ class Tutor(models.Model):
                                      verbose_name="政治面貌")
     tut_degree = models.CharField(max_length=64, choices=([(tag.name, tag.value) for tag in DegreeChoice]),
                                   verbose_name="学位")
-    education = models.ForeignKey(Education, null=True, on_delete=models.CASCADE, related_name='education', verbose_name="学历")
-    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy', verbose_name="所属学院")
+    education = models.ForeignKey(Education, null=True, on_delete=models.CASCADE, related_name='education',
+                                  verbose_name="学历")
+    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy',
+                                verbose_name="所属学院")
 
     def get_gender(self):
         return GenderChoice[self.tut_gender].value
