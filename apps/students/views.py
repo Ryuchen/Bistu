@@ -38,7 +38,7 @@ class SimpleStudent(object):
                         'stu_grade', 'stu_system', 'stu_entrance_time', 'stu_graduation_time', 'stu_cultivating_mode',
                         'stu_enrollment_category', 'stu_nationality', 'stu_special_program', 'stu_is_regular_income',
                         'stu_is_tuition_fees', 'stu_is_archives', 'stu_is_superb', 'stu_telephone', 'stu_status',
-                        'stu_class', 'major_category', 'stu_name',)
+                        'stu_class', 'stu_name',)
     ordering = ('stu_number',)
     ordering_fields = ('stu_number', 'stu_entrance_time', 'stu_graduation_time', 'stu_birth_day',)
 
@@ -80,17 +80,17 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         queryset = self.queryset
         params = self.request.query_params
         if params:
-            academy = params.get('academy')
+            academy = params.get('stu_academy')
             if academy:
-                queryset = queryset.filter(academy__uuid=academy)
+                queryset = queryset.filter(stu_academy__uuid=academy)
 
-            major = params.get('major')
+            major = params.get('stu_major')
             if major:
-                queryset = queryset.filter(major__uuid=major)
+                queryset = queryset.filter(stu_major__uuid=major)
 
-            tutor = params.get('tutor')
+            tutor = params.get('stu_tutor')
             if tutor:
-                queryset = queryset.filter(tutor__uuid=tutor)
+                queryset = queryset.filter(stu_tutor__uuid=tutor)
             ordering = self.request.query_params.get('ordering')
             if ordering:
                 queryset = queryset.order_by(ordering)
