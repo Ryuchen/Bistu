@@ -56,7 +56,27 @@ class TeacherAcademyFilter(admin.SimpleListFilter):
 
 
 class TutorAdmin(admin.ModelAdmin):
+
+    def export_as_csv(self, request, queryset):
+        field_names = [
+            "教师编号", "教师姓名", "性别", "职称", "政治面貌",
+            "所属学院", "教师邮箱", "教师电话", "最高学历", "毕业院校",
+            "出生日期", "入职日期"
+        ]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=教师表格.csv'
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            writer.writerow(obj.export_row())
+
+        return response
+    export_as_csv.short_description = "导出所选的 教师"
+
     form = forms.TutorForm
+    actions = ["export_as_csv"]
     fieldsets = (
         ('关联账户', {
             'fields': ('user', )
