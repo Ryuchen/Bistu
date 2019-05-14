@@ -137,11 +137,11 @@ class Academy(models.Model):
     aca_phone = models.CharField(max_length=128, null=True, verbose_name="学院电话")
     aca_fax = models.CharField(max_length=128, null=True, verbose_name="学院传真")
     aca_href = models.URLField(max_length=256, null=True, verbose_name="学院网址")
-    aca_brief = models.TextField(verbose_name="学院简介")
+    aca_brief = models.TextField(verbose_name="学院简介", null=True)
     aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="学院负责人",
                                  related_name="aca_user")
-    majors = models.ManyToManyField(Major, related_name='majors')
-    reforms = models.ManyToManyField(Reform, related_name='reform')
+    majors = models.ManyToManyField(Major, null=True, related_name='majors')
+    reforms = models.ManyToManyField(Reform, null=True, related_name='reform')
 
     def __str__(self):
         return '学院编码: {0} 学院名称: {1}'.format(self.aca_code, self.aca_cname)
