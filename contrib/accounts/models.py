@@ -144,8 +144,7 @@ class Student(models.Model):
     stu_major = models.ForeignKey(Major, null=True, related_name='stu_major', on_delete=models.SET_NULL, verbose_name="所属专业")
     stu_academy = models.ForeignKey(Academy, null=True, related_name='stu_academy', on_delete=models.SET_NULL, verbose_name='所属学院')
     stu_research = models.ForeignKey(Research, null=True, related_name='stu_research', on_delete=models.SET_NULL, verbose_name="科研方向")
-    stu_thesis = models.ForeignKey(Thesis, null=True, related_name='stu_thesis', on_delete=models.SET_NULL,
-                                   verbose_name="毕业论文")
+    stu_thesis = models.ForeignKey(Thesis, null=True, related_name='stu_thesis', on_delete=models.SET_NULL, verbose_name="毕业论文")
 
     def get_gender(self):
         return GenderChoice[self.stu_gender].value
@@ -158,6 +157,46 @@ class Student(models.Model):
     def get_stu_type(self):
         return StudentType[self.stu_type].value
     get_stu_type.short_description = '学生类型'
+
+    def get_stu_learn_type(self):
+        return StudentCategory[self.stu_learn_type].value
+    get_stu_learn_type.short_description = '学习形式'
+
+    def get_stu_learn_status(self):
+        return DegreeChoice[self.stu_learn_status].value
+    get_stu_learn_status.short_description = '学习阶段'
+
+    def get_stu_cultivating_mode(self):
+        return CultivatingMode[self.stu_cultivating_mode].value
+    get_stu_cultivating_mode.short_description = '培养方式'
+
+    def get_stu_enrollment_category(self):
+        return EnrollmentCategory[self.stu_enrollment_category].value
+    get_stu_enrollment_category.short_description = '录取类别'
+
+    def get_stu_special_program(self):
+        return SpecialProgramChoice[self.stu_special_program].value
+    get_stu_special_program.short_description = '专项计划'
+
+    def get_stu_mid_check(self):
+        return MidCheckChoice[self.stu_mid_check].value
+    get_stu_mid_check.short_description = '中期考核结果'
+
+    def get_stu_status(self):
+        return StatusChoice[self.stu_status].value
+    get_stu_status.short_description = '在学状态'
+
+    def export_row(self):
+        field_data = [
+            self.stu_name, self.stu_number, self.stu_candidate_number, self.stu_card_type, self.stu_cardID,
+            self.get_gender(), self.stu_birth_day, self.stu_nation, self.stu_source, self.stu_is_village,
+            self.get_political(), self.stu_academy.aca_cname, self.stu_major.maj_name, self.stu_major.get_major_type(),
+            self.stu_class, self.get_stu_status(), self.stu_tutor.tut_number, self.stu_tutor.tut_name, self.get_stu_type(),
+            self.get_stu_learn_type(), self.get_stu_learn_status(), self.stu_grade, self.stu_system, self.stu_entrance_time,
+            self.get_stu_cultivating_mode(), self.get_stu_enrollment_category(), self.stu_nationality, self.get_stu_special_program(),
+            self.stu_is_regular_income, self.stu_is_tuition_fees, self.stu_is_archives, self.stu_graduation_time
+        ]
+        return field_data
 
     def __str__(self):
         return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
@@ -174,23 +213,6 @@ class Student(models.Model):
             ("can_search_student", "查询学生")
         ]
         ordering = ['stu_number']
-
-    def export_row(self):
-        field_names = [
-            "姓名", "学号", "考生号", "身份证件类型", "身份证号",
-            "性别", "出生日期", "民族", "生源地", "是否农村学生",
-            "政治面貌", "学院", "专业", "专业大类", "班级", "在学状态",
-            "导师工号", "导师", "学生类型", "	学习形式", "学习阶段",
-            "年级", "学制	", "入学日期", "培养方式", "录取类别",
-            "国籍", "专项计划", "是否有固定收入", "是否欠缴学费",
-            "档案是否转到学校", "毕业日期"
-        ]
-        field_data = [
-            self.stu_name, self.stu_number, self.stu_candidate_number, self.stu_card_type, self.stu_cardID,
-            self.get_gender(), self.stu_birth_day, self.stu_nation, self.stu_source, self.stu_is_village,
-            self.get_political(), self.stu_academy.aca_cname, self.stu_major.maj_name, self.stu_major.get_major_type()
-        ]
-        return field_data
 
 
 class MidCheckReport(models.Model):
