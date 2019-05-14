@@ -11,6 +11,6 @@ from django.conf.urls import url
 from .views import MidCheckReportList, MidCheckReportUpload
 
 urlpatterns = [
-	url(r"^mid_check_reports/$", MidCheckReportList.as_view(), name="mid_check_report-list"),
+	url(r"^mid_check_reports/$", MidCheckReportList.as_view(), name="mid_check_report_list"),
 	url(r"^mid_check_report_upload/$", MidCheckReportUpload.as_view(), name="mid_check_report-upload"),
 ]

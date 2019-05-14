@@ -26,18 +26,35 @@ class ThesisBlindReviewInline(admin.TabularInline):
     extra = 0
 
 
+class StartTimeFilter(admin.SimpleListFilter):
+    title = '开题年份'
+    parameter_name = 'the_start_time'
+
+    def lookups(self, request, model_admin):
+        start_year = set([c.the_start_time.year for c in model_admin.model.objects.all()])
+        return sorted([(year, year) for year in start_year])
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(the_start_time__year=self.value())
+
+
 class ThesisAdmin(admin.ModelAdmin):
     actions_on_top = True
     search_fields = ('the_title', )
     list_display = (
         'get_thesis_title', 'the_start_time', 'the_start_result', 'the_is_delay', 'the_delay_reason',
-        'the_is_superb', 'the_final_score'
+        'the_is_superb', 'the_final_score', 'student'
     )
+    list_filter = [
+        StartTimeFilter
+    ]
     inlines = [
         ThesisPlaCheckInline,
         ThesisBlindReviewInline
     ]
     empty_value_display = '--'
+    change_list_template = 'admin/web/Thesis/change_list.html'
 
 
 # class ThesisPlaCheckAdmin(admin.ModelAdmin):
