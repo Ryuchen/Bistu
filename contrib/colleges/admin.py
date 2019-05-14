@@ -7,12 +7,15 @@
 # @File : admin.py
 # @Desc : 
 # ==================================================
+
 from . import forms
 from . import models
 
 from contrib.accounts.models import Student
 
+from django.urls import reverse
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from django_admin_listfilter_dropdown.filters import DropdownFilter, ChoiceDropdownFilter
 
 
@@ -104,15 +107,23 @@ class ClassAdmin(admin.ModelAdmin):
 
 
 class AcademyAdmin(admin.ModelAdmin):
+
+    def get_enroll_statistic(self, obj):
+        return mark_safe('<a class="deletelink" href="{0}?academy={1}">招生统计</a>'.format(reverse("create_xls"), obj.pk))
+    get_enroll_statistic.short_description = 'Action'
+    get_enroll_statistic.allow_tags = True
+
     inlines = [
         MajorInline,
         ReformInline,
     ]
     list_display = (
-        'aca_code', 'aca_cname', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href'
+        'aca_code', 'aca_cname', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
     )
+    list_display_links = ('get_enroll_statistic', )
     exclude = ('majors', 'reforms')
     empty_value_display = '--'
+    change_list_template = "admin/web/Academy/change_list.html"
 
 
 class ReformAdmin(admin.ModelAdmin):
