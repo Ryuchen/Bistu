@@ -8,6 +8,7 @@
 # @Desc : 
 # ==================================================
 import xlrd
+from datetime import datetime
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -15,9 +16,10 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import LimitOffsetPagination
 
 from contrib.accounts.models import Tutor
-from contrib.colleges.models import Major
+from contrib.colleges.models import Major, Academy
 from .serializers import TutorSerializers
 from core.decorators.excepts import excepts
+from apps.settings.views import trans_choice
 
 
 def user_create(username, tut_number):
@@ -103,7 +105,7 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
     # 添加
     @excepts
     @csrf_exempt
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
@@ -123,7 +125,8 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
 
     @excepts
     @csrf_exempt
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        trans = trans_choice()
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
@@ -134,16 +137,15 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
             t_dict = dict()
             t_dict["tut_number"] = int(row[0]) if row[0] else 0
             t_dict["user"] = user_create(row[1], int(row[0]))
-            t_dict["tut_gender"] = row[2]
-            t_dict["tut_political"] = row[3]
-            t_dict["tut_title"] = row[4]
-            t_dict["tut_birth_day"] = str(xlrd.xldate_as_datetime(row[5], 'YYYY-MM-DD'))[0:10]
-            t_dict["tut_degree"] = row[6]
-            t_dict["academy"] = Major.objects.filter(maj_name=row[7]).uuid
+            t_dict["tut_gender"] = trans[row[2]]
+            t_dict["tut_political"] = trans[row[3]]
+            t_dict["tut_title"] = trans[row[4]]
+            t_dict["tut_birth_day"] = datetime.strptime(str(int(row[5])), '%Y%m%d').strftime('%Y-%m-%d')
+            t_dict["tut_degree"] = trans[row[6]]
+            t_dict["academy"] = Academy.objects.filter(aca_cname=row[7]).first()
             t_dict["tut_cardID"] = row[8]
-            t_dict["tut_entry_day"] = str(xlrd.xldate_as_datetime(row[9], 'YYYY-MM-DD'))[0:10]
+            t_dict["tut_entry_day"] = datetime.strptime(str(int(row[9])), '%Y%m').strftime('%Y-%m-01')
             t_dict["tut_telephone"] = row[10]
-
             t_list.append(t_dict)
         serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
         serializer.is_valid(raise_exception=True)

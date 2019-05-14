@@ -25,8 +25,8 @@ class EducationSerializers(serializers.ModelSerializer):
 class TutorSerializers(serializers.ModelSerializer):
     """ 老师 """
     user = UserSerializers(many=False)
-    academy = AcademySerializers(many=False)
-    education = EducationSerializers(many=False)
+    academy = AcademySerializers(many=False, allow_null=True)
+    education = EducationSerializers(many=False, allow_null=True)
 
     class Meta:
         model = Tutor
@@ -42,18 +42,19 @@ class TutorSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = validated_data.pop('user')
+        academy = validated_data.pop('academy')
+        education = validated_data.pop('education')
 
-        if not User.objects.filter(username=user.get('username')).count():
+        if not User.objects.filter(first_name=user.get('first_name')).count():
             user = User.objects.create(**user)
-        if validated_data.get('education'):
-            education = validated_data.pop('education')
-            if isinstance(education, dict):
-                education = Education.objects.create(**education)
-                new_tutor = Tutor.objects.create(user=user, education=education, **validated_data)
-            else:
-                new_tutor = Tutor.objects.create(user=user, **validated_data)
         else:
-            new_tutor = Tutor.objects.create(user=user, **validated_data)
+            user = User.objects.filter(first_name=user['first_name']).first()
+
+        if education:
+            new_tutor = Tutor.objects.create(user=user, academy=academy, education=education,  **validated_data)
+        else:
+            new_tutor = Tutor.objects.create(user=user, academy=academy, **validated_data)
+
         return new_tutor
 
     def update(self, instance, validated_data):

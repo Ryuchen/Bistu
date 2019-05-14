@@ -32,9 +32,9 @@ class PoliticalChoice(Enum):
 
 
 class DegreeChoice(Enum):
-    D1 = "博士"
-    D2 = "硕士"
-    D3 = "本科"
+    S1 = "博士"
+    S2 = "硕士"
+    S3 = "本科"
 
 
 class StatusChoice(Enum):
