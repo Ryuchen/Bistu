@@ -27,8 +27,8 @@ class MidCheckReportList(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         mid_check_list = list()
         # 输出每个学院的统计数
         if academy:
@@ -47,11 +47,11 @@ class MidCheckReportList(generics.GenericAPIView):
             aca_dict["stu_count"] = stu_count
             aca_dict["schedule_count"] = academy_stu.filter(stu_is_delay=True).count()
             aca_dict["delay_count"] = delay_count
-            aca_dict["delay_proportion"] = '{:.2%}'.format(delay_count / stu_count)
+            aca_dict["delay_proportion"] = '{:.0%}'.format(delay_count / stu_count)
             aca_dict["track_count"] = track_count
-            aca_dict["track_proportion"] = '{:.2%}'.format(track_count / stu_count)
+            aca_dict["track_proportion"] = '{:.0%}'.format(track_count / stu_count)
             aca_dict["fail_count"] = fail_count
-            aca_dict["fail_proportion"] = '{:.2%}'.format(fail_count / stu_count)
+            aca_dict["fail_proportion"] = '{:.0%}'.format(fail_count / stu_count)
             mid_check_list.append(aca_dict)
         return Response(mid_check_list)
 
@@ -61,8 +61,8 @@ class MidCheckReportUpload(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        year = request.query_params.get("year", 2019)
+        academy = request.query_params.get("academy")
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('worksheet')
         header_style, table_center_style = TableStyle.header_style, TableStyle.table_center_style
@@ -84,11 +84,11 @@ class MidCheckReportUpload(generics.GenericAPIView):
             aca_dict["stu_count"] = stu_count
             aca_dict["schedule_count"] = academy_stu.filter(stu_is_delay=True).count()
             aca_dict["delay_count"] = delay_count
-            aca_dict["delay_proportion"] = '{:.2%}'.format(delay_count / stu_count)
+            aca_dict["delay_proportion"] = '{:.0%}'.format(delay_count / stu_count)
             aca_dict["track_count"] = track_count
-            aca_dict["track_proportion"] = '{:.2%}'.format(track_count / stu_count)
+            aca_dict["track_proportion"] = '{:.0%}'.format(track_count / stu_count)
             aca_dict["fail_count"] = fail_count
-            aca_dict["fail_proportion"] = '{:.2%}'.format(fail_count / stu_count)
+            aca_dict["fail_proportion"] = '{:.0%}'.format(fail_count / stu_count)
             mid_check_list.append(aca_dict)
 
         worksheet.write_merge(0, 0, 0, 9, label='{0}届研究生中期考核情况统计'.format(year), style=header_style)
@@ -112,19 +112,24 @@ class MidCheckReportUpload(generics.GenericAPIView):
                 else:
                     worksheet.write(line + 2, index, label=data[value], style=table_center_style)
         # 合计汇总行
+        all_academy_stu = Student.objects.filter(stu_entrance_time__year=year)
+        stu_all_count = all_academy_stu.count()
+        all_delay_count = all_academy_stu.filter(stu_is_delay=False).count()
+        all_track_count = all_academy_stu.filter(stu_mid_check='S2').count()
+        all_fail_count = all_academy_stu.filter(stu_mid_check='S3').count()
         for i, value in enumerate([data_len + 1, '合计',
                                    xlwt.Formula('SUM(C3:C{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
-                                   xlwt.Formula('E{0}*100/C{0}%'.format(data_len + 2)),
+                                   '{:.0%}'.format(all_delay_count / stu_all_count),
                                    xlwt.Formula('SUM(G3:G{0})'.format(data_len + 2)),
-                                   xlwt.Formula('G{0}*100/C{0}%'.format(data_len + 2)),
+                                   '{:.0%}'.format(all_track_count / stu_all_count),
                                    xlwt.Formula('SUM(I3:I{0})'.format(data_len + 2)),
-                                   xlwt.Formula('I{0}*100/C{0}%'.format(data_len + 2))]):
+                                   '{:.0%}'.format(all_fail_count / stu_all_count)]):
             worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 
         # 保存
-        workbook.save('midterm_exams.xls')
+        workbook.save(os.path.join(settings.BASE_DIR, 'midterm_exams.xls'))
         if os.path.exists(os.path.join(settings.BASE_DIR, 'midterm_exams.xls')):
             with open(os.path.join(settings.BASE_DIR, 'midterm_exams.xls'), 'rb') as excel:
                 response = HttpResponse(excel.read(), 'application/vnd.ms-excel')
