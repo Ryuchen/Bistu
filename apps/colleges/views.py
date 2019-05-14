@@ -23,7 +23,7 @@ from contrib.accounts.models import Student
 from contrib.colleges.models import Reform
 from contrib.colleges.models import Academy, Major, Research
 from .serializers import MajorSerializers, AcademySerializers, ResearchSerializers
-from .serializers import ReformResultsSerializers
+from .serializers import ReformSerializers
 
 
 # 科研方向
@@ -304,18 +304,18 @@ class OpeningReportList(generics.GenericAPIView):
         opening_list = list()
         # 输出每个学院的统计数
         if academy:
-            academies = Academy.objects.filter(aca_cname=academy).values('name')
+            academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
         else:
-            academies = Academy.objects.values('name')
+            academies = Academy.objects.values('uuid', 'aca_cname')
+
         for academy in academies:
             opening_dict = dict()
-            opening_dict["academy"] = academy["name"]
-            academy_stu = Student.objects.filter(stu_graduation_time__year=year) \
-                .filter(stu_academy__aca_cname=academy["name"])
+            opening_dict["academy"] = academy["aca_cname"]
+            academy_stu = Student.objects.filter(stu_entrance_time__year=year).filter(stu_academy_id=academy["uuid"])
             opening_dict["stu_count"] = academy_stu.count()
-            opening_dict["schedule_count"] = academy_stu.filter(thesis__the_start_delay=False).count()
-            opening_dict["delay_count"] = academy_stu.filter(thesis__the_start_delay=True).count()
-            opening_dict["fail_count"] = academy_stu.filter(thesis__the_start_result=False).count()
+            opening_dict["schedule_count"] = academy_stu.filter(stu_thesis__the_is_delay=False).count()
+            opening_dict["delay_count"] = academy_stu.filter(stu_thesis__the_is_delay=True).count()
+            opening_dict["fail_count"] = academy_stu.filter(stu_thesis__the_final_score=False).count()
             opening_list.append(opening_dict)
         return Response(opening_list)
 
@@ -333,18 +333,18 @@ class OpeningReportUpload(generics.GenericAPIView):
         opening_list = list()
         # 输出每个学院的统计数
         if academy:
-            academies = Academy.objects.filter(aca_cname=academy).values('name')
+            academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
         else:
-            academies = Academy.objects.values('name')
+            academies = Academy.objects.values('uuid', 'aca_cname')
+
         for academy in academies:
             opening_dict = dict()
-            opening_dict["academy"] = academy["name"]
-            academy_stu = Student.objects.filter(stu_graduation_time__year=year) \
-                .filter(stu_academy__aca_cname=academy["name"])
+            opening_dict["academy"] = academy["aca_cname"]
+            academy_stu = Student.objects.filter(stu_entrance_time__year=year).filter(stu_academy_id=academy["uuid"])
             opening_dict["stu_count"] = academy_stu.count()
-            opening_dict["schedule_count"] = academy_stu.filter(thesis__the_start_delay=False).count()
-            opening_dict["delay_count"] = academy_stu.filter(thesis__the_start_delay=True).count()
-            opening_dict["fail_count"] = academy_stu.filter(thesis__the_start_result=False).count()
+            opening_dict["schedule_count"] = academy_stu.filter(stu_thesis__the_is_delay=False).count()
+            opening_dict["delay_count"] = academy_stu.filter(stu_thesis__the_is_delay=True).count()
+            opening_dict["fail_count"] = academy_stu.filter(stu_thesis__the_final_score=False).count()
             opening_list.append(opening_dict)
     
         # 标题
@@ -361,7 +361,7 @@ class OpeningReportUpload(generics.GenericAPIView):
     
         data_len = len(opening_list)
         for line, data in enumerate(opening_list):
-            for index, value in enumerate(["academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
+            for index, value in enumerate(["", "academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
                 if index == 0:
                     worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
                 else:
@@ -372,7 +372,7 @@ class OpeningReportUpload(generics.GenericAPIView):
                                    xlwt.Formula('SUM(D3:D{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2))]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 2, i, label=value, style=table_center_style)
     
         # 保存
         workbook.save('opening_report.xls')
@@ -387,39 +387,42 @@ class OpeningReportUpload(generics.GenericAPIView):
 
 # 研究生教育改革成果统计
 class ReformList(generics.GenericAPIView):
-    
+    model = Reform
+    queryset = Reform.objects.all()
+    serializer_class = ReformSerializers
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
         year = request.data.get("year", "2019")
-        academy = request.data.get("academy", "")
+        academy = request.data.get("academy")
         reform_list = list()
         # 输出每个学院的统计数
         if academy:
-            academies = Academy.objects.filter(aca_cname=academy).values('name')
+            academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
         else:
-            academies = Academy.objects.values('name')
+            academies = Academy.objects.values('uuid', 'aca_cname')
 
         for academy in academies:
             reform_dict = dict()
-            reform_dict["academy"] = academy["name"]
-            academy_stu = Reform.objects.filter(time=year).filter(academy__aca_cname=academy["name"])
-            reform_dict["project_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT1").values("ref_name")])
-            reform_dict["paper_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT2").values("ref_name")])
-            reform_dict["textbook_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT3").values("ref_name")])
-            reform_dict["award_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT4").values("ref_name")])
-            reform_dict["course_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT5").values("ref_name")])
-            reform_dict["base_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT6").values("ref_name")])
-            reform_dict["exchange_project_count"] = "\n".join(
-                [ref['ref_name'] for ref in academy_stu.filter(ref_type="RT7").values("ref_name")])
+            reform_dict["academy"] = academy["aca_cname"]
+            reform = Reform.objects.filter(reform__uuid=academy["uuid"])
+            reform_dict["project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT1").values("ref_name")])
+            reform_dict["paper"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT2").values("ref_name")])
+            reform_dict["textbook"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT3").values("ref_name")])
+            reform_dict["award"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT4").values("ref_name")])
+            reform_dict["course"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT5").values("ref_name")])
+            reform_dict["base"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT6").values("ref_name")])
+            reform_dict["exchange_project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
-        return  Response(reform_list)
+        return Response(reform_list)
     
     # Excel上传
     @excepts
@@ -429,44 +432,48 @@ class ReformList(generics.GenericAPIView):
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
         table = data.sheets()[0]
         nrows = table.nrows
-        file_list = list()
+        time = "2019"
         for i in range(2, nrows-1):
             rowx = table.row_values(i)
-            file_dict = dict()
-            file_dict["academy"] = rowx[0]
-            file_dict["time"] = "2019"
+            academy = Academy.objects.get(aca_cname=rowx[0])
+            reform_list = list()
             for name in rowx[1].splitlines():
-                file_dict["ref_type"] = "RT1"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[2].splitlines():
-                file_dict["ref_type"] = "RT2"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[3].splitlines():
-                file_dict["ref_type"] = "RT3"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[4].splitlines():
-                file_dict["ref_type"] = "RT4"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[5].splitlines():
-                file_dict["ref_type"] = "RT5"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[6].splitlines():
-                file_dict["ref_type"] = "RT6"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
-            for name in rowx[7].splitlines():
-                file_dict["ref_type"] = "RT7"
-                file_dict["ref_name"] = name
-                file_list.append(file_dict)
+                reform = Reform.objects.create(ref_type="RT1", ref_name=name, time=time)
+                reform_list.append(reform)
 
-        serializer = self.get_serializer(data=file_list, many=True, context={"r_academy": ""})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            for name in rowx[2].splitlines():
+                reform = Reform.objects.create(ref_type="RT2", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for name in rowx[3].splitlines():
+                reform = Reform.objects.create(ref_type="RT3", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for name in rowx[4].splitlines():
+                reform = Reform.objects.create(ref_type="RT4", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for name in rowx[5].splitlines():
+                reform = Reform.objects.create(ref_type="RT5", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for name in rowx[6].splitlines():
+                reform = Reform.objects.create(ref_type="RT6", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for name in rowx[7].splitlines():
+                reform = Reform.objects.create(ref_type="RT7", ref_name=name, time=time)
+                reform_list.append(reform)
+
+            for x in reform_list:
+                academy.reforms.add(x)
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+        else:
+            serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -483,21 +490,28 @@ class ReformUpload(generics.GenericAPIView):
         reform_list = list()
         # 输出每个学院的统计数
         if academy:
-            academies = Academy.objects.filter(aca_cname=academy).values('name')
+            academies = Academy.objects.filter(aca_cname=academy).values('uuid', 'aca_cname')
         else:
-            academies = Academy.objects.values('name')
-            
+            academies = Academy.objects.values('uuid', 'aca_cname')
+
         for academy in academies:
             reform_dict = dict()
-            reform_dict["academy"] = academy["name"]
-            academy_stu = Reform.objects.filter(time=year).filter(academy__aca_cname=academy["name"])
-            reform_dict["project_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT1").values("ref_name")])
-            reform_dict["paper_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT2").values("ref_name")])
-            reform_dict["textbook_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT3").values("ref_name")])
-            reform_dict["award_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT4").values("ref_name")])
-            reform_dict["course_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT5").values("ref_name")])
-            reform_dict["base_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT6").values("ref_name")])
-            reform_dict["exchange_project_count"] = "\n".join([ref['ref_name'] for ref in academy_stu.filter(ref_type="RT7").values("ref_name")])
+            reform_dict["academy"] = academy["aca_cname"]
+            reform = Reform.objects.filter(reform__uuid=academy["uuid"])
+            reform_dict["project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT1").values("ref_name")])
+            reform_dict["paper"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT2").values("ref_name")])
+            reform_dict["textbook"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT3").values("ref_name")])
+            reform_dict["award"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT4").values("ref_name")])
+            reform_dict["course"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT5").values("ref_name")])
+            reform_dict["base"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT6").values("ref_name")])
+            reform_dict["exchange_project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
         
         # 标题
@@ -515,12 +529,9 @@ class ReformUpload(generics.GenericAPIView):
 
         data_len = len(reform_list)
         for line, data in enumerate(reform_list):
-            for index, value in enumerate(["academy", "project_count", "paper_count", "textbook_count", "award_count",
-                                           "course_count", "base_count", "exchange_project_count"]):
-                if index == 0:
-                    worksheet.write(line + 2, 0, label=line + 1, style=table_center_style)
-                else:
-                    worksheet.write(line + 2, index, label=data[value], style=table_center_style)
+            for index, value in enumerate(["academy", "project", "paper", "textbook", "award", "course", "base",
+                                           "exchange_project"]):
+                worksheet.write(line + 2, index, label=data[value], style=table_center_style)
 
         # 合计汇总行
         for i, value in enumerate(['合计',
@@ -531,7 +542,7 @@ class ReformUpload(generics.GenericAPIView):
                                    Reform.objects.filter(time=year).filter(ref_type="RT5").count(),
                                    Reform.objects.filter(time=year).filter(ref_type="RT6").count(),
                                    Reform.objects.filter(time=year).filter(ref_type="RT7").count()]):
-            worksheet.write(data_len + 3, i, label=value, style=table_center_style)
+            worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 
         # 保存
         workbook.save('reform_results.xls')
