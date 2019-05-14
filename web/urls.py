@@ -24,9 +24,14 @@ urlpatterns = [
     path("teachers/", include("apps.teachers.urls")),
     path("students/", include("apps.students.urls")),
     path("settings/", include("apps.settings.urls")),
+    path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
     path("", admin.site.urls)
 ]
+
+admin.sites.AdminSite.site_header = 'Bistu'
+admin.sites.AdminSite.site_title = 'Bistu'
+admin.sites.AdminSite.index_title = 'Bistu'
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
