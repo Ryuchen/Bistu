@@ -11,7 +11,7 @@ import uuid
 
 from django.db import models
 
-from contrib.accounts.models import Student
+# from contrib.accounts.models import Student
 from contrib.colleges.models import Academy, Major
 
 
@@ -28,7 +28,7 @@ class Thesis(models.Model):
     the_delay_reason = models.TextField(null=True, verbose_name="延期原因")
     the_is_superb = models.BooleanField(default=False, verbose_name="是否优秀论文")
     the_final_score = models.BooleanField(default=False, verbose_name="答辩成绩")  # 只存通过和不通过两种情况
-    student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, verbose_name="课题学生")
+    # student = models.ForeignKey(Student, null=True, related_name='student', on_delete=models.SET_NULL, verbose_name="课题学生")
 
     def get_thesis_title(self):
         return '《{0}》'.format(self.the_title)
