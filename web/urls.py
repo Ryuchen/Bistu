@@ -26,12 +26,13 @@ urlpatterns = [
     path("settings/", include("apps.settings.urls")),
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
-    path("", admin.site.urls)
+    path("", admin.site.urls),
+    path("advanced_filters/", include('advanced_filters.urls'))
 ]
 
-admin.sites.AdminSite.site_header = 'Bistu'
-admin.sites.AdminSite.site_title = 'Bistu'
-admin.sites.AdminSite.index_title = 'Bistu'
+admin.sites.AdminSite.site_header = '研究生管理系统'
+admin.sites.AdminSite.site_title = '研究生管理系统'
+admin.sites.AdminSite.index_title = '研究生管理系统'
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
