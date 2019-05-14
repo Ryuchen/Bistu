@@ -71,6 +71,10 @@ class Tutor(models.Model):
         return GenderChoice[self.tut_gender].value
     get_gender.short_description = '性别'
 
+    def get_title(self):
+        return TitleChoice[self.tut_title].value
+    get_gender.short_description = '职称'
+
     def get_degree(self):
         return DegreeChoice[self.tut_degree].value
     get_degree.short_description = '学历'
@@ -78,6 +82,14 @@ class Tutor(models.Model):
     def get_political(self):
         return PoliticalChoice[self.tut_political].value
     get_political.short_description = '政治面貌'
+
+    def export_row(self):
+        field_data = [
+            self.tut_number, self.tut_name, self.get_gender(), self.get_title(), self.get_political(),
+            self.academy.aca_cname, self.user.email, self.tut_telephone, self.tut_degree, self.education.edu_school_name,
+            self.tut_birth_day, self.tut_entry_day
+        ]
+        return field_data
 
     def __str__(self):
         return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.first_name + self.user.last_name)
