@@ -193,7 +193,7 @@ class StudentStatistics(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.GET.get("year", "")
+        year = request.GET.get("year", datetime.now().year)
         if year:
             student = Student.objects.filter(stu_entrance_time__year=year).all()
         else:
@@ -265,7 +265,7 @@ class StudentStatistics(generics.GenericAPIView):
 @csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
-    year = request.GET.get("year", "")
+    year = request.GET.get("year", datetime.now().year)
 
     # 创建一个workbook 设置编码
     workbook = xlwt.Workbook(encoding='utf-8')
@@ -347,14 +347,14 @@ def create_xls(request):
         row_end = row_start + len(majors)
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'], style=table_center_style)
         if year:
-            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]) \
+            aca_student = Student.objects.filter(stu_academy__uuid=aca["uuid"]) \
                 .filter(stu_entrance_time__year=year).all()
         else:
-            aca_student = Student.objects.filter(academy__uuid=aca["uuid"]).all()
+            aca_student = Student.objects.filter(stu_academy__uuid=aca["uuid"]).all()
 
         worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count(), style=table_center_style)
         for major in majors:
-            maj_student = aca_student.filter(major_id=major["majors__uuid"])
+            maj_student = aca_student.filter(stu_major_id=major["majors__uuid"])
             worksheet.write(row_start, 0, label=major['majors__maj_code'], style=table_center_style)
             worksheet.write(row_start, 1, label=major['majors__maj_name'])
             worksheet.write(row_start, 4, label=maj_student.count(), style=table_center_style)

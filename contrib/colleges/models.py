@@ -9,6 +9,7 @@
 # ==================================================
 import uuid
 
+
 from core.definition.enums import *
 
 from django.db import models
