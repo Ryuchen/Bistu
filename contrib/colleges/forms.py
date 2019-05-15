@@ -13,9 +13,6 @@ from core.definition.enums import *
 
 from django.forms import ModelForm
 
-MajorTypeChoice = [(choice.name, choice.value) for choice in MajorType]
-MajorDegreeChoice = [(choice.name, choice.value) for choice in MajorDegree]
-
 
 class MajorForm(ModelForm):
 

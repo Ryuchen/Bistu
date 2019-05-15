@@ -22,7 +22,7 @@ from django_admin_listfilter_dropdown.filters import DropdownFilter, ChoiceDropd
 class ResearchInline(admin.TabularInline):
     verbose_name = '研究方向'
     verbose_name_plural = verbose_name
-    model = models.Major.research.through
+    model = models.Major.maj_research.through
     fields = (
         'research',
     )
@@ -69,14 +69,14 @@ class StudentInline(admin.TabularInline):
 class MajorInline(admin.TabularInline):
     verbose_name = '学科专业'
     verbose_name_plural = verbose_name
-    model = models.Academy.majors.through
+    model = models.Academy.aca_majors.through
     extra = 0
 
 
 class ReformInline(admin.TabularInline):
     verbose_name = '教改项目'
     verbose_name_plural = verbose_name
-    model = models.Academy.reforms.through
+    model = models.Academy.aca_reforms.through
     extra = 0
 
 
@@ -97,7 +97,7 @@ class MajorsAdmin(admin.ModelAdmin):
         'maj_code', 'maj_name', 'get_major_type', 'maj_first', 'maj_second',
         'maj_setup_time', 'get_major_degree'
     )
-    exclude = ('research', )
+    exclude = ('maj_research', )
     empty_value_display = '--'
 
 
@@ -121,14 +121,24 @@ class AcademyAdmin(admin.ModelAdmin):
         'aca_code', 'aca_cname', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
     )
     list_display_links = ('get_enroll_statistic', )
-    exclude = ('majors', 'reforms')
+    exclude = ('aca_majors', 'aca_reforms')
     empty_value_display = '--'
     change_list_template = "admin/web/Academy/change_list.html"
 
 
 class ReformAdmin(admin.ModelAdmin):
     list_display = (
-        'ref_name', 'ref_type', 'time'
+        'ref_name', 'ref_type', 'ref_time'
+    )
+    empty_value_display = '--'
+
+
+class ReformResultsAdmin(admin.ModelAdmin):
+    list_filter = [
+        ('time', DropdownFilter)
+    ]
+    list_display = (
+        'academy', 'time'
     )
     empty_value_display = '--'
 
@@ -138,3 +148,4 @@ admin.site.register(models.Major, MajorsAdmin)
 admin.site.register(models.Class, ClassAdmin)
 admin.site.register(models.Academy, AcademyAdmin)
 admin.site.register(models.Reform, ReformAdmin)
+admin.site.register(models.ReformResults, ReformResultsAdmin)
