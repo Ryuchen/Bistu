@@ -272,7 +272,7 @@ class Command(BaseCommand):
                 )
                 major_list.append(major)
                 for _ in range(random.randint(1, 2)):
-                    research = Research.objects.create(res_name=fake.sentence())
+                    research = Research.objects.create(res_name=fake.sentence().strip(string.punctuation))
                     research_list.append(research)
                     major.maj_research.add(research)
                 academy.aca_majors.add(major)
@@ -284,12 +284,12 @@ class Command(BaseCommand):
                     counts = random.randint(10, 30)
                     reforms_data.append(counts)
                     for count in range(counts):
-                        reform = Reform.objects.create(
+                        ref_item = Reform.objects.create(
                             ref_time=reform_time,
                             ref_type=reform,
-                            ref_name=fake.sentence(),
+                            ref_name=fake.sentence().strip(string.punctuation),
                         )
-                        academy.aca_reforms.add(reform)
+                        academy.aca_reforms.add(ref_item)
                 ReformResults.objects.create(
                     time=reform_time,
                     project_count=reforms_data[0],
@@ -314,8 +314,8 @@ class Command(BaseCommand):
                 edu_begin_time=fake.date_of_birth(minimum_age=32, maximum_age=33),
                 edu_finish_time=fake.date_of_birth(minimum_age=27, maximum_age=28),
                 edu_school_name=fake.random.choice(SchoolsName),
-                edu_study_major=fake.random.choice(major_list),
-                edu_study_field=fake.random.choice(research_list)
+                edu_study_major=fake.random.choice(major_list).maj_name,
+                edu_study_field=fake.random.choice(research_list).res_name
             )
 
             teacher = Tutor(
@@ -339,133 +339,133 @@ class Command(BaseCommand):
             teacher.save()
             tutors_list.append(teacher)
         self.stdout.write(self.style.NOTICE('导师相关数据生成完毕~~~~~~'))
-        #
-        # # 论文相关数据
-        # _thesis_list = []
-        # _plaCheck_list = []
-        # _blindCheck_list = []
-        # for t_name in range(100):
-        #     the_final_score = fake.random.choice([True, False])
-        #     thesis = Thesis(
-        #         the_title="关于{0}的研究".format(t_name),
-        #         the_start_time="2019-09-01",
-        #         the_final_score=the_final_score,
-        #         the_start_result=fake.random.choice([True, False]),
-        #         the_exam_count=fake.random.choice([1, 2, 3])
-        #     )
-        #     the_is_delay = fake.random.choice([True, False])
-        #     thesis.the_is_delay = the_is_delay  # 毕设开题是否延期
-        #     if the_is_delay:
-        #         thesis.the_delay_reason = "aaa"
-        #         thesis.the_is_superb = False
-        #     else:
-        #         if the_final_score:
-        #             thesis.the_is_delay = False
-        #             thesis.the_is_superb = fake.random.choice([True, False])
-        #     thesis.save()
-        #     _thesis_list.append(thesis)
-        #     # 生成论文查重次数
-        #     for _ in range(random.randint(1, 3)):
-        #         pla_rate = fake.random.randint(1, 100)
-        #         pla_result = False if pla_rate >= 30 else True
-        #         placheck = ThesisPlaCheck.objects.create(
-        #             pla_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
-        #             pla_result=pla_result,
-        #             pla_rate=pla_rate,
-        #             thesis=thesis
-        #         )
-        #         _plaCheck_list.append(placheck)
-        #
-        #     # 生成论文盲审成绩
-        #     for _ in range(random.randint(1, 3)):
-        #         blindcheck = ThesisBlindReview.objects.create(
-        #             bli_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
-        #             bli_score=fake.random.choice(['合格', '不合格', '再审查']),
-        #             thesis=thesis
-        #         )
-        #         _blindCheck_list.append(blindcheck)
-        # # TODO: rebuild reducer the mock students method
-        # students_num = len(student_list)
-        # entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
-        # entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
-        # for entrance_year in entrance_years:
-        #     _student_list = []
-        #     student_num = int('{0}0101001'.format(entrance_year.year))
-        #     if (2019 - entrance_year.year) >= 3:
-        #         graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
-        #     else:
-        #         graduate_year = None
-        #     for _ in range(int(students_num / 10)):
-        #         student_num += 1
-        #         student = Student(
-        #             stu_number=student_num,
-        #             stu_gender=fake.random.choice([tag.name for tag in GenderChoice]),
-        #             stu_card_type='身份证',
-        #             stu_cardID=self.create_card_id(),
-        #             stu_candidate_number=random.randint(12101000000000, 12201000000000),
-        #             stu_birth_day=self.create_birthday(entrance_year),
-        #             stu_nation=fake.random.choice(EthnicChoice),
-        #             stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
-        #             stu_is_village=fake.random.choice([True, False]),
-        #             stu_political=fake.random.choice([tag.name for tag in PoliticalChoice]),  # 政治面貌
-        #             stu_type=fake.random.choice([tag.name for tag in StudentType]),  # 学生类型
-        #             stu_learn_type=fake.random.choice([tag.name for tag in StudentCategory]),  # 学习类型
-        #             stu_learn_status=fake.random.choice([tag.name for tag in DegreeChoice]),  # 学习阶段
-        #             stu_grade=random.randint(1, 3),  # 年级
-        #             stu_system=3,
-        #             stu_entrance_time=entrance_year,
-        #             stu_graduation_time=graduate_year,
-        #             stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingMode]),
-        #             stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategory]),
-        #             stu_nationality='中国',
-        #             stu_special_program=fake.random.choice([tag.name for tag in SpecialProgramChoice]),
-        #             stu_is_regular_income=fake.random.choice([True, False]),
-        #             stu_is_tuition_fees=fake.random.choice([True, False]),
-        #             stu_is_archives=fake.random.choice([True, False]),
-        #             stu_is_exemption=fake.random.choice([True, False]),
-        #             stu_is_adjust=fake.random.choice([True, False]),
-        #             stu_is_volunteer=fake.random.choice([True, False]),
-        #             stu_gain_diploma=fake.random.choice([True, False]) if graduate_year else False,
-        #             stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
-        #             stu_telephone=self.create_telephone(),
-        #             stu_status=fake.random.choice([tag.name for tag in StatusChoice]),
-        #             stu_mid_check=fake.random.choice([tag.name for tag in MidCheckChoice]),
-        #         )
-        #         student.user = student_list.pop()
-        #         student.stu_name = student.user.first_name + student.user.last_name
-        #         student.stu_tutor = fake.random.choice(tutors_list)
-        #         # 学生的学院/专业/班级信息
-        #         stu_academy = fake.random.choice(academy_list)
-        #         student.stu_academy = stu_academy   # 学院
-        #         stu_major = fake.random.choice(stu_academy.majors.all())
-        #         student.stu_major = stu_major  # 专业
-        #         student.stu_research = fake.random.choice(stu_major.research.all())
-        #
-        #         Class.objects.get_or_create(
-        #             cla_name=stu_major.maj_name,
-        #             cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3)),
-        #             major=stu_major
-        #         )  # 班级
-        #
-        #         student.stu_class = Class.objects.filter(
-        #             cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3))).first()
-        #
-        #         # 入学在2018年之前的都需要有对应的中期考核成绩
-        #         if entrance_year.year < 2018:
-        #
-        #             # 中期考核确认状态
-        #             student.stu_is_delay = fake.random.choice([True, False])
-        #             if student.stu_is_delay:
-        #                 student.stu_delay_reason = fake.sentence()
-        #
-        #             student.stu_mid_check = fake.random.choice([tag.name for tag in MidCheckChoice])  # 中期考核成绩
-        #             student.stu_is_superb = fake.random.choice([True, False])
-        #         # 论文
-        #         stu_thesis = fake.random.choice(_thesis_list)
-        #         student.stu_thesis = stu_thesis
-        #         _student_list.append(student)
-        #     Student.objects.bulk_create(_student_list)
-        # self.stdout.write(self.style.NOTICE('学生相关数据生成完毕~~~~~~'))
+
+        # 论文相关数据
+        _thesis_list = []
+        _plaCheck_list = []
+        _blindCheck_list = []
+        for t_name in range(100):
+            the_final_score = fake.random.choice([True, False])
+            thesis = Thesis(
+                the_title="关于{0}的研究".format(t_name),
+                the_start_time="2019-09-01",
+                the_final_score=the_final_score,
+                the_start_result=fake.random.choice([True, False]),
+                the_exam_count=fake.random.choice([1, 2, 3])
+            )
+            the_is_delay = fake.random.choice([True, False])
+            thesis.the_is_delay = the_is_delay  # 毕设开题是否延期
+            if the_is_delay:
+                thesis.the_delay_reason = "aaa"
+                thesis.the_is_superb = False
+            else:
+                if the_final_score:
+                    thesis.the_is_delay = False
+                    thesis.the_is_superb = fake.random.choice([True, False])
+            thesis.save()
+            _thesis_list.append(thesis)
+            # 生成论文查重次数
+            for _ in range(random.randint(1, 3)):
+                pla_rate = fake.random.randint(1, 100)
+                pla_result = False if pla_rate >= 30 else True
+                placheck = ThesisPlaCheck.objects.create(
+                    pla_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
+                    pla_result=pla_result,
+                    pla_rate=pla_rate,
+                    thesis=thesis
+                )
+                _plaCheck_list.append(placheck)
+
+            # 生成论文盲审成绩
+            for _ in range(random.randint(1, 3)):
+                blindcheck = ThesisBlindReview.objects.create(
+                    bli_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
+                    bli_score=fake.random.choice(['合格', '不合格', '再审查']),
+                    thesis=thesis
+                )
+                _blindCheck_list.append(blindcheck)
+        # TODO: rebuild reducer the mock students method
+        students_num = len(student_list)
+        entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
+        entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
+        for entrance_year in entrance_years:
+            _student_list = []
+            student_num = int('{0}0101001'.format(entrance_year.year))
+            if (2019 - entrance_year.year) >= 3:
+                graduate_year = entrance_year.replace(year=(entrance_year.year + 3))
+            else:
+                graduate_year = None
+            for _ in range(int(students_num / 10)):
+                student_num += 1
+                student = Student(
+                    stu_number=student_num,
+                    stu_gender=fake.random.choice([tag.name for tag in GenderType]),
+                    stu_card_type='身份证',
+                    stu_cardID=self.create_card_id(),
+                    stu_candidate_number=random.randint(12101000000000, 12201000000000),
+                    stu_birth_day=self.create_birthday(entrance_year),
+                    stu_nation=fake.random.choice(EthnicChoice),
+                    stu_source=fake.random.choice([x[1] for x in ProvinceOfChina]),
+                    stu_is_village=fake.random.choice([True, False]),
+                    stu_political=fake.random.choice([tag.name for tag in PoliticalType]),  # 政治面貌
+                    stu_type=fake.random.choice([tag.name for tag in StudentCategoryType]),  # 学生类型
+                    stu_learn_type=fake.random.choice([tag.name for tag in StudentLearnType]),  # 学习类型
+                    stu_learn_status=fake.random.choice([tag.name for tag in DegreeType]),  # 学习阶段
+                    stu_grade=random.randint(1, 3),  # 年级
+                    stu_system=3,
+                    stu_entrance_time=entrance_year,
+                    stu_graduation_time=graduate_year,
+                    stu_cultivating_mode=fake.random.choice([tag.name for tag in CultivatingModeType]),
+                    stu_enrollment_category=fake.random.choice([tag.name for tag in EnrollmentCategoryType]),
+                    stu_nationality='中国',
+                    stu_special_program=fake.random.choice([tag.name for tag in SpecialProgramType]),
+                    stu_is_regular_income=fake.random.choice([True, False]),
+                    stu_is_tuition_fees=fake.random.choice([True, False]),
+                    stu_is_archives=fake.random.choice([True, False]),
+                    stu_is_exemption=fake.random.choice([True, False]),
+                    stu_is_adjust=fake.random.choice([True, False]),
+                    stu_is_volunteer=fake.random.choice([True, False]),
+                    stu_gain_diploma=fake.random.choice([True, False]) if graduate_year else False,
+                    stu_gain_cert=fake.random.choice([True, False]) if graduate_year else False,
+                    stu_telephone=self.create_telephone(),
+                    stu_status=fake.random.choice([tag.name for tag in StudentStatusType]),
+                    stu_mid_check=fake.random.choice([tag.name for tag in MidCheckType]),
+                )
+                student.stu_user = student_list.pop()
+                student.stu_name = student.stu_user.first_name + student.stu_user.last_name
+                student.stu_tutor = fake.random.choice(tutors_list)
+                # 学生的学院/专业/班级信息
+                stu_academy = fake.random.choice(academy_list)
+                student.stu_academy = stu_academy   # 学院
+                stu_major = fake.random.choice(stu_academy.aca_majors.all())
+                student.stu_major = stu_major  # 专业
+                student.stu_research = fake.random.choice(stu_major.maj_research.all())
+
+                Class.objects.get_or_create(
+                    cla_name=stu_major.maj_name,
+                    cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3)),
+                    cla_major=stu_major
+                )  # 班级
+
+                student.stu_class = Class.objects.filter(
+                    cla_code='{}0{}'.format(entrance_year.year, fake.random.randint(1, 3))).first()
+
+                # 入学在2018年之前的都需要有对应的中期考核成绩
+                if entrance_year.year < 2018:
+
+                    # 中期考核确认状态
+                    student.stu_is_delay = fake.random.choice([True, False])
+                    if student.stu_is_delay:
+                        student.stu_delay_reason = fake.sentence()
+
+                    student.stu_mid_check = fake.random.choice([tag.name for tag in MidCheckType])  # 中期考核成绩
+                    student.stu_is_superb = fake.random.choice([True, False])
+                # 论文
+                stu_thesis = fake.random.choice(_thesis_list)
+                student.stu_thesis = stu_thesis
+                _student_list.append(student)
+            Student.objects.bulk_create(_student_list)
+        self.stdout.write(self.style.NOTICE('学生相关数据生成完毕~~~~~~'))
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('begin import'))
