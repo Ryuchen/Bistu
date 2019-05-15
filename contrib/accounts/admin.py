@@ -60,21 +60,21 @@ class TutorAdmin(admin.ModelAdmin):
     actions = ["export_as_csv"]
     fieldsets = (
         ('关联账户', {
-            'fields': ('user', )
+            'fields': ('tut_user', )
         }),
         ('基本信息', {
             'fields': (
                 'tut_number', 'tut_name', 'tut_avatar', 'tut_gender', 'tut_cardID',
                 'tut_birth_day', 'tut_telephone', 'tut_title', 'tut_political',
-                'tut_degree', 'tut_entry_day', 'education'
+                'tut_degree', 'tut_entry_day', 'tut_education'
             )
         }),
         ('学院资料', {
-            'fields': ('academy', ),
+            'fields': ('tut_academy', ),
         })
     )
     list_filter = [
-        ('academy', RelatedDropdownFilter),
+        ('tut_academy', RelatedDropdownFilter),
         # for choice fields
         ('tut_political', ChoiceDropdownFilter),
     ]
