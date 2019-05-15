@@ -17,3 +17,4 @@ typed-ast
 wrapt
 xlrd
 https://github.com/darklow/django-suit/tarball/v2#egg=django-suit
+django-admin-list-filter-dropdown

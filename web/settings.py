@@ -30,6 +30,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
+    'web.apps.SuitConfig',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -41,8 +43,6 @@ INSTALLED_APPS = [
     'core',
     'django_filters',
     'django_admin_listfilter_dropdown',
-    'web.apps.SuitConfig',
-    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
