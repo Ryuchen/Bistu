@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+
 urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("colleges/", include("apps.colleges.urls")),
@@ -27,7 +28,6 @@ urlpatterns = [
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
     path("", admin.site.urls),
-    path("advanced_filters/", include('advanced_filters.urls'))
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'
