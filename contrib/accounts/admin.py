@@ -75,7 +75,6 @@ class TutorAdmin(admin.ModelAdmin):
     )
     list_filter = [
         ('tut_academy', RelatedDropdownFilter),
-        # for choice fields
         ('tut_political', ChoiceDropdownFilter),
     ]
     list_display = (
@@ -115,7 +114,7 @@ class StudentAdmin(admin.ModelAdmin):
     actions = ["export_as_csv"]
     fieldsets = (
         ('关联账户', {
-            'fields': ('user',)
+            'fields': ('stu_user',)
         }),
         ('基本信息', {
             'fields': (
@@ -142,17 +141,12 @@ class StudentAdmin(admin.ModelAdmin):
         }),
     )
     list_filter = [
-        # for choice fields
         ('stu_special_program', ChoiceDropdownFilter),
-        # for choice fields
         ('stu_cultivating_mode', ChoiceDropdownFilter),
-        # for choice fields
         ('stu_enrollment_category', ChoiceDropdownFilter),
         ('stu_entrance_time', DropdownFilter),
         ('stu_academy', RelatedDropdownFilter),
-        # for related fields
         ('stu_major', RelatedDropdownFilter),
-        # for choice fields
         ('stu_political', ChoiceDropdownFilter),
     ]
     list_display = (
