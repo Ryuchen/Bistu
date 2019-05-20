@@ -61,11 +61,11 @@ class TutorSerializers(serializers.ModelSerializer):
 
         return new_tutor
 
-    def update(self, instance, validated_data):
-        username = validated_data.get('user')['username']
-        education = validated_data.get('education')
-        if not User.objects.filter(username=username).count():
-            User.objects.filter(id=instance.user_id).update(username=username)
-        if isinstance(education, dict):
-            Education.objects.filter(uuid=instance.education_id).update(**education)
-        return instance
+    # def update(self, instance, validated_data):
+    #     username = validated_data.get('user')['username']
+    #     education = validated_data.get('education')
+    #     if not User.objects.filter(username=username).count():
+    #         User.objects.filter(id=instance.user_id).update(username=username)
+    #     if isinstance(education, dict):
+    #         Education.objects.filter(uuid=instance.education_id).update(**education)
+    #     return instance

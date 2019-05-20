@@ -18,6 +18,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from contrib.accounts.models import Tutor
 from contrib.colleges.models import Major, Academy
 from .serializers import TutorSerializers
+from .serializers import AcademySerializers
 from core.decorators.excepts import excepts
 from apps.settings.views import trans_choice
 
@@ -26,8 +27,8 @@ def user_create(username, tut_number):
     user = dict()
     if username:
         user['username'] = str(int(tut_number))
-        user['first_name'] = username
-        user['last_name'] = username
+        user['first_name'] = username[0:1]
+        user['last_name'] = username[1:]
         user['password'] = make_password('123456')
         user['is_superuser'] = False
         user['is_staff'] = True
@@ -39,7 +40,6 @@ class SimpleTutor(object):
     model = Tutor
     queryset = Tutor.objects.all()
     serializer_class = TutorSerializers
-    pagination_class = LimitOffsetPagination
     filter_fields = ("tut_title", "tut_telephone", "tut_degree")
 
 
@@ -54,16 +54,13 @@ class TutorDetail(SimpleTutor, generics.RetrieveUpdateDestroyAPIView):
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
-        data = request.data
-        username = data.get('user')
-        data["user"] = user_create(username)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data, partial=partial,
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,
                                          context={"academy": "", 'user': "", "education": ""})
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     @excepts
     @csrf_exempt
@@ -102,26 +99,18 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
             serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # 添加
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
+        """ TODO """
         data = request.data
-        bulk = isinstance(data, list)
-        if not bulk:
-            username = data.get('user')
-            data["user"] = user_create(username)
-            data["majors"] = Major.objects.filter(maj_name=data.get('majors')).first()
-            serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
-        else:
-            for item in data:
-                username = item['user']
-                item["user"] = user_create(username)
-                data["majors"] = Major.objects.filter(maj_name=item.get('majors')).first()
-            serializer = self.get_serializer(data=data, many=True, context={"academy": "", "user": ""})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        data["user"] = user_create(data.get('tut_name'), data.get('tut_number'))
+        data["academy"] = Academy.objects.get(uuid=data.get("academy"))
+        serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @excepts
     @csrf_exempt
