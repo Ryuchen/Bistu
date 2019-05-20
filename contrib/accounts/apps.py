@@ -12,7 +12,6 @@ from django.apps import AppConfig
 
 class AccountConfig(AppConfig):
     name = 'contrib.accounts'
-    label = '用户管理'
     verbose_name = '用户管理'
-    verbose_name_plural = 1
+    verbose_name_plural = verbose_name
 

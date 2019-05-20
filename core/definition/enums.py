@@ -10,12 +10,15 @@
 from enum import Enum
 
 
-class GenderChoice(Enum):
+class GenderType(Enum):
     G1 = "男"
     G2 = "女"
 
 
-class TitleChoice(Enum):
+GenderChoice = [(tag.name, tag.value) for tag in GenderType]
+
+
+class TitleType(Enum):
     T1 = "讲师"
     T2 = "副教授"
     T3 = "教授"
@@ -24,32 +27,47 @@ class TitleChoice(Enum):
     T6 = "助教"
 
 
-class PoliticalChoice(Enum):
+TitleChoice = [(tag.name, tag.value) for tag in TitleType]
+
+
+class PoliticalType(Enum):
     P1 = "党员"
     P2 = "团员"
     P3 = "群众"
     P4 = "民主党派"
 
 
-class DegreeChoice(Enum):
+PoliticalChoice = [(tag.name, tag.value) for tag in PoliticalType]
+
+
+class DegreeType(Enum):
     S1 = "博士"
     S2 = "硕士"
     S3 = "本科"
 
 
-class StatusChoice(Enum):
+DegreeChoice = [(tag.name, tag.value) for tag in DegreeType]
+
+
+class StudentStatusType(Enum):
     S1 = "在校"
     S2 = "离校"
     S3 = "留校"
 
 
-class MidCheckChoice(Enum):
+StudentStatusChoice = [(tag.name, tag.value) for tag in StudentStatusType]
+
+
+class MidCheckType(Enum):
     S1 = "合格"
     S2 = "跟踪"
     S3 = "不合格"
 
 
-class StudentType(Enum):
+MidCheckChoice = [(tag.name, tag.value) for tag in MidCheckType]
+
+
+class StudentLearnType(Enum):
     S1 = "硕士"
     S2 = "博士"
     S3 = "本硕连读"
@@ -57,22 +75,34 @@ class StudentType(Enum):
     S5 = "直博"
 
 
-class StudentCategory(Enum):
+StudentLearnChoice = [(tag.name, tag.value) for tag in StudentLearnType]
+
+
+class StudentCategoryType(Enum):
     S1 = "全日制"
     S2 = "非全日制"
 
 
-class CultivatingMode(Enum):
+StudentCategoryChoice = [(tag.name, tag.value) for tag in StudentCategoryType]
+
+
+class CultivatingModeType(Enum):
     C1 = "专硕"
     C2 = "学硕"
 
 
-class EnrollmentCategory(Enum):
+CultivatingModeChoice = [(tag.name, tag.value) for tag in CultivatingModeType]
+
+
+class EnrollmentCategoryType(Enum):
     E1 = "定向"
     E2 = "非定向"
 
 
-class SpecialProgramChoice(Enum):
+EnrollmentCategoryChoice = [(tag.name, tag.value) for tag in EnrollmentCategoryType]
+
+
+class SpecialProgramType(Enum):
     S1 = '无'
     S2 = '少数民族高层次骨干计划'
     S3 = '强军计划'
@@ -84,9 +114,15 @@ class SpecialProgramChoice(Enum):
     S9 = '其他'
 
 
+SpecialProgramChoice = [(tag.name, tag.value) for tag in SpecialProgramType]
+
+
 class MajorType(Enum):
     C1 = "专业硕士学位"
     C2 = "学科硕士学位"
+
+
+MajorTypeChoice = [(tag.name, tag.value) for tag in MajorType]
 
 
 class MajorDegree(Enum):
@@ -105,6 +141,9 @@ class MajorDegree(Enum):
     D13 = "艺术学"
 
 
+MajorDegreeChoice = [(tag.name, tag.value) for tag in MajorDegree]
+
+
 class ReformType(Enum):
     RT1 = "研究生教改项目立项"
     RT2 = "研究生教改论文发表"
@@ -113,3 +152,6 @@ class ReformType(Enum):
     RT5 = "精品/在线课程建设"
     RT6 = "研究生实践基地建设"
     RT7 = "研究生国际交流项目"
+
+
+ReformTypeChoice = [(tag.name, tag.value) for tag in ReformType]

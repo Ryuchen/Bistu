@@ -152,7 +152,7 @@ class ThesisQualityReport(models.Model):
     graduate_proportion = models.IntegerField(null=False, default=0, verbose_name="毕业率")
     degree_count = models.IntegerField(null=False, default=0, verbose_name="获学位人数")
     degree_proportion = models.IntegerField(null=False, default=0, verbose_name="获学位率")
-    major = models.ForeignKey(Major, null=True, related_name='major', on_delete=models.SET_NULL, verbose_name="学科专业")
+    major = models.ForeignKey(Major, null=True, related_name='tq_major', on_delete=models.SET_NULL, verbose_name="学科专业")
     academy = models.ForeignKey(Academy, null=True, related_name='tq_academy', on_delete=models.SET_NULL, verbose_name="学院名称")
 
     class Meta:

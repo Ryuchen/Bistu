@@ -192,7 +192,7 @@ class StudentStatistics(generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
-        year = request.GET.get("year", "")
+        year = request.GET.get("year", datetime.now().year)
         if year:
             student = Student.objects.filter(stu_entrance_time__year=year).all()
         else:
@@ -265,7 +265,7 @@ class StudentStatistics(generics.GenericAPIView):
 @csrf_exempt
 @api_view(['GET'])
 def create_xls(request):
-    year = request.GET.get("year", 2019)
+    year = request.GET.get("year", datetime.now().year)
 
     # 创建一个workbook 设置编码
     workbook = xlwt.Workbook(encoding='utf-8')
