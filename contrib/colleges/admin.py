@@ -110,7 +110,7 @@ class AcademyAdmin(admin.ModelAdmin):
 
     def get_enroll_statistic(self, obj):
         return mark_safe('<a class="deletelink" href="{0}?academy={1}">招生统计</a>'.format(reverse("create_xls"), obj.pk))
-    get_enroll_statistic.short_description = 'Action'
+    get_enroll_statistic.short_description = '操作'
     get_enroll_statistic.allow_tags = True
 
     inlines = [
@@ -120,7 +120,7 @@ class AcademyAdmin(admin.ModelAdmin):
     list_display = (
         'aca_code', 'aca_cname', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
     )
-    list_display_links = ('get_enroll_statistic', )
+    list_display_links = ('aca_cname', )
     exclude = ('aca_majors', 'aca_reforms')
     empty_value_display = '--'
     change_list_template = "admin/web/Academy/change_list.html"
