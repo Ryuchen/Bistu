@@ -8,6 +8,7 @@
 # @Desc :
 # ==================================================
 import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -20,9 +21,9 @@ class Education(models.Model):
     """
     学习经历模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    edu_begin_time = models.DateField(verbose_name="开始时间")
-    edu_finish_time = models.DateField(verbose_name="结束时间")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
+    edu_begin_time = models.DateField(null=True, verbose_name="开始时间")
+    edu_finish_time = models.DateField(null=True, verbose_name="结束时间")
     edu_school_name = models.CharField(max_length=128, null=True, verbose_name="学校名称")
     edu_study_major = models.CharField(max_length=128, null=True, verbose_name="专业方向")
     edu_study_field = models.CharField(max_length=128, null=True, verbose_name="研究领域")
@@ -47,54 +48,48 @@ class Tutor(models.Model):
     """
     导师模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='user', verbose_name="账户信息")
-    tut_name = models.CharField(null=True, max_length=64, verbose_name="导师名称")
-    tut_avatar = models.ImageField(null=True, upload_to="teachers", default='default.png', verbose_name="教师图片")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
+    tut_user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='tut_user', verbose_name="账户信息")
+    tut_name = models.CharField(max_length=64, null=True, verbose_name="导师名称")
+    tut_avatar = models.ImageField(upload_to="teachers", default='default.png', null=True, verbose_name="教师图片")
     tut_birth_day = models.DateField(max_length=128, null=True, verbose_name="出生日期")
     tut_entry_day = models.DateField(max_length=128, null=True, verbose_name="入职日期")
     tut_telephone = models.IntegerField(null=True, verbose_name="电话号码")
-    tut_number = models.IntegerField(null=True, unique=True, verbose_name="导师工号")
-    tut_cardID = models.CharField(max_length=128, null=True, unique=True, verbose_name="身份证号")
-    tut_gender = models.CharField(max_length=64, choices=([(tag.name, tag.value) for tag in GenderChoice]),
-                                  verbose_name="性别")
-    tut_title = models.CharField(max_length=64, choices=([(tag.name, tag.value) for tag in TitleChoice]),
-                                 verbose_name="职称")
-    tut_political = models.CharField(max_length=64, choices=([(tag.name, tag.value) for tag in PoliticalChoice]),
-                                     verbose_name="政治面貌")
-    tut_degree = models.CharField(max_length=64, choices=([(tag.name, tag.value) for tag in DegreeChoice]),
-                                  verbose_name="学位")
-    education = models.ForeignKey(Education, null=True, on_delete=models.CASCADE, related_name='education',
-                                  verbose_name="学历")
-    academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='academy',
-                                verbose_name="所属学院")
+    tut_number = models.IntegerField(null=True, verbose_name="导师工号")
+    tut_cardID = models.CharField(max_length=128, null=True, verbose_name="身份证号")
+    tut_gender = models.CharField(max_length=64, choices=GenderChoice, verbose_name="性别")
+    tut_title = models.CharField(max_length=64, choices=TitleChoice, verbose_name="职称")
+    tut_political = models.CharField(max_length=64, choices=PoliticalChoice, verbose_name="政治面貌")
+    tut_degree = models.CharField(max_length=64, choices=DegreeChoice, verbose_name="学位")
+    tut_education = models.ForeignKey(Education, null=True, on_delete=models.CASCADE, related_name='tut_education', verbose_name="学历")
+    tut_academy = models.ForeignKey(Academy, null=True, on_delete=models.CASCADE, related_name='tut_academy', verbose_name="所属学院")
 
     def get_gender(self):
-        return GenderChoice[self.tut_gender].value
+        return GenderType[self.tut_gender].value
     get_gender.short_description = '性别'
 
     def get_title(self):
-        return TitleChoice[self.tut_title].value
+        return TitleType[self.tut_title].value
     get_gender.short_description = '职称'
 
     def get_degree(self):
-        return DegreeChoice[self.tut_degree].value
+        return DegreeType[self.tut_degree].value
     get_degree.short_description = '学历'
 
     def get_political(self):
-        return PoliticalChoice[self.tut_political].value
+        return PoliticalType[self.tut_political].value
     get_political.short_description = '政治面貌'
 
     def export_row(self):
         field_data = [
             self.tut_number, self.tut_name, self.get_gender(), self.get_title(), self.get_political(),
-            self.academy.aca_cname, self.user.email, self.tut_telephone, self.tut_degree, self.education.edu_school_name,
-            self.tut_birth_day, self.tut_entry_day
+            self.tut_academy.aca_cname, self.tut_user.email, self.tut_telephone, self.tut_degree,
+            self.tut_education.edu_school_name, self.tut_birth_day, self.tut_entry_day
         ]
         return field_data
 
     def __str__(self):
-        return "工号：{0}  姓名：{1}".format(self.tut_number, self.user.first_name + self.user.last_name)
+        return "工号：{0}  姓名：{1}".format(self.tut_number, self.tut_name)
 
     class Meta:
         db_table = 'teacher'
@@ -114,32 +109,32 @@ class Student(models.Model):
     """
     学生模型
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='stu_user', verbose_name="账户信息")
-    stu_name = models.CharField(null=True, max_length=64, verbose_name="姓名")
-    stu_number = models.IntegerField(null=True, unique=True, default='20190101', verbose_name="学号")
-    stu_avatar = models.ImageField(null=True, upload_to="students", default='default.png', verbose_name="学生照片")
-    stu_gender = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in GenderChoice], verbose_name="性别")
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
+    stu_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stu_user", null=True, verbose_name="账户信息")
+    stu_name = models.CharField(max_length=64, null=True, verbose_name="姓名")
+    stu_number = models.IntegerField(default="2019019011", null=True, verbose_name="学号")
+    stu_avatar = models.ImageField(upload_to="students", default="default.png", null=True, verbose_name="学生照片")
+    stu_gender = models.CharField(max_length=64, null=True, choices=GenderChoice, verbose_name="性别")
     stu_telephone = models.IntegerField(null=True, verbose_name="电话")
-    stu_card_type = models.CharField(max_length=128, null=True, verbose_name='身份证件类型', default="身份证")
-    stu_cardID = models.CharField(max_length=128, null=True, unique=True, verbose_name="身份证号", default="")
+    stu_card_type = models.CharField(max_length=128, null=True, default="身份证", verbose_name="身份证件类型")
+    stu_cardID = models.CharField(max_length=128, null=True, verbose_name="身份证号")
     stu_candidate_number = models.CharField(max_length=128, null=True, verbose_name="考生号")
-    stu_birth_day = models.DateField(max_length=64, null=True, verbose_name="出生日期", default='201909')
-    stu_nation = models.CharField(max_length=64, null=True, verbose_name='民族', default='汉')
+    stu_birth_day = models.DateField(max_length=64, null=True, default="201909", verbose_name="出生日期")
+    stu_nation = models.CharField(max_length=64, null=True, default="汉", verbose_name="民族")
     stu_source = models.CharField(max_length=128, null=True, verbose_name="生源地")
-    stu_is_village = models.BooleanField(null=True, verbose_name='是否农村学生')
-    stu_political = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in PoliticalChoice], verbose_name="政治面貌")
-    stu_type = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in StudentType], verbose_name='学生类型', default='S1')
-    stu_learn_type = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in StudentCategory], verbose_name='学习形式', default='S1')
-    stu_learn_status = models.CharField(max_length=64, null=True, verbose_name='学习阶段', default='D2', choices=[(tag.name, tag.value) for tag in DegreeChoice])
-    stu_grade = models.CharField(max_length=64, null=True, verbose_name='年级', default='1')
-    stu_system = models.IntegerField(null=True, verbose_name='学制', default=3)
-    stu_entrance_time = models.DateField(max_length=32, null=True, verbose_name='入学日期', default='2019-09')
-    stu_graduation_time = models.DateField(max_length=32, null=True, verbose_name='毕业日期', default='2021-07')
-    stu_cultivating_mode = models.CharField(max_length=128, null=True, verbose_name='培养方式', default='C1', choices=[(tag.name, tag.value) for tag in CultivatingMode])
-    stu_enrollment_category = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in EnrollmentCategory], verbose_name='录取类别', default='E1')
+    stu_is_village = models.BooleanField(default=False, null=True, verbose_name="是否农村学生")
+    stu_political = models.CharField(max_length=64, null=True, choices=PoliticalChoice, verbose_name="政治面貌")
+    stu_type = models.CharField(max_length=128, null=True, choices=StudentCategoryChoice, verbose_name="学生类型")
+    stu_learn_type = models.CharField(max_length=64, null=True, choices=StudentLearnChoice, verbose_name='学习形式')
+    stu_learn_status = models.CharField(max_length=64, null=True, choices=DegreeChoice, verbose_name='学习阶段')
+    stu_grade = models.CharField(max_length=64, null=True, default='1', verbose_name='年级')
+    stu_system = models.IntegerField(null=True, default=3, verbose_name='学制')
+    stu_entrance_time = models.DateField(max_length=32, null=True, verbose_name='入学日期')
+    stu_graduation_time = models.DateField(max_length=32, null=True, verbose_name='毕业日期')
+    stu_cultivating_mode = models.CharField(max_length=128, choices=CultivatingModeChoice, null=True, verbose_name='培养方式')
+    stu_enrollment_category = models.CharField(max_length=64, null=True, choices=EnrollmentCategoryChoice, default='E1', verbose_name='录取类别')
     stu_nationality = models.CharField(max_length=128, null=True, verbose_name='国籍', default='中国')
-    stu_special_program = models.CharField(max_length=128, null=True, choices=[(tag.name, tag.value) for tag in SpecialProgramChoice], verbose_name='专项计划', default='S1')
+    stu_special_program = models.CharField(max_length=128, null=True, choices=SpecialProgramChoice, default='S1', verbose_name='专项计划')
     stu_is_regular_income = models.BooleanField(default=False, verbose_name='是否有固定收入')
     stu_is_tuition_fees = models.BooleanField(default=False, verbose_name='是否欠缴学费')
     stu_is_archives = models.BooleanField(default=False, verbose_name='档案是否转到学校')
@@ -149,8 +144,8 @@ class Student(models.Model):
     stu_is_superb = models.BooleanField(default=False, verbose_name="是否优秀毕业生")
     stu_is_delay = models.BooleanField(default=True, verbose_name="是否延期（中期考核）")
     stu_delay_reason = models.CharField(max_length=255, null=True, verbose_name="中期考核延期原因")
-    stu_mid_check = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in MidCheckChoice], verbose_name="中期考核结果")
-    stu_status = models.CharField(max_length=64, null=True, choices=[(tag.name, tag.value) for tag in StatusChoice], verbose_name="在学状态", default='S1')
+    stu_mid_check = models.CharField(max_length=64, null=True, choices=MidCheckChoice, verbose_name="中期考核结果")
+    stu_status = models.CharField(max_length=64, null=True, choices=StudentStatusChoice, default='S1', verbose_name="在学状态")
     stu_gain_diploma = models.BooleanField(null=True, default=False, verbose_name="学位证")
     stu_gain_cert = models.BooleanField(null=True, default=False, verbose_name="毕业证")
     stu_tutor = models.ForeignKey(Tutor, null=True, related_name='stu_tutor', on_delete=models.SET_NULL, verbose_name="指导老师")
@@ -161,31 +156,31 @@ class Student(models.Model):
     stu_thesis = models.ForeignKey(Thesis, null=True, related_name='stu_thesis', on_delete=models.SET_NULL, verbose_name="毕业论文")
 
     def get_gender(self):
-        return GenderChoice[self.stu_gender].value
+        return GenderType[self.stu_gender].value
     get_gender.short_description = '性别'
 
     def get_political(self):
-        return PoliticalChoice[self.stu_political].value
+        return PoliticalType[self.stu_political].value
     get_political.short_description = '政治面貌'
 
     def get_stu_type(self):
-        return StudentType[self.stu_type].value
+        return StudentLearnType[self.stu_type].value
     get_stu_type.short_description = '学生类型'
 
     def get_stu_learn_type(self):
-        return StudentCategory[self.stu_learn_type].value
+        return StudentCategoryType[self.stu_learn_type].value
     get_stu_learn_type.short_description = '学习形式'
 
     def get_stu_learn_status(self):
-        return DegreeChoice[self.stu_learn_status].value
+        return DegreeType[self.stu_learn_status].value
     get_stu_learn_status.short_description = '学习阶段'
 
     def get_stu_cultivating_mode(self):
-        return CultivatingMode[self.stu_cultivating_mode].value
+        return CultivatingModeType[self.stu_cultivating_mode].value
     get_stu_cultivating_mode.short_description = '培养方式'
 
     def get_stu_enrollment_category(self):
-        return EnrollmentCategory[self.stu_enrollment_category].value
+        return EnrollmentCategoryType[self.stu_enrollment_category].value
     get_stu_enrollment_category.short_description = '录取类别'
 
     def get_stu_special_program(self):
@@ -197,7 +192,7 @@ class Student(models.Model):
     get_stu_mid_check.short_description = '中期考核结果'
 
     def get_stu_status(self):
-        return StatusChoice[self.stu_status].value
+        return StudentStatusType[self.stu_status].value
     get_stu_status.short_description = '在学状态'
 
     def export_row(self):
@@ -213,7 +208,7 @@ class Student(models.Model):
         return field_data
 
     def __str__(self):
-        return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.user.first_name + self.user.last_name)
+        return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.stu_name)
 
     class Meta:
         db_table = 'student'
@@ -240,7 +235,6 @@ class MidCheckReport(models.Model):
     pass_count = models.IntegerField(null=False, default=0, verbose_name="延期考核人数")
     pass_proportion = models.IntegerField(null=False, default=0, verbose_name="延期考核比例")
     delay_count = models.IntegerField(null=False, default=0, verbose_name="延期考核人数")
-    # delay_reason = models.TextField(null=False, default="", verbose_name="延期考核原因")  # 每个延期考核的学生都有自己的延期原因
     delay_proportion = models.IntegerField(null=False, default=0, verbose_name="延期考核比例")
     track_count = models.IntegerField(null=False, default=0, verbose_name="被跟踪人数")
     track_proportion = models.IntegerField(null=False, default=0, verbose_name="被跟踪比例")
