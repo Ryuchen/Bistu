@@ -16,7 +16,7 @@ from apps.colleges.serializers import AcademySerializers, MajorSerializers
 
 
 class StudentSerializers(serializers.ModelSerializer):
-    user = UserSerializers(many=False)
+    stu_user = UserSerializers(many=False)
     stu_academy = AcademySerializers(many=False)
     stu_major = MajorSerializers(many=False)
     stu_tutor = TutorSerializers(many=False)
@@ -45,7 +45,7 @@ class StudentSerializers(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = validated_data.pop('user')
+        user = validated_data.pop('stu_user')
         major = validated_data.pop('stu_major')
         tutor = validated_data.pop('stu_tutor')
         academy = validated_data.pop('stu_academy')
@@ -53,11 +53,11 @@ class StudentSerializers(serializers.ModelSerializer):
             user = User.objects.create(**user)
         else:
             user = User.objects.filter(first_name=user['first_name']).first()
-        new_tutor = Student.objects.create(user=user, stu_academy=academy, stu_major=major, stu_tutor=tutor, **validated_data)
+        new_tutor = Student.objects.create(stu_user=user, stu_academy=academy, stu_major=major, stu_tutor=tutor, **validated_data)
         return new_tutor
 
     def update(self, instance, validated_data):
-        username = validated_data.get('user')['username']
+        username = validated_data.get('stu_user')['username']
         if not User.objects.filter(username=username).count():
             User.objects.filter(id=instance.user_id).update(username=username)
         return instance
