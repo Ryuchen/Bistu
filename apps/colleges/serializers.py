@@ -23,7 +23,7 @@ class ResearchSerializers(serializers.ModelSerializer):
 
 class MajorSerializers(serializers.ModelSerializer):
     """ 学科专业 """
-    research = ResearchSerializers(many=True)
+    maj_research = ResearchSerializers(many=True)
     student_count = serializers.SerializerMethodField(read_only=True)
 
     def get_student_count(self, major):
@@ -32,7 +32,7 @@ class MajorSerializers(serializers.ModelSerializer):
     class Meta:
         model = Major
         fields = ('uuid', 'maj_name', 'maj_code', 'maj_type', 'maj_first', 'maj_second',
-                  'maj_setup_time', 'maj_degree', 'research', 'student_count')
+                  'maj_setup_time', 'maj_degree', 'maj_research', 'student_count')
 
     def to_representation(self, instance):
         instance.maj_type = instance.get_maj_type_display()
@@ -51,9 +51,9 @@ class ReformSerializers(serializers.ModelSerializer):
 
 class AcademySerializers(serializers.ModelSerializer):
     """ 学院 """
-    majors = MajorSerializers(many=True)
+    aca_majors = MajorSerializers(many=True)
     aca_user = UserSerializers(many=False)
-    reforms = ReformSerializers(many=True)
+    aca_reforms = ReformSerializers(many=True)
     student_count = serializers.SerializerMethodField(read_only=True)
 
     def get_student_count(self, academy):
@@ -62,7 +62,7 @@ class AcademySerializers(serializers.ModelSerializer):
     class Meta:
         model = Academy
         fields = ('uuid', 'aca_avatar', 'aca_nickname', 'aca_cname', 'aca_ename', 'aca_code', 'aca_phone', 'aca_fax',
-                  'aca_href', 'aca_brief', 'aca_user', 'majors', 'student_count', 'reforms')
+                  'aca_href', 'aca_brief', 'aca_user', 'aca_majors', 'student_count', 'aca_reforms')
 
 
 class ReformResultsSerializers(serializers.ModelSerializer):
