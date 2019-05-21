@@ -9,6 +9,10 @@
 # ==================================================
 import csv
 
+from import_export import resources
+from import_export.fields import Field
+from import_export.admin import ImportExportMixin
+
 from . import forms
 from . import models
 
@@ -34,43 +38,36 @@ class StudentInline(admin.TabularInline):
     extra = 0
 
 
-@admin.register(models.Tutor)
-class TutorAdmin(admin.ModelAdmin):
+class TutorResource(resources.ModelResource):
+    tut_number = Field(attribute='tut_number', column_name='教师编号')
+    tut_name = Field(attribute='tut_name', column_name='教师姓名')
+    get_gender = Field(attribute='get_gender', column_name='性别')
+    get_title = Field(attribute='get_title', column_name='职称')
+    get_political = Field(attribute='get_political', column_name='政治面貌')
+    tut_aca_cname = Field(attribute='tut_academy__aca_cname', column_name='所属学院')
+    tut_email = Field(attribute='tut_user__email', column_name='教师邮箱')
+    tut_telephone = Field(attribute='tut_telephone', column_name='教师电话')
+    get_degree = Field(attribute='get_degree', column_name='最高学历')
+    tut_edu_school_name = Field(attribute='tut_education__edu_school_name', column_name='毕业院校')
+    tut_birth_day = Field(attribute='tut_birth_day', column_name='出生日期')
+    tut_entry_day = Field(attribute='tut_entry_day', column_name='入职日期')
 
-    def export_as_csv(self, request, queryset):
-        field_names = [
-            "教师编号", "教师姓名", "性别", "职称", "政治面貌",
-            "所属学院", "教师邮箱", "教师电话", "最高学历", "毕业院校",
-            "出生日期", "入职日期"
-        ]
-
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=教师表格.csv'
-        writer = csv.writer(response)
-
-        writer.writerow(field_names)
-        for obj in queryset:
-            writer.writerow(obj.export_row())
-
-        return response
-    export_as_csv.short_description = "导出所选的 教师"
-
-    def get_urls(self):
-        urls = super(TutorAdmin, self).get_urls()
-        extend_urls = [
-            url(r'^import-excel/$', self.admin_site.admin_view(self.import_excel), name='import-excel')
-        ]
-        return extend_urls + urls
-
-    def import_excel(self, request):
-        context = dict(
-            self.admin_site.each_context(request),
+    class Meta:
+        model = models.Tutor
+        fields = (
+            'tut_number', 'tut_name', 'get_gender', 'get_title', 'get_political',
+            'tut_aca_cname', 'tut_email', 'tut_telephone', 'get_degree',
+            'tut_edu_school_name', 'tut_birth_day', 'tut_entry_day'
         )
-        return TemplateResponse(request, "admin/web/Tutor/import_excel.html", context)
+
+
+@admin.register(models.Tutor)
+class TutorAdmin(ImportExportMixin, admin.ModelAdmin):
+
+    resource_class = TutorResource
 
     form = forms.TutorForm
     inlines = [StudentInline]
-    actions = ["export_as_csv"]
     fieldsets = (
         ('关联账户', {
             'fields': ('tut_user', )
@@ -96,7 +93,6 @@ class TutorAdmin(admin.ModelAdmin):
     )
 
     empty_value_display = '--'
-    change_list_template = 'admin/web/Tutor/change_list.html'
 
 
 @admin.register(models.Student)

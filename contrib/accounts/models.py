@@ -166,11 +166,11 @@ class Student(models.Model):
     get_political.short_description = '政治面貌'
 
     def get_stu_type(self):
-        return StudentLearnType[self.stu_type].value
+        return StudentCategoryType[self.stu_type].value
     get_stu_type.short_description = '学生类型'
 
     def get_stu_learn_type(self):
-        return StudentCategoryType[self.stu_learn_type].value
+        return StudentLearnType[self.stu_learn_type].value
     get_stu_learn_type.short_description = '学习形式'
 
     def get_stu_learn_status(self):
@@ -186,11 +186,11 @@ class Student(models.Model):
     get_stu_enrollment_category.short_description = '录取类别'
 
     def get_stu_special_program(self):
-        return SpecialProgramChoice[self.stu_special_program].value
+        return SpecialProgramType[self.stu_special_program].value
     get_stu_special_program.short_description = '专项计划'
 
     def get_stu_mid_check(self):
-        return MidCheckChoice[self.stu_mid_check].value
+        return MidCheckType[self.stu_mid_check].value
     get_stu_mid_check.short_description = '中期考核结果'
 
     def get_stu_status(self):
