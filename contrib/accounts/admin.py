@@ -17,26 +17,24 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
 
-from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedDropdownFilter, ChoiceDropdownFilter
-
 
 class StudentInline(admin.TabularInline):
     verbose_name = '指导学生'
     verbose_name_plural = verbose_name
     model = models.Student
     fields = (
-        'stu_number', 'stu_name', 'stu_telephone', 'stu_birth_day', 'stu_nation', 'stu_source', 'stu_entrance_time',
-        'stu_academy', 'stu_major', 'stu_research'
+        'stu_number', 'stu_name', 'stu_telephone', 'stu_nation', 'stu_source', 'stu_entrance_time',
+        'stu_academy', 'stu_major'
     )
     readonly_fields = (
-        'stu_number', 'stu_name', 'stu_telephone', 'stu_birth_day', 'stu_nation', 'stu_source', 'stu_entrance_time',
-        'stu_academy', 'stu_major', 'stu_research'
+        'stu_number', 'stu_name', 'stu_telephone', 'stu_nation', 'stu_source', 'stu_entrance_time',
+        'stu_academy', 'stu_major'
     )
     can_delete = False
-    show_change_link = False
     extra = 0
 
 
+@admin.register(models.Tutor)
 class TutorAdmin(admin.ModelAdmin):
 
     def export_as_csv(self, request, queryset):
@@ -89,8 +87,8 @@ class TutorAdmin(admin.ModelAdmin):
         })
     )
     list_filter = [
-        ('tut_academy', RelatedDropdownFilter),
-        ('tut_political', ChoiceDropdownFilter),
+        'tut_academy',
+        'tut_political',
     ]
     list_display = (
         'tut_number', 'tut_name', 'get_gender', 'tut_telephone', 'tut_cardID',
@@ -101,6 +99,7 @@ class TutorAdmin(admin.ModelAdmin):
     change_list_template = 'admin/web/Tutor/change_list.html'
 
 
+@admin.register(models.Student)
 class StudentAdmin(admin.ModelAdmin):
 
     def export_as_csv(self, request, queryset):
@@ -123,7 +122,7 @@ class StudentAdmin(admin.ModelAdmin):
             writer.writerow(obj.export_row())
 
         return response
-    export_as_csv.short_description = "导出所选的 学生"
+    export_as_csv.short_description = "导出所选学生"
 
     def get_urls(self):
         urls = super(StudentAdmin, self).get_urls()
@@ -142,11 +141,9 @@ class StudentAdmin(admin.ModelAdmin):
     actions = ["export_as_csv"]
     fieldsets = [
         ('关联账户', {
-            'classes': ('suit-tab', 'suit-tab-general'),
             'fields': ('stu_user',)
         }),
         ('基本信息', {
-            'classes': ('suit-tab', 'suit-tab-general'),
             'fields': (
                 'stu_number', 'stu_name', 'stu_avatar', 'stu_gender', 'stu_is_regular_income',
                 'stu_card_type', 'stu_cardID', 'stu_entrance_time', 'stu_graduation_time',
@@ -155,11 +152,9 @@ class StudentAdmin(admin.ModelAdmin):
             )
         }),
         ('学院资料', {
-            'classes': ('suit-tab', 'suit-tab-academy'),
             'fields': ('stu_academy', 'stu_major', 'stu_class', 'stu_tutor', 'stu_research'),
         }),
         ('档案信息', {
-            'classes': ('suit-tab', 'suit-tab-profile'),
             'fields': (
                 'stu_status', 'stu_gain_diploma', 'stu_gain_cert', 'stu_is_superb',
                 'stu_is_volunteer', 'stu_is_adjust', 'stu_is_exemption', 'stu_is_archives',
@@ -169,30 +164,23 @@ class StudentAdmin(admin.ModelAdmin):
             ),
         }),
         ('中期考核', {
-            'classes': ('suit-tab', 'suit-tab-midcheck'),
             'fields': ('stu_is_delay', 'stu_delay_reason', 'stu_mid_check'),
         })
     ]
-    suit_form_tabs = (('general', '基本信息'), ('academy', '学院资料'), ('profile', '档案信息'), ('midcheck', '中期考核'))
-    list_filter = [
-        ('stu_special_program', ChoiceDropdownFilter),
-        ('stu_cultivating_mode', ChoiceDropdownFilter),
-        ('stu_enrollment_category', ChoiceDropdownFilter),
-        ('stu_entrance_time', DropdownFilter),
-        ('stu_academy', RelatedDropdownFilter),
-        ('stu_major', RelatedDropdownFilter),
-        ('stu_political', ChoiceDropdownFilter),
-    ]
+    list_filter = (
+        'stu_special_program',
+        'stu_cultivating_mode',
+        'stu_enrollment_category',
+        'stu_academy',
+        'stu_major',
+        'stu_political'
+    )
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
         'stu_birth_day', 'stu_nation', 'stu_source', 'stu_is_village', 'get_political',
         'get_stu_type', 'stu_entrance_time',
     )
-    search_fields = ('stu_name',)
+    list_per_page = 20
+    search_fields = ('stu_name', 'stu_telephone')
     empty_value_display = '--'
     change_list_template = 'admin/web/Student/change_list.html'
-
-
-# Register your models here.
-admin.site.register(models.Student, StudentAdmin)
-admin.site.register(models.Tutor, TutorAdmin)

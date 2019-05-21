@@ -30,6 +30,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
+    'django_filters',
+    'django_admin_listfilter_dropdown',
     'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,8 +43,6 @@ INSTALLED_APPS = [
     'contrib.colleges.apps.CollegeConfig',
     'contrib.education.apps.CultivateConfig',
     'core',
-    'django_filters',
-    'django_admin_listfilter_dropdown',
 ]
 
 MIDDLEWARE = [
