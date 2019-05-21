@@ -40,6 +40,7 @@ class SimpleTutor(object):
     model = Tutor
     queryset = Tutor.objects.all()
     serializer_class = TutorSerializers
+    pagination_class = LimitOffsetPagination
     filter_fields = ("tut_title", "tut_telephone", "tut_degree")
 
 
@@ -104,9 +105,9 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
     def put(self, request, *args, **kwargs):
         """ TODO """
         data = request.data
-        data["user"] = user_create(data.get('tut_name'), data.get('tut_number'))
-        data["academy"] = Academy.objects.get(uuid=data.get("academy"))
-        serializer = self.get_serializer(data=data, context={"academy": "", 'user': "", "education": ""})
+        data["tut_user"] = user_create(data.get('tut_name'), data.get('tut_number'))
+        data["tut_academy"] = Academy.objects.get(uuid=data.get("academy"))
+        serializer = self.get_serializer(data=data, context={"tut_academy": "", 'tut_user': "", "tut_education": ""})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -125,18 +126,18 @@ class TutorList(SimpleTutor, generics.GenericAPIView):
             row = table.row_values(i)
             t_dict = dict()
             t_dict["tut_number"] = int(row[0]) if row[0] else 0
-            t_dict["user"] = user_create(row[1], int(row[0]))
+            t_dict["tut_user"] = user_create(row[1], int(row[0]))
             t_dict["tut_gender"] = trans[row[2]]
             t_dict["tut_political"] = trans[row[3]]
             t_dict["tut_title"] = trans[row[4]]
             t_dict["tut_birth_day"] = datetime.strptime(str(int(row[5])), '%Y%m%d').strftime('%Y-%m-%d')
             t_dict["tut_degree"] = trans[row[6]]
-            t_dict["academy"] = Academy.objects.filter(aca_cname=row[7]).first()
+            t_dict["tut_academy"] = Academy.objects.filter(aca_cname=row[7]).first()
             t_dict["tut_cardID"] = row[8]
             t_dict["tut_entry_day"] = datetime.strptime(str(int(row[9])), '%Y%m').strftime('%Y-%m-01')
             t_dict["tut_telephone"] = row[10]
             t_list.append(t_dict)
-        serializer = self.get_serializer(data=t_list, many=True, context={"academy": "", 'user': "", "education": ""})
+        serializer = self.get_serializer(data=t_list, many=True, context={"tut_academy": "", 'tut_user': "", "tut_education": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

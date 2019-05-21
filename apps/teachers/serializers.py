@@ -24,7 +24,7 @@ class EducationSerializers(serializers.ModelSerializer):
 
 class TutorSerializers(serializers.ModelSerializer):
     """ 老师 """
-    user = UserSerializers(many=False)
+    tut_user = UserSerializers(many=False)
     academy = AcademySerializers(many=False, allow_null=True)
     education = EducationSerializers(many=False, allow_null=True)
 
@@ -45,8 +45,8 @@ class TutorSerializers(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = validated_data.pop('user')
-        academy = validated_data.pop('academy')
+        user = validated_data.pop('tut_user')
+        academy = validated_data.pop('tut_academy')
 
         if not User.objects.filter(first_name=user.get('first_name')).count():
             user = User.objects.create(**user)
@@ -54,10 +54,10 @@ class TutorSerializers(serializers.ModelSerializer):
             user = User.objects.filter(first_name=user['first_name']).first()
 
         if 'education' in validated_data:
-            education = validated_data.pop('education')
-            new_tutor = Tutor.objects.create(user=user, academy=academy, education=education,  **validated_data)
+            education = validated_data.pop('tut_education')
+            new_tutor = Tutor.objects.create(tut_user=user, tut_academy=academy, tut_education=education,  **validated_data)
         else:
-            new_tutor = Tutor.objects.create(user=user, academy=academy, **validated_data)
+            new_tutor = Tutor.objects.create(tut_user=user, tut_academy=academy, **validated_data)
 
         return new_tutor
 

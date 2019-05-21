@@ -115,20 +115,20 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         data = request.data
         bulk = isinstance(data, list)
         if not bulk:
-            username = data.get('user')
-            data["user"] = user_create(username)
+            username = data.get('stu_user')
+            data["stu_user"] = user_create(username)
             data["stu_major"] = Major.objects.filter(maj_name=data.get('stu_major')).first()
             data["stu_academy"] = Academy.objects.filter(aca_cname=data.get('stu_academy')).first()
-            data["tutor"] = Tutor.objects.filter(user__first_name=data.get('tutor')).first()
+            data["stu_tutor"] = Tutor.objects.filter(tut_user__first_name=data.get('stu_tutor')).first()
             serializer = self.get_serializer(data=data, context={"stu_academy": "", 'stu_user': "", "stu_major": "",
                                                                  "stu_tutor": ""})
         else:
             for item in data:
-                username = item['user']
-                item["user"] = user_create(username)
+                username = item['stu_user']
+                item["stu_user"] = user_create(username)
                 data["stu_major"] = Major.objects.filter(maj_name=item['stu_major']).first()
                 data["stu_academy"] = Academy.objects.filter(aca_cname=item['stu_academy']).first()
-                data["tutor"] = Tutor.objects.filter(user__first_name=data.get('tutor')).first()
+                data["stu_tutor"] = Tutor.objects.filter(user__first_name=data.get('stu_tutor')).first()
             serializer = self.get_serializer(data=data, many=True,
                                              context={"stu_academy": "", 'stu_user': "", "stu_major": "",
                                                       "stu_tutor": ""})
@@ -148,7 +148,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         for i in range(1, nrows):
             rowx = table.row_values(i)
             student_dict = dict()
-            student_dict["user"] = user_create(rowx[0], rowx[1])
+            student_dict["stu_user"] = user_create(rowx[0], rowx[1])
             student_dict["stu_name"] = rowx[0]
             student_dict["stu_number"] = rowx[1]
             student_dict["stu_candidate_number"] = rowx[2]
