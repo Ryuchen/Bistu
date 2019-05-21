@@ -140,11 +140,13 @@ class StudentAdmin(admin.ModelAdmin):
 
     form = forms.StudentForm
     actions = ["export_as_csv"]
-    fieldsets = (
+    fieldsets = [
         ('关联账户', {
+            'classes': ('suit-tab', 'suit-tab-general'),
             'fields': ('stu_user',)
         }),
         ('基本信息', {
+            'classes': ('suit-tab', 'suit-tab-general'),
             'fields': (
                 'stu_number', 'stu_name', 'stu_avatar', 'stu_gender', 'stu_is_regular_income',
                 'stu_card_type', 'stu_cardID', 'stu_entrance_time', 'stu_graduation_time',
@@ -153,9 +155,11 @@ class StudentAdmin(admin.ModelAdmin):
             )
         }),
         ('学院资料', {
+            'classes': ('suit-tab', 'suit-tab-academy'),
             'fields': ('stu_academy', 'stu_major', 'stu_class', 'stu_tutor', 'stu_research'),
         }),
         ('档案信息', {
+            'classes': ('suit-tab', 'suit-tab-profile'),
             'fields': (
                 'stu_status', 'stu_gain_diploma', 'stu_gain_cert', 'stu_is_superb',
                 'stu_is_volunteer', 'stu_is_adjust', 'stu_is_exemption', 'stu_is_archives',
@@ -165,9 +169,11 @@ class StudentAdmin(admin.ModelAdmin):
             ),
         }),
         ('中期考核', {
+            'classes': ('suit-tab', 'suit-tab-midcheck'),
             'fields': ('stu_is_delay', 'stu_delay_reason', 'stu_mid_check'),
-        }),
-    )
+        })
+    ]
+    suit_form_tabs = (('general', '基本信息'), ('academy', '学院资料'), ('profile', '档案信息'), ('midcheck', '中期考核'))
     list_filter = [
         ('stu_special_program', ChoiceDropdownFilter),
         ('stu_cultivating_mode', ChoiceDropdownFilter),
