@@ -30,8 +30,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django_filters',
-    'django_admin_listfilter_dropdown',
     'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +41,8 @@ INSTALLED_APPS = [
     'contrib.colleges.apps.CollegeConfig',
     'contrib.education.apps.CultivateConfig',
     'core',
+    'django_filters',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -260,7 +260,17 @@ SIMPLEUI_CONFIG = {
                     'name': '论文',
                     'icon': 'fa fa-book',
                     'url': 'education/thesis/'
-                }
+                },
+                {
+                    'name': '论文查重',
+                    'icon': 'fa fa-book',
+                    'url': 'education/thesisplacheck/'
+                },
+                {
+                    'name': '论文盲审',
+                    'icon': 'fa fa-book',
+                    'url': 'education/thesisblindreview/'
+                },
             ]
         }
     ]

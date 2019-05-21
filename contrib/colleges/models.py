@@ -54,10 +54,12 @@ class Major(models.Model):
 
     def get_major_type(self):
         return MajorType[self.maj_type].value
+
     get_major_type.short_description = '学科类型'
 
     def get_major_degree(self):
         return MajorDegree[self.maj_degree].value
+
     get_major_degree.short_description = '学位类型'
 
     def __str__(self):
@@ -83,7 +85,8 @@ class Class(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
     cla_name = models.CharField(max_length=128, null=True, verbose_name="班级名称")
     cla_code = models.IntegerField(null=True, verbose_name="班级代码")
-    cla_major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL, verbose_name="专业名称")
+    cla_major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL,
+                                  verbose_name="专业名称")
 
     def __str__(self):
         return "专业名称: {0} => {1} {2}".format(self.cla_major.maj_name, self.cla_name, self.cla_code)
@@ -131,7 +134,8 @@ class Academy(models.Model):
     学院模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
-    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", verbose_name="学院负责人")
+    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user",
+                                 verbose_name="学院负责人")
     aca_avatar = models.ImageField(null=True, upload_to="academies", default='default.png', verbose_name="学院图标")
     aca_nickname = models.CharField(max_length=128, null=True, verbose_name="学院简称")
     aca_cname = models.CharField(max_length=128, null=True, verbose_name="学院名称(中)")
@@ -174,6 +178,14 @@ class ReformResults(models.Model):
     base_count = models.IntegerField(null=False, default=0, verbose_name="实践基地建设数量")
     exchange_project_count = models.IntegerField(null=False, default=0, verbose_name="研究生国际交流数量")
     academy = models.ForeignKey(Academy, null=True, related_name='rr_academy', on_delete=models.SET_NULL, verbose_name="学院")
+
+    def get_academy_cname(self):
+        return self.academy.aca_cname
+    get_academy_cname.short_description = '学院名称'
+
+    def get_reform_year(self):
+        return self.time.year
+    get_reform_year.short_description = '年份'
 
     def __str__(self):
         return '学院名称: {0} 年份: {1}'.format(self.academy.aca_cname, self.time)

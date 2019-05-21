@@ -10,6 +10,9 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 from inline_actions.admin import InlineActionsModelAdminMixin
+from import_export import resources
+from import_export.fields import Field
+from import_export.admin import ExportMixin
 
 from . import forms
 from . import models
@@ -163,13 +166,30 @@ class ReformAdmin(admin.ModelAdmin):
     empty_value_display = '--'
 
 
+class ReformResultsResource(resources.ModelResource):
+    get_academy_cname = Field(attribute='get_academy_cname', column_name='学院')
+    project_count = Field(attribute='project_count', column_name='研究生教育相关教改项目立项数量')
+    paper_count = Field(attribute='paper_count', column_name='发表研究生教育相关教改论文数量')
+    textbook_count = Field(attribute='textbook_count', column_name='出版研究生教材数量')
+    award_count = Field(attribute='award_count', column_name='研究生教育相关获奖数量')
+    course_count = Field(attribute='course_count', column_name='精品/在线课程建设数量')
+    base_count = Field(attribute='base_count', column_name='实践基地建设数量')
+    exchange_project_count = Field(attribute='exchange_project_count', column_name='研究生国际交流数量')
+
+    class Meta:
+        model = models.ReformResults
+        fields = (
+            'get_academy_cname', 'project_count', 'paper_count', 'textbook_count', 'award_count',
+            'course_count', 'base_count', 'exchange_project_count'
+        )
+
+
 @admin.register(models.ReformResults)
-class ReformResultsAdmin(admin.ModelAdmin):
-    list_filter = [
-        ('time', DropdownFilter)
-    ]
+class ReformResultsAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = ReformResultsResource
     list_display = (
-        'academy', 'time'
+        'get_academy_cname', 'project_count', 'paper_count', 'textbook_count', 'award_count', 'course_count',
+        'base_count', 'exchange_project_count', 'get_reform_year'
     )
     date_hierarchy = 'time'
     empty_value_display = '--'
