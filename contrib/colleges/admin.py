@@ -7,6 +7,9 @@
 # @File : admin.py
 # @Desc : 
 # ==================================================
+from django.conf.urls import url
+from django.shortcuts import redirect
+from inline_actions.admin import InlineActionsModelAdminMixin
 
 from . import forms
 from . import models
@@ -15,7 +18,6 @@ from contrib.accounts.models import Student
 
 from django.urls import reverse
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 from django_admin_listfilter_dropdown.filters import DropdownFilter, ChoiceDropdownFilter
 
 
@@ -125,29 +127,44 @@ class ClassAdmin(admin.ModelAdmin):
     empty_value_display = '--'
 
 
-class AcademyAdmin(admin.ModelAdmin):
+class AcademyAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
 
-    def get_enroll_statistic(self, obj):
-        return mark_safe('<a class="deletelink" href="{0}?academy={1}">招生统计</a>'.format(reverse("create_xls"), obj.pk))
-    get_enroll_statistic.short_description = '操作'
+    def get_enroll_statistic(self, request, obj, parent_obj=None):
+        filter_year = request.GET.get('aca_reforms__ref_time', '')
+        response = redirect(reverse("create_xls"), year=filter_year)
+        return response
+    get_enroll_statistic.short_description = '招生情况'
 
+    def get_urls(self):
+        urls = super(AcademyAdmin, self).get_urls()
+        urls += [
+            url(r'^enroll-statistic/$', self.admin_site.admin_view(self.enroll_statistic))
+        ]
+        return urls
+
+    def enroll_statistic(self, request):
+        filter_year = request.GET.get('aca_reforms__ref_time', '')
+        response = redirect(reverse("create_xls"), year=filter_year)
+        return response
+    
+    inlines = [MajorInline, ReformInline]
+    inline_actions = ['get_enroll_statistic']
     fieldsets = [
         ('基本信息', {
             'classes': ('suit-tab', 'suit-tab-general',),
             'fields': ['aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'aca_brief']
         })
     ]
-
-    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
-
-    inlines = [MajorInline, ReformInline]
-
+    list_filter = [
+        'aca_reforms__ref_time'
+    ]
     list_display = (
-        'aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
+        'aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href'
     )
     exclude = ('aca_majors', 'aca_reforms')
     empty_value_display = '--'
     change_list_template = "admin/web/Academy/change_list.html"
+    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
 
 
 class ReformAdmin(admin.ModelAdmin):
