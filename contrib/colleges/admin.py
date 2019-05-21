@@ -163,6 +163,7 @@ class ReformAdmin(admin.ModelAdmin):
     empty_value_display = '--'
 
 
+@admin.register(models.ReformResults)
 class ReformResultsAdmin(admin.ModelAdmin):
     list_filter = [
         ('time', DropdownFilter)
@@ -170,6 +171,7 @@ class ReformResultsAdmin(admin.ModelAdmin):
     list_display = (
         'academy', 'time'
     )
+    date_hierarchy = 'time'
     empty_value_display = '--'
 
 
@@ -178,4 +180,3 @@ admin.site.register(models.Major, MajorsAdmin)
 admin.site.register(models.Class, ClassAdmin)
 admin.site.register(models.Academy, AcademyAdmin)
 admin.site.register(models.Reform, ReformAdmin)
-admin.site.register(models.ReformResults, ReformResultsAdmin)

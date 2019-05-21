@@ -106,7 +106,7 @@ class Reform(models.Model):
     教育改革项目统计模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    ref_time = models.IntegerField(null=False, verbose_name="年份")
+    ref_time = models.DateField(null=False, verbose_name="年份")
     ref_type = models.CharField(max_length=128, choices=ReformTypeChoice, verbose_name="教改成果类型")
     ref_name = models.TextField(verbose_name="教改项目名称")
 
@@ -165,7 +165,7 @@ class ReformResults(models.Model):
     教育改革成果统计模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
-    time = models.IntegerField(null=False, verbose_name="年份")
+    time = models.DateField(null=False, verbose_name="年份")
     project_count = models.IntegerField(null=False, default=0, verbose_name="研究生教育相关教改项目立项数量")
     paper_count = models.IntegerField(null=False, default=0, verbose_name="发表研究生教育相关教改论文数量")
     textbook_count = models.IntegerField(null=False, default=0, verbose_name="出版研究生教材数量")
