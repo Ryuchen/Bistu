@@ -7,7 +7,6 @@
 # @File : admin.py
 # @Desc : 
 # ==================================================
-
 from . import forms
 from . import models
 
@@ -15,6 +14,7 @@ from contrib.accounts.models import Student
 
 from django.urls import reverse
 from django.contrib import admin
+from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from django_admin_listfilter_dropdown.filters import DropdownFilter, ChoiceDropdownFilter
 
@@ -97,7 +97,7 @@ class MajorsAdmin(admin.ModelAdmin):
         'maj_code', 'maj_name', 'get_major_type', 'maj_first', 'maj_second',
         'maj_setup_time', 'get_major_degree'
     )
-    exclude = ('maj_research', )
+    exclude = ('maj_research',)
     empty_value_display = '--'
 
 
@@ -108,19 +108,20 @@ class ClassAdmin(admin.ModelAdmin):
 
 class AcademyAdmin(admin.ModelAdmin):
 
+    def update_status(self, request):
+        return render(request, 'admin/web/Academy/enroll_statistic.html', context={})
+    update_status.short_description = "Update status"
+
     def get_enroll_statistic(self, obj):
         return mark_safe('<a class="deletelink" href="{0}?academy={1}">招生统计</a>'.format(reverse("create_xls"), obj.pk))
     get_enroll_statistic.short_description = '操作'
-    get_enroll_statistic.allow_tags = True
 
     inlines = [
         MajorInline,
-        ReformInline,
     ]
     list_display = (
-        'aca_code', 'aca_cname', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
+        'aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
     )
-    list_display_links = ('aca_cname', )
     exclude = ('aca_majors', 'aca_reforms')
     empty_value_display = '--'
     change_list_template = "admin/web/Academy/change_list.html"

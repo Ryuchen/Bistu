@@ -11,10 +11,10 @@ from .models import *
 
 from core.definition.enums import *
 
-from django.forms import ModelForm
+from django import forms
 
 
-class MajorForm(ModelForm):
+class MajorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MajorForm, self).__init__(*args, **kwargs)
