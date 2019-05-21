@@ -69,8 +69,6 @@ class StudentInline(admin.TabularInline):
 
 
 class MajorInline(admin.TabularInline):
-    suit_classes = 'suit-tab suit-tab-majors'
-
     verbose_name = '学科专业'
     verbose_name_plural = verbose_name
     model = models.Academy.aca_majors.through
@@ -86,8 +84,6 @@ class MajorInline(admin.TabularInline):
 
 
 class ReformInline(admin.TabularInline):
-    suit_classes = 'suit-tab suit-tab-reforms'
-
     verbose_name = '教改项目'
     verbose_name_plural = verbose_name
     model = models.Academy.aca_reforms.through
@@ -149,13 +145,6 @@ class AcademyAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
     
     inlines = [MajorInline, ReformInline]
     inline_actions = ['get_enroll_statistic']
-    fieldsets = [
-        ('基本信息', {
-            'classes': ('suit-tab', 'suit-tab-general',),
-            'fields': ['aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'aca_brief']
-        })
-    ]
-    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
     list_filter = [
         'aca_reforms__ref_time'
     ]
