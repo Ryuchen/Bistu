@@ -1,7 +1,9 @@
-xlwt
 astroid
 Django
+django-admin-list-filter-dropdown
 django-filter
+django-inline-actions
+https://github.com/darklow/django-suit/tarball/v2#egg=django-suit
 djangorestframework
 Faker
 isort
@@ -12,9 +14,9 @@ pylint
 python-dateutil
 pytz
 six
+sqlparse
 text-unidecode
 typed-ast
 wrapt
 xlrd
-https://github.com/darklow/django-suit/tarball/v2#egg=django-suit
-django-admin-list-filter-dropdown
+xlwt

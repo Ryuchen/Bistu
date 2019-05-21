@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'contrib.education.apps.CultivateConfig',
     'core',
     'django_filters',
-    'django_object_actions',
     'django_admin_listfilter_dropdown',
 ]
 

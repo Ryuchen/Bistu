@@ -13,5 +13,4 @@ from suit.apps import DjangoSuitConfig
 
 class SuitConfig(DjangoSuitConfig):
     verbose_name = '研究生信息管理系统'
-    layout = 'horizontal'
     form_inlines_hide_original = True
