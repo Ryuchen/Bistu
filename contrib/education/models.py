@@ -57,10 +57,10 @@ class ThesisPlaCheck(models.Model):
     pla_date = models.DateField(null=False, verbose_name="查重时间")
     pla_result = models.CharField(max_length=128, null=False, verbose_name="查重结果")
     pla_rate = models.CharField(max_length=128, null=False, verbose_name="重复率")
-    thesis = models.ForeignKey(Thesis, null=True, related_name='pla_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
+    pla_thesis = models.ForeignKey(Thesis, on_delete=models.SET_NULL, null=True, related_name='pla_thesis', verbose_name="论文课题")
 
     def __str__(self):
-        return "查重:《{0}》".format(self.thesis.the_title)
+        return "查重:《{0}》".format(self.pla_thesis.the_title)
 
     class Meta:
         db_table = 'thesis_pla_check'
@@ -82,10 +82,10 @@ class ThesisBlindReview(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
     bli_date = models.DateField(null=False, verbose_name="盲审时间")
     bli_score = models.CharField(max_length=64, verbose_name="盲审结果")
-    thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
+    bli_thesis = models.ForeignKey(Thesis, null=True, related_name='bli_thesis', on_delete=models.SET_NULL, verbose_name="论文课题")
 
     def __str__(self):
-        return "盲审:《{0}》".format(self.thesis.the_title)
+        return "盲审:《{0}》".format(self.bli_thesis.the_title)
 
     class Meta:
         db_table = 'thesis_blind_review'

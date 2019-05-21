@@ -210,7 +210,7 @@ class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         data = request.data
         data["aca_user"] = User.objects.get(username=data.get('aca_user')).id
-        data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('majors').split(","))]
+        data["aca_majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('aca_majors').split(","))]
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=partial)
@@ -246,13 +246,13 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
         bulk = isinstance(data, list)
         if not bulk:
             data["aca_user"] = User.objects.get(username=data.get('aca_user')).id
-            data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('majors').split(","))]
-            serializer = self.get_serializer(data=data, context={"majors": "", "aca_user": ""})
+            data["aca_majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=data.get('aca_majors').split(","))]
+            serializer = self.get_serializer(data=data, context={"aca_majors": "", "aca_user": ""})
         else:
             for item in data:
                 data["aca_user"] = User.objects.get(username=item.get('aca_user')).id
-                data["majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=item.get('majors').split(","))]
-            serializer = self.get_serializer(data=data, many=True, context={"majors": "", "aca_user": ""})
+                data["aca_majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=item.get('aca_majors').split(","))]
+            serializer = self.get_serializer(data=data, many=True, context={"aca_majors": "", "aca_user": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -270,7 +270,7 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
             m_dict = dict()
             m_dict["aca_code"] = int(row[0]) if row[0] else 0
             m_dict["aca_name"] = row[1]
-            m_dict["majors"] = row[2].split('、')
+            m_dict["aca_majors"] = row[2].split('、')
             m_list.append(m_dict)
         serializer = self.get_serializer(data=m_list, many=True)
         serializer.is_valid(raise_exception=True)
