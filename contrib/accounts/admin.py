@@ -63,14 +63,13 @@ class TutorResource(resources.ModelResource):
 
 @admin.register(models.Tutor)
 class TutorAdmin(ImportExportMixin, admin.ModelAdmin):
-
     resource_class = TutorResource
 
     form = forms.TutorForm
     inlines = [StudentInline]
     fieldsets = (
         ('关联账户', {
-            'fields': ('tut_user', )
+            'fields': ('tut_user',)
         }),
         ('基本信息', {
             'fields': (
@@ -80,7 +79,7 @@ class TutorAdmin(ImportExportMixin, admin.ModelAdmin):
             )
         }),
         ('学院资料', {
-            'fields': ('tut_academy', ),
+            'fields': ('tut_academy',),
         })
     )
     list_filter = [
@@ -93,6 +92,9 @@ class TutorAdmin(ImportExportMixin, admin.ModelAdmin):
     )
 
     empty_value_display = '--'
+
+    class Media:
+        css = {"all": ("./custom/css/hide_admin_original.css",)}
 
 
 @admin.register(models.Student)
@@ -118,6 +120,7 @@ class StudentAdmin(admin.ModelAdmin):
             writer.writerow(obj.export_row())
 
         return response
+
     export_as_csv.short_description = "导出所选学生"
 
     def get_urls(self):
