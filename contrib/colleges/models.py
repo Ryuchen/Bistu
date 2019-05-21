@@ -50,7 +50,7 @@ class Major(models.Model):
     maj_second = models.BooleanField(verbose_name="是否二级学科")
     maj_setup_time = models.DateField(verbose_name="获批时间")
     maj_degree = models.CharField(max_length=128, choices=MajorDegreeChoice, verbose_name="学位类型")
-    maj_research = models.ManyToManyField(Research, related_name='research', verbose_name="科研方向")
+    maj_research = models.ManyToManyField(Research, related_name='maj_research', verbose_name="科研方向")
 
     def get_major_type(self):
         return MajorType[self.maj_type].value
@@ -83,7 +83,7 @@ class Class(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
     cla_name = models.CharField(max_length=128, null=True, verbose_name="班级名称")
     cla_code = models.IntegerField(null=True, verbose_name="班级代码")
-    cla_major = models.ForeignKey(Major, null=True, related_name='major', on_delete=models.SET_NULL, verbose_name="专业名称")
+    cla_major = models.ForeignKey(Major, null=True, related_name='cla_major', on_delete=models.SET_NULL, verbose_name="专业名称")
 
     def __str__(self):
         return "专业名称: {0} => {1} {2}".format(self.cla_major.maj_name, self.cla_name, self.cla_code)
@@ -131,6 +131,7 @@ class Academy(models.Model):
     学院模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
+    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", verbose_name="学院负责人")
     aca_avatar = models.ImageField(null=True, upload_to="academies", default='default.png', verbose_name="学院图标")
     aca_nickname = models.CharField(max_length=128, null=True, verbose_name="学院简称")
     aca_cname = models.CharField(max_length=128, null=True, verbose_name="学院名称(中)")
@@ -140,9 +141,8 @@ class Academy(models.Model):
     aca_fax = models.CharField(max_length=128, null=True, verbose_name="学院传真")
     aca_href = models.URLField(max_length=256, null=True, verbose_name="学院网址")
     aca_brief = models.TextField(verbose_name="学院简介", null=True)
-    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", verbose_name="学院负责人")
-    aca_majors = models.ManyToManyField(Major, related_name='majors')
-    aca_reforms = models.ManyToManyField(Reform, related_name='reforms')
+    aca_majors = models.ManyToManyField(Major, related_name='aca_majors')
+    aca_reforms = models.ManyToManyField(Reform, related_name='aca_reforms')
 
     def __str__(self):
         return '学院编码: {0} 学院名称: {1}'.format(self.aca_code, self.aca_cname)
