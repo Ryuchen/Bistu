@@ -7,6 +7,7 @@
 # @File : admin.py
 # @Desc : 
 # ==================================================
+
 from . import forms
 from . import models
 
@@ -14,7 +15,6 @@ from contrib.accounts.models import Student
 
 from django.urls import reverse
 from django.contrib import admin
-from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from django_admin_listfilter_dropdown.filters import DropdownFilter, ChoiceDropdownFilter
 
@@ -67,16 +67,36 @@ class StudentInline(admin.TabularInline):
 
 
 class MajorInline(admin.TabularInline):
+    suit_classes = 'suit-tab suit-tab-majors'
+
     verbose_name = '学科专业'
     verbose_name_plural = verbose_name
     model = models.Academy.aca_majors.through
+    fields = (
+        'major',
+    )
+    readonly_fields = (
+        'major',
+    )
+    can_delete = False
+    show_change_link = False
     extra = 0
 
 
 class ReformInline(admin.TabularInline):
+    suit_classes = 'suit-tab suit-tab-reforms'
+
     verbose_name = '教改项目'
     verbose_name_plural = verbose_name
     model = models.Academy.aca_reforms.through
+    fields = (
+        'reform',
+    )
+    readonly_fields = (
+        'reform',
+    )
+    can_delete = False
+    show_change_link = False
     extra = 0
 
 
@@ -90,7 +110,6 @@ class MajorsAdmin(admin.ModelAdmin):
     list_filter = [
         ('maj_type', ChoiceDropdownFilter),
         ('maj_degree', ChoiceDropdownFilter),
-        # for choice fields
         ('maj_first', DropdownFilter),
     ]
     list_display = (
@@ -108,17 +127,21 @@ class ClassAdmin(admin.ModelAdmin):
 
 class AcademyAdmin(admin.ModelAdmin):
 
-    def update_status(self, request):
-        return render(request, 'admin/web/Academy/enroll_statistic.html', context={})
-    update_status.short_description = "Update status"
-
     def get_enroll_statistic(self, obj):
         return mark_safe('<a class="deletelink" href="{0}?academy={1}">招生统计</a>'.format(reverse("create_xls"), obj.pk))
     get_enroll_statistic.short_description = '操作'
 
-    inlines = [
-        MajorInline,
+    fieldsets = [
+        ('基本信息', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': ['aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'aca_brief']
+        })
     ]
+
+    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
+
+    inlines = [MajorInline, ReformInline]
+
     list_display = (
         'aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'get_enroll_statistic'
     )
