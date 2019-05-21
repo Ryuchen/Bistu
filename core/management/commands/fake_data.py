@@ -279,9 +279,9 @@ class Command(BaseCommand):
 
             for _ in range(10):
                 reforms_data = []
-                reform_time = datetime.datetime.now().replace(year=(2019 - _)).year
+                reform_time = datetime.datetime.now().replace(year=(2019 - _))
                 for reform in [tag.name for tag in ReformType]:
-                    counts = random.randint(10, 30)
+                    counts = random.randint(1, 5)
                     reforms_data.append(counts)
                     for count in range(counts):
                         ref_item = Reform.objects.create(
@@ -372,7 +372,7 @@ class Command(BaseCommand):
                     pla_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
                     pla_result=pla_result,
                     pla_rate=pla_rate,
-                    thesis=thesis
+                    pla_thesis=thesis
                 )
                 _plaCheck_list.append(placheck)
 
@@ -381,7 +381,7 @@ class Command(BaseCommand):
                 blindcheck = ThesisBlindReview.objects.create(
                     bli_date=datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0),
                     bli_score=fake.random.choice(['合格', '不合格', '再审查']),
-                    thesis=thesis
+                    bli_thesis=thesis
                 )
                 _blindCheck_list.append(blindcheck)
         # TODO: rebuild reducer the mock students method
