@@ -203,15 +203,15 @@ class StudentStatistics(generics.GenericAPIView):
             aca_student = student.filter(stu_academy__uuid=academy["uuid"])
             aca_dict["academy_name"] = academy["aca_cname"]
             aca_dict["academy_total"] = aca_student.count()
-            majors = Academy.objects.filter(uuid=academy["uuid"]).values('majors__uuid', 'majors__maj_name',
-                                                                         'majors__maj_code', 'majors__maj_type')
+            majors = Academy.objects.filter(uuid=academy["uuid"]).values('aca_majors__uuid', 'aca_majors__maj_name',
+                                                                         'aca_majors__maj_code', 'aca_majors__maj_type')
             aca_dict["academy_major"] = list()
             for maj in majors:
                 major_obj = dict()
-                maj_student = aca_student.filter(stu_major_id=maj["majors__uuid"])
-                major_obj["major_name"] = maj["majors__maj_name"]
-                major_obj["major_code"] = maj["majors__maj_code"]
-                major_obj["major_type"] = maj["majors__maj_type"]
+                maj_student = aca_student.filter(stu_major_id=maj["aca_majors__uuid"])
+                major_obj["major_name"] = maj["aca_majors__maj_name"]
+                major_obj["major_code"] = maj["aca_majors__maj_code"]
+                major_obj["major_type"] = maj["aca_majors__maj_type"]
                 major_obj["major_total"] = maj_student.count()
                 # S1: 全日制
                 s1 = maj_student.filter(stu_learn_type='S1')
@@ -340,7 +340,8 @@ def create_xls(request):
     acas = Academy.objects.values("aca_cname", "uuid")
     i = 2
     for aca in acas:
-        majors = Academy.objects.filter(uuid=aca['uuid']).values('majors__uuid', 'majors__maj_name', 'majors__maj_code')
+        majors = Academy.objects.filter(uuid=aca['uuid']).values('aca_majors__uuid', 'aca_majors__maj_name',
+                                                                 'aca_majors__maj_code')
         row_start = i + 1
         row_end = row_start + len(majors)
         worksheet.write_merge(row_start, row_end, 2, 2, aca['aca_cname'], style=table_center_style)
@@ -352,9 +353,9 @@ def create_xls(request):
 
         worksheet.write_merge(row_start, row_end, 3, 3, aca_student.count(), style=table_center_style)
         for major in majors:
-            maj_student = aca_student.filter(stu_major__uuid=major["majors__uuid"])
-            worksheet.write(row_start, 0, label=major['majors__maj_code'], style=table_center_style)
-            worksheet.write(row_start, 1, label=major['majors__maj_name'])
+            maj_student = aca_student.filter(stu_major__uuid=major["aca_majors__uuid"])
+            worksheet.write(row_start, 0, label=major['aca_majors__maj_code'], style=table_center_style)
+            worksheet.write(row_start, 1, label=major['aca_majors__maj_name'])
             worksheet.write(row_start, 4, label=maj_student.count(), style=table_center_style)
             worksheet.write(row_start, 5, label=maj_student.filter(stu_learn_type='S1')
                             .filter(stu_cultivating_mode='C2').count(), style=table_center_style)

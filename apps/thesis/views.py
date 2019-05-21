@@ -22,7 +22,7 @@ class SimpleThesis(object):
     model = Thesis
     queryset = Thesis.objects.all()
     serializer_class = ThesisSerializers
-    pagination_class = ""
+    pagination_class = None
 
 
 class ThesisDetail(SimpleThesis, generics.RetrieveUpdateDestroyAPIView):
