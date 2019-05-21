@@ -406,21 +406,21 @@ class ReformList(generics.GenericAPIView):
         for academy in academies:
             reform_dict = dict()
             reform_dict["academy"] = academy["aca_cname"]
-            reform = Reform.objects.filter(reform__uuid=academy["uuid"])
+            reform = Reform.objects.filter(aca_reforms__uuid=academy["uuid"]).filter(ref_time__year=year)
             reform_dict["project"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT1").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT1").values("ref_name")])
             reform_dict["paper"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT2").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT2").values("ref_name")])
             reform_dict["textbook"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT3").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT3").values("ref_name")])
             reform_dict["award"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT4").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT4").values("ref_name")])
             reform_dict["course"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT5").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT5").values("ref_name")])
             reform_dict["base"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT6").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT6").values("ref_name")])
             reform_dict["exchange_project"] = ",".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT7").values("ref_name")])
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
         return Response(reform_list)
     
@@ -467,7 +467,7 @@ class ReformList(generics.GenericAPIView):
                 reform_list.append(reform)
 
             for x in reform_list:
-                academy.reforms.add(x)
+                academy.aca_reforms.add(x)
 
         return Response(res, status=status.HTTP_200_OK)
 
@@ -492,21 +492,21 @@ class ReformUpload(generics.GenericAPIView):
         for academy in academies:
             reform_dict = dict()
             reform_dict["academy"] = academy["aca_cname"]
-            reform = Reform.objects.filter(reform__uuid=academy["uuid"])
-            reform_dict["project"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT1").values("ref_name")])
-            reform_dict["paper"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT2").values("ref_name")])
-            reform_dict["textbook"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT3").values("ref_name")])
-            reform_dict["award"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT4").values("ref_name")])
-            reform_dict["course"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT5").values("ref_name")])
-            reform_dict["base"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT6").values("ref_name")])
-            reform_dict["exchange_project"] = "\n".join(
-                [ref['ref_name'] for ref in reform.filter(time=year).filter(ref_type="RT7").values("ref_name")])
+            reform = Reform.objects.filter(aca_reforms__uuid=academy["uuid"]).filter(ref_time__year=year)
+            reform_dict["project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT1").values("ref_name")])
+            reform_dict["paper"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT2").values("ref_name")])
+            reform_dict["textbook"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT3").values("ref_name")])
+            reform_dict["award"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT4").values("ref_name")])
+            reform_dict["course"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT5").values("ref_name")])
+            reform_dict["base"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT6").values("ref_name")])
+            reform_dict["exchange_project"] = ",".join(
+                [ref['ref_name'] for ref in reform.filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
         
         # 标题
@@ -530,13 +530,13 @@ class ReformUpload(generics.GenericAPIView):
 
         # 合计汇总行
         for i, value in enumerate(['合计',
-                                   Reform.objects.filter(time=year).filter(ref_type="RT1").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT2").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT3").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT4").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT5").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT6").count(),
-                                   Reform.objects.filter(time=year).filter(ref_type="RT7").count()]):
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT1").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT2").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT3").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT4").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT5").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT6").count(),
+                                   Reform.objects.filter(ref_time__year=year).filter(ref_type="RT7").count()]):
             worksheet.write(data_len + 2, i, label=value, style=table_center_style)
 
         # 保存
