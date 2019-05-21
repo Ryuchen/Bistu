@@ -162,7 +162,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["stu_political"] = trans[rowx[10]]
             student_dict["stu_academy"] = Academy.objects.filter(aca_cname=rowx[11]).first()
             student_dict["stu_major"] = Major.objects.filter(maj_name=rowx[12]).first()
-            # student_dict["major_category"] = trans[rowx[13]]
             student_dict["stu_class"] = Class.objects.filter(cla_name=rowx[14]).first()
             student_dict["stu_status"] = trans[rowx[15]]
             student_dict["stu_tutor"] = Tutor.objects.filter(tut_number=rowx[16]).first()
@@ -181,8 +180,7 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["stu_is_archives"] = True if rowx[30] == "是" else False
             student_dict["stu_graduation_time"] = datetime.strptime(str(int(rowx[31])), '%Y%m').strftime('%Y-%m-01')
             s_list.append(student_dict)
-        serializer = self.get_serializer(data=s_list, many=True, context={"stu_academy": "", 'stu_user': "",
-                                                                          "stu_major": "", "stu_tutor": ""})
+        serializer = self.get_serializer(data=s_list, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

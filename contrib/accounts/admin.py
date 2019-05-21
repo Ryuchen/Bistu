@@ -12,8 +12,10 @@ import csv
 from . import forms
 from . import models
 
+from django.conf.urls import url
 from django.contrib import admin
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 
 from django_admin_listfilter_dropdown.filters import DropdownFilter, RelatedDropdownFilter, ChoiceDropdownFilter
 
@@ -54,6 +56,19 @@ class TutorAdmin(admin.ModelAdmin):
 
         return response
     export_as_csv.short_description = "导出所选的 教师"
+
+    def get_urls(self):
+        urls = super(TutorAdmin, self).get_urls()
+        extend_urls = [
+            url(r'^import-excel/$', self.admin_site.admin_view(self.import_excel), name='import-excel')
+        ]
+        return extend_urls + urls
+
+    def import_excel(self, request):
+        context = dict(
+            self.admin_site.each_context(request),
+        )
+        return TemplateResponse(request, "admin/web/Tutor/import_excel.html", context)
 
     form = forms.TutorForm
     inlines = [StudentInline]
@@ -109,6 +124,19 @@ class StudentAdmin(admin.ModelAdmin):
 
         return response
     export_as_csv.short_description = "导出所选的 学生"
+
+    def get_urls(self):
+        urls = super(StudentAdmin, self).get_urls()
+        extend_urls = [
+            url(r'^import-excel/$', self.admin_site.admin_view(self.security_configuration), name='import-excel')
+        ]
+        return extend_urls + urls
+
+    def security_configuration(self, request):
+        context = dict(
+            self.admin_site.each_context(request),
+        )
+        return TemplateResponse(request, "admin/web/Student/import_excel.html", context)
 
     form = forms.StudentForm
     actions = ["export_as_csv"]
