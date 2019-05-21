@@ -155,6 +155,7 @@ class AcademyAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
             'fields': ['aca_cname', 'aca_code', 'aca_ename', 'aca_phone', 'aca_fax', 'aca_href', 'aca_brief']
         })
     ]
+    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
     list_filter = [
         'aca_reforms__ref_time'
     ]
@@ -164,7 +165,6 @@ class AcademyAdmin(InlineActionsModelAdminMixin, admin.ModelAdmin):
     exclude = ('aca_majors', 'aca_reforms')
     empty_value_display = '--'
     change_list_template = "admin/web/Academy/change_list.html"
-    suit_form_tabs = (('general', '基本信息'), ('majors', '学科专业'), ('reforms', '教改项目'))
 
 
 class ReformAdmin(admin.ModelAdmin):
