@@ -1,0 +1,14 @@
+{% extends 'admin/base.html' %}
+{% load i18n admin_static %}
+
+{% block content %}
+<div>
+    <form action="{% url 'tutor-list' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">选择上传的 Excel 文件</label>
+        <input type="file" id="file" name="file">
+        <button type="submit">上传</button>
+    </form>
+</div>
+<br />
+{% endblock %}
