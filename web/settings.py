@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'web.apps.SuitConfig',
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -181,3 +181,87 @@ REST_FRAMEWORK = {
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+# SimpleUI settings
+# https://github.com/newpanjing/simpleui/blob/master/QUICK.md
+SIMPLEUI_HOME_INFO = False
+
+SIMPLEUI_CONFIG = {
+    'system_keep': False,
+    'menus': [
+        {
+            'app': 'auth',
+            'name': '账户管理',
+            'icon': 'fas fa-user-shield',
+            'models': [
+                {
+                    'name': '用户',
+                    'icon': 'fa fa-user',
+                    'url': 'auth/user/'
+                },
+                {
+                    'name': '用户组',
+                    'icon': 'fa fa-users-cog',
+                    'url': 'auth/group/'
+                }
+            ]
+        },
+        {
+            'app': 'accounts',
+            'name': '学生管理',
+            'icon': 'fa fa-graduation-cap',
+            'url': 'accounts/student/'
+        },
+        {
+            'app': 'accounts',
+            'name': '教师管理',
+            'icon': 'fa fa-id-card',
+            'url': 'accounts/tutor/'
+        },
+        {
+            'app': 'colleges',
+            'name': '学院管理',
+            'icon': 'fa fa-university',
+            'models': [
+                {
+                    'name': '学院',
+                    'icon': 'fa fa-university',
+                    'url': 'colleges/academy/'
+                },
+                {
+                    'name': '专业',
+                    'icon': 'fa fa-university',
+                    'url': 'colleges/major/'
+                },
+                {
+                    'name': '班级',
+                    'icon': 'fa fa-university',
+                    'url': 'colleges/class/'
+                },
+                {
+                    'name': '教改',
+                    'icon': 'fa fa-university',
+                    'url': 'colleges/reform/'
+                },
+                {
+                    'name': '统计',
+                    'icon': 'fa fa-university',
+                    'url': 'colleges/reformresults/'
+                }
+            ]
+        },
+        {
+            'app': 'education',
+            'name': '教学管理',
+            'icon': 'fas fa-book',
+            'models': [
+                {
+                    'name': '论文',
+                    'icon': 'fa fa-book',
+                    'url': 'education/thesis/'
+                }
+            ]
+        }
+    ]
+}

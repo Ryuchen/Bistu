@@ -3,7 +3,6 @@ Django
 django-admin-list-filter-dropdown
 django-filter
 django-inline-actions
-https://github.com/darklow/django-suit/tarball/v2#egg=django-suit
 djangorestframework
 Faker
 isort
