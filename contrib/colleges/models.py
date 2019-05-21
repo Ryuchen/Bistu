@@ -45,11 +45,11 @@ class Major(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
     maj_name = models.CharField(max_length=128, null=True, verbose_name="学科名称")
     maj_code = models.IntegerField(null=True, verbose_name="学科编号")
-    maj_type = models.CharField(max_length=128, choices=MajorTypeChoice, verbose_name="学科类型")
-    maj_first = models.BooleanField(verbose_name="是否一级学科")
-    maj_second = models.BooleanField(verbose_name="是否二级学科")
-    maj_setup_time = models.DateField(verbose_name="获批时间")
-    maj_degree = models.CharField(max_length=128, choices=MajorDegreeChoice, verbose_name="学位类型")
+    maj_type = models.CharField(null=True, max_length=128, choices=MajorTypeChoice, verbose_name="学科类型")
+    maj_first = models.BooleanField(null=True, verbose_name="是否一级学科")
+    maj_second = models.BooleanField(null=True, verbose_name="是否二级学科")
+    maj_setup_time = models.DateField(null=True, verbose_name="获批时间")
+    maj_degree = models.CharField(max_length=128, null=True, choices=MajorDegreeChoice, verbose_name="学位类型")
     maj_research = models.ManyToManyField(Research, related_name='research', verbose_name="科研方向")
 
     def get_major_type(self):
@@ -140,7 +140,8 @@ class Academy(models.Model):
     aca_fax = models.CharField(max_length=128, null=True, verbose_name="学院传真")
     aca_href = models.URLField(max_length=256, null=True, verbose_name="学院网址")
     aca_brief = models.TextField(verbose_name="学院简介", null=True)
-    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", verbose_name="学院负责人")
+    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", 
+                                 verbose_name="学院负责人")
     aca_majors = models.ManyToManyField(Major, related_name='majors')
     aca_reforms = models.ManyToManyField(Reform, related_name='reforms')
 
