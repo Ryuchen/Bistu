@@ -1,5 +1,6 @@
 {% extends 'admin/base.html' %}
-{% load i18n static %}
+{% load i18n %}
+{% load admin_urls static admin_list simpletags %}
 
 {% block content %}
 <div>
@@ -11,4 +12,13 @@
     </form>
 </div>
 <br />
+<el-upload
+  class="upload-demo"
+  drag
+  action="{% url 'student-list' %}"
+  multiple>
+  <i class="el-icon-upload"></i>
+  <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
+  <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
+</el-upload>
 {% endblock %}
