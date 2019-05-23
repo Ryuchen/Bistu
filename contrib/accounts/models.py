@@ -82,14 +82,6 @@ class Tutor(models.Model):
         return PoliticalType[self.tut_political].value
     get_political.short_description = '政治面貌'
 
-    def export_row(self):
-        field_data = [
-            self.tut_number, self.tut_name, self.get_gender(), self.get_title(), self.get_political(),
-            self.tut_academy.aca_cname, self.tut_user.email, self.tut_telephone, self.tut_degree,
-            self.tut_education.edu_school_name, self.tut_birth_day, self.tut_entry_day
-        ]
-        return field_data
-
     def __str__(self):
         return "工号：{0}  姓名：{1}".format(self.tut_number, self.tut_name)
 
@@ -196,18 +188,6 @@ class Student(models.Model):
     def get_stu_status(self):
         return StudentStatusType[self.stu_status].value
     get_stu_status.short_description = '在学状态'
-
-    def export_row(self):
-        field_data = [
-            self.stu_name, self.stu_number, self.stu_candidate_number, self.stu_card_type, self.stu_cardID,
-            self.get_gender(), self.stu_birth_day, self.stu_nation, self.stu_source, self.stu_is_village,
-            self.get_political(), self.stu_academy.aca_cname, self.stu_major.maj_name, self.stu_major.get_major_type(),
-            self.stu_class, self.get_stu_status(), self.stu_tutor.tut_number, self.stu_tutor.tut_name, self.get_stu_type(),
-            self.get_stu_learn_type(), self.get_stu_learn_status(), self.stu_grade, self.stu_system, self.stu_entrance_time,
-            self.get_stu_cultivating_mode(), self.get_stu_enrollment_category(), self.stu_nationality, self.get_stu_special_program(),
-            self.stu_is_regular_income, self.stu_is_tuition_fees, self.stu_is_archives, self.stu_graduation_time
-        ]
-        return field_data
 
     def __str__(self):
         return "学生编号：{0}  学生姓名：{1}".format(self.stu_number, self.stu_name)
