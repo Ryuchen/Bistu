@@ -3,22 +3,23 @@
 {% load admin_urls static admin_list simpletags %}
 
 {% block content %}
-<div>
-    <form action="{% url 'student-list' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file">选择上传的 Excel 文件</label>
-        <input type="file" id="file" name="file">
-        <button type="submit">上传</button>
-    </form>
+<div id="uploader">
+    <el-upload
+      class="el-upload"
+      drag
+      action="{% url 'student-list' %}"
+      multiple>
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
+      <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
+    </el-upload>
 </div>
-<br />
-<el-upload
-  class="upload-demo"
-  drag
-  action="{% url 'student-list' %}"
-  multiple>
-  <i class="el-icon-upload"></i>
-  <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
-  <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
-</el-upload>
+
+<script type="text/javascript">
+    if (document.getElementById('uploader')) {
+        new Vue({
+            el: '#uploader'
+        })
+    }
+</script>
 {% endblock %}
