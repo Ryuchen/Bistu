@@ -2,8 +2,60 @@
 {% load i18n admin_static %}
 
 {% block object-tools-items %}
-<li>
-    <a href="import-excel/" class="addlink" style="background-color: greenyellow">导入 老师</a>
-</li>
 {{ block.super }}
+<li id="import-dialog">
+    <el-link type="primary" @click="dialogVisible = true">导入 教师</el-link>
+
+    <el-dialog title="选择导入教师文件" :visible.sync="dialogVisible" width="30%" :modal="false" style="text-align: center">
+        <div id="drag-upload">
+            <el-upload
+                class="el-upload"
+                drag
+                action="{% url 'tutor-list' %}"
+                :on-error="handleError"
+                :on-success="handleSuccess"
+            >
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
+            </el-upload>
+        </div>
+    </el-dialog>
+</li>
+
+<script type="text/javascript">
+    if (document.getElementById('import-dialog')) {
+        new Vue({
+            el: '#import-dialog',
+            data() {
+                return {
+                    dialogVisible: false
+                };
+            },
+            methods: {
+                handleSuccess(response) {
+                    console.log(response);
+                    this.$notify({
+                        title: '上传成功',
+                        message: "",
+                        type:'success',
+                        dangerouslyUseHTMLString: true,
+                        showClose: false
+                    });
+                },
+                handleError(response) {
+                    const { message } = response;
+                    const body = JSON.parse(message);
+                    this.$notify({
+                        title: '解析失败',
+                        message: body.meta.details,
+                        type:'error',
+                        dangerouslyUseHTMLString: true,
+                        showClose: false
+                    });
+                }
+            }
+        });
+    }
+</script>
 {% endblock %}
