@@ -78,7 +78,7 @@
                     }
                 }, {
                     text: getLanuage('Close current'),
-                    icon: 'el-icon-circle-close-outline',
+                    icon: 'el-icon-circle-close',
                     handler: function (tab, item) {
                         app.handleTabsEdit(tab.id, 'remove');
                     }
@@ -125,6 +125,7 @@
             models: [],
             fontDialogVisible: false,
             fontSlider: 12,
+            loading:false
         },
         watch: {
             fold: function (newValue, oldValue) {
@@ -227,7 +228,16 @@
             },
             iframeLoad: function (tab, e) {
                 url = e.target.contentWindow.location.href
+
                 tab.newUrl = url;
+                tab.loading=false;
+                this.$forceUpdate();
+                var self=this;
+                e.target.contentWindow.beforeLoad=function(){
+                    tab.loading=true;
+                    self.$forceUpdate();
+                }
+                this.loading = false;
             },
             setTheme: function (item) {
                 var url = window.themeUrl;
@@ -293,6 +303,7 @@
             }
             ,
             openTab: function (data, index) {
+
                 this.breadcrumbs = data.breadcrumbs;
                 var exists = null;
                 //判断是否存在，存在就直接打开
@@ -307,6 +318,11 @@
                 if (exists) {
                     this.tabModel = exists.id;
                 } else {
+                    //其他的网址loading会一直转
+                    if(data.url.indexOf('http')!=0){
+                        data.loading=true;
+                        this.loading = true;
+                    }
                     data.id = new Date().getTime() + "" + Math.random();
                     data.index = index;
                     this.tabs.push(data);
@@ -332,12 +348,20 @@
                 var width = document.documentElement.clientWidth || document.body.clientWidth;
                 if (width > 800) {
                     this.pwdDialog = {
-                        url: window.urls.changePassword,
+                        url: window.urls.changePassword+'?dialog=1',
                         name: language.change_password,
                         show: true
                     };
                 } else {
-                    this.openTab({url: window.urls.changePassword, icon: 'far fa-edit', name: language.change_password})
+                    this.openTab({
+                        url: window.urls.changePassword,
+                        icon: 'far fa-edit',
+                        name: language.change_password,
+                        breadcrumbs:[{
+                            name: language.change_password,
+                            icon: 'far fa-edit'
+                        }]
+                    })
                     app.breadcrumbs = [language.change_password];
                 }
             }
@@ -354,8 +378,11 @@
                 });
             }
             ,
-            goIndex: function () {
-                window.open('/');
+            goIndex: function (url) {
+                if (!url || url == 'None') {
+                    url = '/';
+                }
+                window.open(url);
             }
             ,
             getLanuage: getLanuage,
