@@ -61,19 +61,19 @@ class TutorResource(resources.ModelResource):
 @admin.register(models.Tutor)
 class TutorAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = TutorResource
-
-    def get_urls(self):
-        urls = super(TutorAdmin, self).get_urls()
-        extend_urls = [
-            url(r'^import-excel/$', self.admin_site.admin_view(self.import_excel), name='import-excel')
-        ]
-        return extend_urls + urls
-
-    def import_excel(self, request):
-        context = dict(
-            self.admin_site.each_context(request),
-        )
-        return TemplateResponse(request, "admin/web/Student/import_excel.html", context)
+    #
+    # def get_urls(self):
+    #     urls = super(TutorAdmin, self).get_urls()
+    #     extend_urls = [
+    #         url(r'^import-excel/$', self.admin_site.admin_view(self.import_excel), name='import-excel')
+    #     ]
+    #     return extend_urls + urls
+    #
+    # def import_excel(self, request):
+    #     context = dict(
+    #         self.admin_site.each_context(request),
+    #     )
+    #     return TemplateResponse(request, "admin/web/Tutor/import_excel.html", context)
 
     form = forms.TutorForm
     inlines = [StudentInline]
