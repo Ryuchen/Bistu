@@ -9,7 +9,7 @@
 # ==================================================
 from import_export import resources
 from import_export.fields import Field
-from import_export.admin import ExportMixin
+from import_export.admin import ExportActionMixin
 
 from . import forms
 from . import models
@@ -150,14 +150,21 @@ class MajorsAdmin(admin.ModelAdmin):
 @admin.register(models.Class)
 class ClassAdmin(admin.ModelAdmin):
     list_display = ('cla_code', 'cla_name')
+    list_per_page = 20
     empty_value_display = '--'
 
 
 @admin.register(models.Reform)
 class ReformAdmin(admin.ModelAdmin):
+    search_fields = ('ref_name',)
+    list_filter = [
+        'ref_type',
+    ]
     list_display = (
         'ref_name', 'ref_type', 'ref_time'
     )
+    list_per_page = 20
+    date_hierarchy = 'ref_time'
     empty_value_display = '--'
 
 
@@ -180,11 +187,15 @@ class ReformResultsResource(resources.ModelResource):
 
 
 @admin.register(models.ReformResults)
-class ReformResultsAdmin(ExportMixin, admin.ModelAdmin):
+class ReformResultsAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = ReformResultsResource
+    list_filter = [
+        'academy',
+    ]
     list_display = (
         'get_academy_cname', 'project_count', 'paper_count', 'textbook_count', 'award_count', 'course_count',
         'base_count', 'exchange_project_count', 'get_reform_year'
     )
+    list_per_page = 20
     date_hierarchy = 'time'
     empty_value_display = '--'
