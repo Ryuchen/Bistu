@@ -124,9 +124,6 @@ class AcademyAdmin(admin.ModelAdmin):
     empty_value_display = '--'
     change_list_template = 'admin/web/Academy/change_list.html'
 
-    class Media:
-        css = {"all": ("./custom/css/hide_admin_original.css",)}
-
 
 @admin.register(models.Major)
 class MajorsAdmin(admin.ModelAdmin):
@@ -148,9 +145,6 @@ class MajorsAdmin(admin.ModelAdmin):
     list_per_page = 20
     exclude = ('maj_research',)
     empty_value_display = '--'
-
-    class Media:
-        css = {"all": ("./custom/css/hide_admin_original.css",)}
 
 
 @admin.register(models.Class)

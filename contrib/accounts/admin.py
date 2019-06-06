@@ -107,9 +107,6 @@ class TutorAdmin(ExportActionMixin, admin.ModelAdmin):
     empty_value_display = '--'
     change_list_template = 'admin/web/Tutor/change_list.html'
 
-    class Media:
-        css = {"all": ("./custom/css/hide_admin_original.css",)}
-
 
 class StudentResource(resources.ModelResource):
     stu_name = Field(attribute='stu_name', column_name='姓名')
