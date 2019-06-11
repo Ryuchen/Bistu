@@ -4,6 +4,11 @@
 {% block object-tools-items %}
 {{ block.super }}
 <li>
-    <a href="enroll-statistic/" class="changelink" style="background-color: greenyellow">招生统计</a>
+    <el-link id="enroll-statistic" type="primary" href="enroll-statistic/" style="background: white;">招生统计</el-link>
 </li>
+<script>
+new Vue({
+    el: '#enroll-statistic'
+})
+</script>
 {% endblock %}
