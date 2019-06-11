@@ -203,7 +203,6 @@ class Student(models.Model):
             ("can_update_student", "修改学生"),
             ("can_search_student", "查询学生")
         ]
-        ordering = ['stu_number']
 
 
 class MidCheckReport(models.Model):

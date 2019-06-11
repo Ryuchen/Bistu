@@ -13,7 +13,9 @@ import xlwt
 from datetime import datetime
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.core import serializers
+from django.db.models import Count
+from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import mixins, generics, status
@@ -180,7 +182,8 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
             student_dict["stu_is_archives"] = True if rowx[30] == "是" else False
             student_dict["stu_graduation_time"] = datetime.strptime(str(int(rowx[31])), '%Y%m').strftime('%Y-%m-01')
             s_list.append(student_dict)
-        serializer = self.get_serializer(data=s_list, many=True, context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
+        serializer = self.get_serializer(data=s_list, many=True,
+                                         context={"stu_academy": "", 'stu_user': "", "stu_major": "", "stu_tutor": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -418,3 +421,8 @@ def create_xls(request):
         return response
     else:
         raise FileNotFoundError
+
+
+def academies_enroll_statistic(request):
+    result = Student.objects.values('stu_academy__aca_cname', 'stu_entrance_time__year').annotate(count=Count('uuid'))
+    return JsonResponse({"statistic": list(result)})

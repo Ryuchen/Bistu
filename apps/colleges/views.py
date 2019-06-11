@@ -251,7 +251,8 @@ class AcademyList(SimpleAcademy, generics.GenericAPIView):
         else:
             for item in data:
                 data["aca_user"] = User.objects.get(username=item.get('aca_user')).id
-                data["aca_majors"] = [i.uuid for i in Major.objects.filter(maj_name__in=item.get('aca_majors').split(","))]
+                data["aca_majors"] = [i.uuid for i in
+                                      Major.objects.filter(maj_name__in=item.get('aca_majors').split(","))]
             serializer = self.get_serializer(data=data, many=True, context={"aca_majors": "", "aca_user": ""})
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -282,7 +283,7 @@ class TableStyle:
     alignment = xlwt.Alignment()
     alignment.horz = xlwt.Alignment.HORZ_CENTER
     alignment.vert = xlwt.Alignment.VERT_CENTER
-    
+
     # 写入excel
     header_style = xlwt.XFStyle()
     header_font = xlwt.Font()
@@ -321,7 +322,7 @@ class OpeningReportList(generics.GenericAPIView):
 
 
 class OpeningReportUpload(generics.GenericAPIView):
-    
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
@@ -346,19 +347,19 @@ class OpeningReportUpload(generics.GenericAPIView):
             opening_dict["delay_count"] = academy_stu.filter(stu_thesis__the_is_delay=True).count()
             opening_dict["fail_count"] = academy_stu.filter(stu_thesis__the_final_score=False).count()
             opening_list.append(opening_dict)
-    
+
         # 标题
         worksheet.write_merge(0, 0, 0, 5, label='{0}届研究生开题情况统计-按学院'.format(year), style=header_style)
-    
+
         # 表头
         for index, value in enumerate(['序号', '学院', '学生数', '按期开题人数', '延期开题人数', '开题不通过人数']):
             worksheet.write(1, index, label=value, style=header_style)
-    
+
         # 行高
         tall_style = xlwt.easyxf('font:height 240;')
         first_row = worksheet.row(1)
         first_row.set_style(tall_style)
-    
+
         data_len = len(opening_list)
         for line, data in enumerate(opening_list):
             for index, value in enumerate(["", "academy", "stu_count", "schedule_count", "delay_count", "fail_count"]):
@@ -373,7 +374,7 @@ class OpeningReportUpload(generics.GenericAPIView):
                                    xlwt.Formula('SUM(E3:E{0})'.format(data_len + 2)),
                                    xlwt.Formula('SUM(F3:F{0})'.format(data_len + 2))]):
             worksheet.write(data_len + 2, i, label=value, style=table_center_style)
-    
+
         # 保存
         workbook.save(os.path.join(settings.BASE_DIR, 'opening_report.xls'))
         if os.path.exists(os.path.join(settings.BASE_DIR, 'opening_report.xls')):
@@ -423,7 +424,7 @@ class ReformList(generics.GenericAPIView):
                 [ref['ref_name'] for ref in reform.filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
         return Response(reform_list)
-    
+
     # Excel上传
     @excepts
     @csrf_exempt
@@ -434,7 +435,7 @@ class ReformList(generics.GenericAPIView):
         table = data.sheets()[0]
         nrows = table.nrows
         time = "2019"
-        for i in range(2, nrows-1):
+        for i in range(2, nrows - 1):
             rowx = table.row_values(i)
             academy = Academy.objects.get(aca_cname=rowx[0])
             reform_list = list()
@@ -473,7 +474,7 @@ class ReformList(generics.GenericAPIView):
 
 
 class ReformUpload(generics.GenericAPIView):
-    
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
@@ -508,15 +509,15 @@ class ReformUpload(generics.GenericAPIView):
             reform_dict["exchange_project"] = ",".join(
                 [ref['ref_name'] for ref in reform.filter(ref_type="RT7").values("ref_name")])
             reform_list.append(reform_dict)
-        
+
         # 标题
         worksheet.write_merge(0, 0, 0, 7, label='{0}年各学院研究生教育改革成果统计'.format(year), style=header_style)
-        
+
         # 表头
         for index, value in enumerate(['学院名称', '研究生教育相关教改项目立项', '发表研究生教育相关教改论文', '出版研究生教材',
                                        '研究生教育相关获奖', '精品/在线课程建设', '实践基地建设', '研究生国际交流']):
             worksheet.write(1, index, label=value, style=header_style)
-        
+
         # 行高
         tall_style = xlwt.easyxf('font:height 240;')
         first_row = worksheet.row(1)
@@ -639,7 +640,7 @@ class PaperList(generics.GenericAPIView):
 
 
 class PaperUpload(generics.GenericAPIView):
-    
+
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
@@ -657,7 +658,7 @@ class PaperUpload(generics.GenericAPIView):
             student_data = Student.objects.all()
         # 表名
         worksheet.write_merge(0, 0, 0, 21, label='{0}年研究生学位论文质量统计'.format(year), style=header_style)
-        
+
         # 表头
         worksheet.write(1, 0, label='序号', style=header_style)
         worksheet.write(1, 1, label='学院', style=header_style)
@@ -703,14 +704,14 @@ class PaperUpload(generics.GenericAPIView):
         paper_fail_all_count = student_data.filter(stu_thesis__pla_thesis__pla_result=False).count()
         paper_fifteen_all_count = student_data.filter(stu_thesis__pla_thesis__pla_rate__lt=15).count()
         paper_ten_all_count = student_data.filter(stu_thesis__pla_thesis__pla_rate__lt=10).count()
-        
+
         blind_trial_all_count = student_data.filter(stu_thesis__bli_thesis__bli_date__year=year).count()
         blind_trial_fail_all_count = student_data.filter(stu_thesis__bli_thesis__bli_score="不合格").count()
         final_fail_all_count = student_data.filter(stu_thesis__the_final_score=False).count()
         ia_superb_all_count = student_data.filter(stu_thesis__the_is_superb=True).count()
         graduate_pass_all_count = student_data.filter(stu_gain_cert=True).count()
         degree_all_count = student_data.filter(stu_gain_diploma=True).count()
-        
+
         for i, value in enumerate([data_len + 1, '合计', full_time_all_count, delay_all_count, student_all_count,
                                    paper_one_pass_all_count,
                                    '{:.0%}'.format(paper_one_pass_all_count / student_all_count), paper_fail_all_count,
@@ -719,7 +720,8 @@ class PaperUpload(generics.GenericAPIView):
                                    '{:.0%}'.format(paper_ten_all_count / student_all_count),
                                    '{:.0%}'.format(blind_trial_all_count / student_all_count),
                                    blind_trial_fail_all_count, final_fail_all_count, '', ia_superb_all_count,
-                                   graduate_pass_all_count, '{:.0%}'.format(graduate_pass_all_count / student_all_count),
+                                   graduate_pass_all_count,
+                                   '{:.0%}'.format(graduate_pass_all_count / student_all_count),
                                    degree_all_count, '{:.0%}'.format(degree_all_count / student_all_count),
                                    ]):
             worksheet.write(data_len + 3, i, label=value, style=table_center_style)
