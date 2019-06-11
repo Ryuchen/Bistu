@@ -2,102 +2,197 @@
 
 {% block content %}
 <div id="contentWrapper">
-<template>
-  <el-table
-    :data="tableData"
-    style="width: 100%">
-    <el-table-column
-      prop="date"
-      label="日期"
-      width="150">
-    </el-table-column>
-    <el-table-column label="配送信息">
-      <el-table-column
-        prop="name"
-        label="姓名"
-        width="120">
-      </el-table-column>
-      <el-table-column label="地址">
-        <el-table-column
-          prop="province"
-          label="省份"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="city"
-          label="市区"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="地址"
-          width="300">
-        </el-table-column>
-        <el-table-column
-          prop="zip"
-          label="邮编"
-          width="120">
-        </el-table-column>
-      </el-table-column>
-    </el-table-column>
-  </el-table>
-</template>
+  <el-container>
+    <el-header >
+      <el-page-header @back="javascript:history.go(-1);" content="硕士生分专业招生人数汇总表"></el-page-header>
+      <el-form :inline="true" :model="formInline" class="demo-form-inline" size="small" style="text-align: right; font-size: 12px">
+        <el-form-item label="招生年份">
+          <el-select v-model="formInline.year" placeholder="全部年份">
+            <el-option v-for="option in options" :value="option">{{ option }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">查询</el-button>
+          <el-button type="primary" @click="onExport">导出</el-button>
+        </el-form-item>
+      </el-form>
+    </el-header>
 
+    <el-main>
+      <template>
+        <el-table
+            v-loading="loading"
+            :data="tableData"
+            :span-method="objectSpanMethod"
+            :highlight-current-row="false"
+            :header-cell-style="tableHeaderColor"
+            size="mini"
+            border
+            style="width: 100%" max-height="700">
+          <el-table-column prop="academyName" label="学院名称" fixed width="120"></el-table-column>
+          <el-table-column prop="academyTotal" label="学院总数" fixed width="80"></el-table-column>
+          <el-table-column label="专业信息">
+            <el-table-column prop="majorName" label="专业名称" width="200"></el-table-column>
+            <el-table-column prop="majorCode" label="招生代码" width="120"></el-table-column>
+            <el-table-column prop="majorType" label="专业类型" width="120"></el-table-column>
+            <el-table-column prop="majorTotal" label="专业总数" width="120"></el-table-column>
+            <el-table-column label="招生详情">
+              <el-table-column label="全日制">
+                <el-table-column prop="S1.C2.count" label="总数" width="120"></el-table-column>
+                <el-table-column label="学术型">
+                  <el-table-column prop="S1.C1.stu_is_volunteer" label="一志愿" width="120"></el-table-column>
+                  <el-table-column prop="S1.C1.stu_is_adjust" label="调剂生" width="120"></el-table-column>
+                  <el-table-column prop="S1.C1.stu_special_program" label="退伍生" width="120"></el-table-column>
+                </el-table-column>
+                <el-table-column label="专业型">
+                  <el-table-column prop="S1.C2.stu_is_volunteer" label="一志愿" width="120"></el-table-column>
+                  <el-table-column prop="S1.C2.stu_is_adjust" label="调剂生" width="120"></el-table-column>
+                  <el-table-column prop="S1.C2.stu_special_program" label="退伍生" width="120"></el-table-column>
+                </el-table-column>
+              </el-table-column>
+              <el-table-column label="非全日制">
+                <el-table-column prop="S2.C1.count" label="总数" width="120"></el-table-column>
+                <el-table-column label="专业型">
+                  <el-table-column prop="S2.C1.stu_is_volunteer" label="一志愿" width="120"></el-table-column>
+                  <el-table-column prop="S2.C1.stu_is_adjust" label="调剂生" width="120"></el-table-column>
+                  <el-table-column prop="S2.C1.stu_special_program" label="退伍生" width="120"></el-table-column>
+                </el-table-column>
+              </el-table-column>
+            </el-table-column>
+          </el-table-column>
+          </el-table-column>
+        </el-table>
+      </template>
+    </el-main>
+  </el-container>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
   new Vue({
     el: '#contentWrapper',
-    data() {
+    data: function() {
+      const options = [];
+      const todayYear = new Date().getFullYear();
+      for (let i = todayYear; i >= 2000; i -= 1) {
+        options.push(i);
+      }
       return {
-        tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }]
+        options: options,
+        temp: {},
+        tableData: [],
+        loading: false,
+        formInline: {
+          year: ''
+        }
+      }
+    },
+    created: function() {
+      this.onLoading(this.formInline.year);
+    },
+    methods: {
+      tableHeaderColor({ row, column, rowIndex, columnIndex }) {
+        return 'text-align: center;'
+      },
+      onSearch() {
+        this.onLoading(this.formInline.year);
+      },
+      onExport() {
+        Vue.prototype.$http = axios;
+        let _this = this;
+        this.$http.get("{% url 'create_xls' %}", {params: { year: this.formInline.year }, 'responseType': 'blob'})
+            .then(function (res) {
+              if (res) {
+                const blob = new Blob([res.data], {type: res.headers['content-type']});
+                const fileName = `${_this.formInline.year}硕士生分专业招生人数汇总表.xls`;
+                if ("download" in document.createElement("a")) {
+                    // 非IE下载
+                    const link = document.createElement("a");
+                    link.download = fileName;
+                    link.style.display = "none";
+                    link.href = URL.createObjectURL(blob);
+                    document.body.appendChild(link);
+                    link.click();
+                    URL.revokeObjectURL(link.href); // 释放URL 对象
+                    document.body.removeChild(link);
+                } else {
+                    // IE10+下载
+                    navigator.msSaveBlob(blob, fileName);
+                }
+              }
+            })
+            .catch(function (error) {
+              _this.$notify.error({
+                title: '错误',
+                message: '导出过程中发生错误',
+              });
+            });
+      },
+      onLoading(year) {
+        Vue.prototype.$http = axios;
+        let _this = this;
+        let data = [];
+        this.loading = true;
+        this.$http.get("{% url 'student-statistics' %}", {params: {year: year}})
+            .then(function (res) {
+              res.data.forEach(item => {
+                const {
+                  academy_name: academyName,
+                  academy_total: academyTotal,
+                  academy_major: academyMajors = [],
+                } = item;
+
+                academyMajors.forEach(major => {
+                  data.push({
+                    academyName,
+                    academyTotal,
+                    majorName: major.major_name,
+                    majorCode: major.major_code,
+                    majorType: major.major_type,
+                    majorTotal: major.major_total,
+                    S1: major.S1,
+                    S2: major.S2,
+                  });
+                });
+              });
+              _this.tableData = data;
+              _this.loading = false;
+            })
+            .catch(function (error) {
+              _this.$notify.error({
+                title: '错误',
+                message: '查询过程中发现错误'
+              });
+            });
+      },
+      mergeCells(index, text, array, columnName) {
+        let i = 0;
+        if (!Object.prototype.hasOwnProperty.call(this.temp, text)) {
+          array.forEach(item => {
+            if (item[columnName] === text) {
+              i += 1;
+            }
+          });
+          this.temp[text] = { index, i };
+          return i;
+        }
+        const { index: displayIndex, i: displaySpan } = this.temp[text];
+        if (displayIndex === index) {
+          return displaySpan;
+        }
+        return i;
+      },
+      objectSpanMethod({ row, rowIndex, columnIndex }) {
+        if (columnIndex === 0) {
+          return {
+            rowspan: this.mergeCells(rowIndex, row.academyName, this.tableData, 'academyName'),
+            colspan: 1
+          };
+        } else if (columnIndex === 1) {
+          return {
+            rowspan: this.mergeCells(rowIndex, row.academyName, this.tableData, 'academyName'),
+            colspan: 1
+          };
+        }
       }
     }
   });
