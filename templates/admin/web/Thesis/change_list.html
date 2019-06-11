@@ -2,12 +2,79 @@
 {% load i18n admin_static %}
 
 {% block object-tools-items %}
-{{ block.super }}
-{#<li>#}
-{#    <a href="" class="addlink">导入</a>#}
-{#</li>#}
-{#<li>#}
-{#    <a href="{% url 'mid_check_report_list' %}" class="addlink">导出</a>#}
-{#    <div>{{ spec }}</div>#}
-{#</li>#}
+  {{ block.super }}
+  <li id="download-dialog">
+    <el-link type="primary" @click="dialogVisible=true" style="background: none">导出论文统计</el-link>
+
+    <el-dialog title="选择需要统计的年份和学院" :visible.sync="dialogVisible" width="400" :modal="false" center>
+      <el-form :model="formInline" label-width="80px" size="mini" label-position="right" style="text-align: center">
+        <el-form-item label="年份">
+          <el-select v-model="formInline.year" placeholder="选择年份">
+            <el-option v-for="option in years" :value="option">{{ option }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="学院">
+          <el-select v-model="formInline.academy" placeholder="选择学院">
+            <el-option v-for="academy in academies" :value="academy.value" :label="academy.option"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">导出</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </li>
+
+  <style>
+    .el-form-item__content {
+      margin-left: 0 !important;
+    }
+  </style>
+  <script type="text/javascript">
+    if (document.getElementById('download-dialog')) {
+      new Vue({
+        el: '#download-dialog',
+        data() {
+          const options = [];
+          const todayYear = new Date().getFullYear();
+          for (let i = todayYear; i >= 2000; i -= 1) {
+            options.push(i);
+          }
+          return {
+            years: options,
+            academies: [],
+            dialogVisible: false,
+            formInline: {
+              year: '',
+              academy: ''
+            }
+          };
+        },
+        created: function () {
+          Vue.prototype.$http = axios;
+          let _this = this;
+          let academies = [];
+          this.$http.get("{% url 'academy-list' %}", {})
+              .then(function (res) {
+                res.data.forEach(item => {
+                    const {uuid, aca_cname} = item;
+                    academies.push({"value": uuid, "option": aca_cname});
+                });
+                _this.academies = academies;
+              })
+              .catch(function (error) {
+                _this.$notify.error({
+                  title: '错误',
+                  message: '导出过程中发生错误',
+                });
+              });
+        },
+        methods: {
+          onSubmit() {
+            console.log('submit!');
+          },
+        }
+      });
+    }
+  </script>
 {% endblock %}
