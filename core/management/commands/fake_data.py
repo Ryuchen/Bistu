@@ -131,7 +131,6 @@ class Command(BaseCommand):
         # 清除账户相关的假数据
         User.objects.all().delete()
         Group.objects.all().delete()
-        Permission.objects.all().delete()
         self.stdout.write(self.style.SUCCESS("User/Group/Permission 相关内容清除完毕！"))
         self.stdout.write(self.style.NOTICE('清除完毕！'))
 
