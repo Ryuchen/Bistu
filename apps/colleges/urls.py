@@ -31,5 +31,5 @@ urlpatterns = [
     url(r"^reform_upload/$", ReformUpload.as_view(), name="reform-upload"),
 
     url(r"^papers/$", PaperList.as_view(), name="paper-list"),
-    url(r"^paper_upload/$", PaperUpload.as_view(), name="paper-upload"),
+    url(r"^paper_statistic/$", PaperUpload.as_view(), name="paper-statistic"),
 ]
