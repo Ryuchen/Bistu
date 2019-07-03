@@ -1,0 +1,43 @@
+[[source]]
+name = "pypi"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+astroid = "==2.2.5"
+backports-csv = "==1.0.7"
+defusedxml = "==0.6.0"
+diff-match-patch = "==20181111"
+django = "==2.2.2"
+django-admin-list-filter-dropdown = "==1.0.2"
+django-filter = "==2.1.0"
+django-import-export = "==1.2.0"
+django-inline-actions = "==2.1.0"
+django-simpleui = "*"
+djangorestframework = "==3.9.4"
+et-xmlfile = "==1.0.1"
+faker = "==1.0.7"
+isort = "==4.3.20"
+jdcal = "==1.4.1"
+lazy-object-proxy = "==1.4.1"
+mccabe = "==0.6.1"
+odfpy = "==1.4.0"
+openpyxl = "==2.6.2"
+pillow = "==6.0.0"
+pylint = "==2.3.1"
+python-dateutil = "==2.8.0"
+pytz = "==2019.1"
+pyyaml = "==5.1"
+six = "==1.12.0"
+sqlparse = "==0.3.0"
+tablib = "==0.13.0"
+text-unidecode = "==1.2"
+typed-ast = "==1.3.5"
+wrapt = "==1.11.1"
+xlrd = "==1.2.0"
+xlwt = "==1.3.0"
+
+[requires]
+python_version = "3.7"

@@ -123,11 +123,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Media files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/media-files/
@@ -190,7 +190,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SimpleUI settings
 # https://github.com/newpanjing/simpleui/blob/master/QUICK.md
 SIMPLEUI_HOME_INFO = False
-
+SIMPLEUI_STATIC_OFFLINE = False
+SIMPLEUI_LOGO = "/static/bistu/img/logo.png"
 SIMPLEUI_CONFIG = {
     'system_keep': False,
     'menus': [
