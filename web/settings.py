@@ -193,8 +193,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SimpleUI settings
 # https://github.com/newpanjing/simpleui/blob/master/QUICK.md
 SIMPLEUI_HOME_INFO = False
-SIMPLEUI_STATIC_OFFLINE = False
-SIMPLEUI_LOGO = "/static/bistu/img/logo.png"
+SIMPLEUI_STATIC_OFFLINE = True
+SIMPLEUI_LOGO = "/static/admin/img/bistu/logo.png"
 SIMPLEUI_CONFIG = {
     'system_keep': False,
     'menus': [
