@@ -8,17 +8,9 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/
 """
 
 import os
-import django
 
 from django.core.wsgi import get_wsgi_application
-from django.contrib.auth.models import Permission
-from core.definition.displays import permissions_display
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
 
 application = get_wsgi_application()
-django.setup()
-
-Permission.__str__ = permissions_display
-
-
