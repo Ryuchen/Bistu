@@ -14,9 +14,8 @@ from import_export.admin import ExportActionMixin
 from . import forms
 from . import models
 
-from django.conf.urls import url
 from django.contrib import admin
-from django.template.response import TemplateResponse
+from django.contrib.auth.models import User, Group
 
 
 class StudentInline(admin.TabularInline):
@@ -190,3 +189,13 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
     search_fields = ('stu_name', 'stu_telephone')
     empty_value_display = '--'
     change_list_template = 'admin/web/Student/change_list.html'
+
+
+# admin.site.unregister(User)
+# admin.site.unregister(Group)
+#
+#
+# @admin.register(User)
+# class AccountAdmin(admin.ModelAdmin):
+#     list_per_page = 20
+#     empty_value_display = '--'

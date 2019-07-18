@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ==================================================
-# @Time : 2019-04-02 10:46 
+# @Time : 2019-04-02 10:46
 # @Author : ryuchen
-# @Site :  
-# @File : views.py 
-# @Desc : 
+# @Site :
+# @File : views.py
+# @Desc :
 # ==================================================
+import json
 import logging
 
-from django.contrib.sessions.models import Session
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 
 from contrib.colleges.models import Academy
 from core.decorators.excepts import excepts
@@ -29,37 +30,22 @@ def login_view(request):
         "code": "00000000",
         "data": {
             "status": 200,
-            "type": "account",
         }
     }
     if request.method != "POST":
         raise NotImplementedError
 
-    username = request.POST['username']
-    password = request.POST['password']
+    params = json.loads(request.body)
+
+    username = params.get('username')
+    password = params.get('password')
+    remember = params.get('remember')
 
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        user = User.objects.filter(username=username).first()
-        if user.is_superuser:
-            res["data"]["authority"] = list(request.user.groups.values_list('name', flat=True))
-            res["data"]["permission"] = []
-            for group in request.user.groups.all():
-                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
-            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
-        elif user.is_staff:
-            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
-            res["data"]["permission"] = []
-            for group in request.user.groups.all():
-                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
-            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
-        else:
-            res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
-            res["data"]["permission"] = []
-            for group in request.user.groups.all():
-                res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
-            res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
+        if not remember:
+            request.session.set_expiry(7 * 24 * 60 * 60)
         return JsonResponse(res)
     else:
         raise AuthenticateError("Username or Password is incorrect!")
@@ -77,16 +63,16 @@ def logout_view(request):
     return JsonResponse(res)
 
 
+@api_view(["GET"])
+@csrf_exempt
 @excepts
-def current_user_view(request):
+def current_view(request):
     res = {
         "code": "00000000",
         "data": {
             "status": 200,
         }
     }
-    if request.method != "GET":
-        raise NotImplementedError
 
     if request.user.is_authenticated:
         user = User.objects.get(id=request.user.id)
@@ -119,6 +105,12 @@ def current_user_view(request):
                     "group": "教师",
                     "academy": ""
                 }
+        res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+        res["data"]["permission"] = []
+        for group in request.user.groups.all():
+            res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+        res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
+
         return JsonResponse(res)
     else:
         raise AuthenticateError("You need login first!")

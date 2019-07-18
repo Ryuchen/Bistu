@@ -14,5 +14,5 @@ from django.conf.urls import url
 urlpatterns = [
     url(r"^login/$", views.login_view, name="login"),
     url(r"^logout/$", views.logout_view, name="logout"),
-    url(r"^current/$", views.current_user_view, name="current-user")
+    url(r"^current/$", views.current_view, name="current-user"),
 ]
