@@ -11,7 +11,7 @@ from rest_framework import status
 
 
 class AuthenticateError(Exception):
-    code = status.HTTP_401_UNAUTHORIZED
+    code = status.HTTP_400_BAD_REQUEST
     details = ""
 
     def __init__(self, details=None):
