@@ -17,4 +17,6 @@ urlpatterns = [
 	url(r"^statistics/$", StudentStatistics.as_view(), name="student-statistics"),
 	url(r"^enrollxls/$", views.create_xls, name="create_xls"),
 	url(r"^trending/$", views.academies_enroll_statistic, name="student-enroll-trending"),
+	url(r"^ratio/$", views.students_ratio, name="student-ratio"),
+	url(r"^list/$", views.students_list, name="student-list"),
 ]

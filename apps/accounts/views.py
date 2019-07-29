@@ -7,110 +7,126 @@
 # @File : views.py
 # @Desc :
 # ==================================================
-import json
 import logging
+import datetime
 
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
+from rest_framework_jwt.settings import api_settings as token_settings
+
+from core.exceptions.errors import *
+from core.decorators.excepts import excepts
 
 from contrib.colleges.models import Academy
-from core.decorators.excepts import excepts
-from core.exceptions.errors import *
 
 log = logging.getLogger('default')
 
 
+@api_view(["POST"])
+@authentication_classes(())
+@permission_classes(())
 @excepts
-@csrf_exempt
 def login_view(request):
+    """
+    用于账户登录接口
+    :param request:
+    :return:
+    """
     res = {
         "code": "00000000",
-        "data": {
-            "status": 200,
-        }
+        "data": {}
     }
-    if request.method != "POST":
-        raise NotImplementedError
 
-    params = json.loads(request.body)
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    remember = request.POST.get('remember')
 
-    username = params.get('username')
-    password = params.get('password')
-    remember = params.get('remember')
+    jwt_payload_handler = token_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = token_settings.JWT_ENCODE_HANDLER
 
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
         if not remember:
-            request.session.set_expiry(7 * 24 * 60 * 60)
+            token_settings.JWT_EXPIRATION_DELTA = datetime.timedelta(hours=3)
+
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        res['data']['token'] = token
         return JsonResponse(res)
     else:
         raise AuthenticateError("Username or Password is incorrect!")
 
 
+@api_view(["GET"])
 @excepts
 def logout_view(request):
+    """
+    用于账户登出接口
+    :param request:
+    :return:
+    """
     res = {
         "code": "00000000",
-        "data": {
-            "status": 200,
-        }
+        "data": {}
     }
     logout(request)
     return JsonResponse(res)
 
 
 @api_view(["GET"])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 @excepts
 def current_view(request):
+    """
+    用于查询当前账户详情接口
+    :param request:
+    :return:
+    """
     res = {
         "code": "00000000",
-        "data": {
-            "status": 200,
-        }
+        "data": {}
     }
 
-    if request.user.is_authenticated:
-        user = User.objects.get(id=request.user.id)
-        if user.is_superuser:
+    user = User.objects.get(id=request.user.id)
+    if user.is_superuser:
+        res["data"]["profile"] = {
+            "name": '{0}{1}'.format(user.first_name, user.last_name),
+            "email": user.email,
+            "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+            "title": "你是当前系统的最高管理员",
+            "group": "超级管理员",
+            "academy": ""
+        }
+    else:
+        if user.is_staff:
+            academy = Academy.objects.filter(aca_user_id=user.id).first()
             res["data"]["profile"] = {
                 "name": '{0}{1}'.format(user.first_name, user.last_name),
                 "email": user.email,
                 "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                "title": "你是当前系统的最高管理员",
-                "group": "超级管理员",
-                "academy": ""
+                "title": "你是{0}学院的管理员".format(academy.aca_cname),
+                "group": "学院管理人员",
+                "academy": academy.uuid
             }
         else:
-            if user.is_staff:
-                academy = Academy.objects.filter(aca_user_id=user.id).first()
-                res["data"]["profile"] = {
-                    "name": '{0}{1}'.format(user.first_name, user.last_name),
-                    "email": user.email,
-                    "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                    "title": "你是{0}学院的管理员".format(academy.aca_cname),
-                    "group": "学院管理人员",
-                    "academy": academy.uuid
-                }
-            else:
-                res["data"]["profile"] = {
-                    "name": '{0}{1}'.format(user.first_name, user.last_name),
-                    "email": user.email,
-                    "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-                    "title": "研究生导师",
-                    "group": "教师",
-                    "academy": ""
-                }
-        res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
-        res["data"]["permission"] = []
-        for group in request.user.groups.all():
-            res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
-        res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
+            res["data"]["profile"] = {
+                "name": '{0}{1}'.format(user.first_name, user.last_name),
+                "email": user.email,
+                "avatar": 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+                "title": "研究生导师",
+                "group": "教师",
+                "academy": ""
+            }
+    res["data"]["authority"] = list(user.groups.values_list('name', flat=True))
+    res["data"]["permission"] = []
+    for group in request.user.groups.all():
+        res["data"]["permission"].extend(list(group.permissions.values_list('codename', flat=True)))
+    res["data"]["permission"].extend(list(user.user_permissions.values_list('codename', flat=True)))
 
-        return JsonResponse(res)
-    else:
-        raise AuthenticateError("You need login first!")
+    return JsonResponse(res)

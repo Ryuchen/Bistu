@@ -8,16 +8,19 @@
 # @Desc : 
 # ==================================================
 import os
+import json
 import xlrd
 import xlwt
+
 from datetime import datetime
 
 from django.conf import settings
 from django.core import serializers
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import mixins, generics, status
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import LimitOffsetPagination
@@ -426,3 +429,73 @@ def create_xls(request):
 def academies_enroll_statistic(request):
     result = Student.objects.values('stu_academy__aca_cname', 'stu_entrance_time__year').annotate(count=Count('uuid'))
     return JsonResponse({"statistic": list(result)})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@excepts
+def students_ratio(request):
+    """
+    用于查询当前学生占比
+    :param request:
+    :return:
+    """
+    res = {
+        "code": "00000000",
+        "data": {
+            "ratio": []
+        }
+    }
+
+    year = request.GET.get("year", datetime.now().year)
+
+    queryset = Student.objects.filter(stu_entrance_time__year=year)\
+        .values('stu_academy__aca_cname', 'stu_academy__uuid')\
+        .annotate(total=Count('uuid'))
+
+    if queryset:
+        for _ in queryset:
+            res["data"]['ratio'].append(
+                {
+                    'aca_cname': _['stu_academy__aca_cname'],
+                    'total': _['total'],
+                    'uuid': str(_['stu_academy__uuid'])
+                }
+            )
+    return JsonResponse(res)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@excepts
+def students_list(request):
+    """
+    用于查询当前学生占比
+    :param request:
+    :return:
+    """
+    res = {
+        "code": "00000000",
+        "data": {
+        }
+    }
+
+    year = request.GET.get("year", "")
+    academy = request.GET.get("academy", "")
+    offset = int(request.GET.get("offset", 0))
+    limit = int(request.GET.get("limit", 20))
+
+    print(offset, limit)
+
+    query = Student.objects
+    if year:
+        query.filter(stu_entrance_time__year=year)
+    if academy:
+        query.filter(stu_academy=academy)
+    queryset = query.order_by('stu_number').all()
+
+    res["data"]["total"] = query.count()
+    queryset = queryset[offset:offset + limit]
+    res["data"]["list"] = json.loads(serializers.serialize('json', queryset))
+
+    return JsonResponse(res)

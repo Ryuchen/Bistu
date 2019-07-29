@@ -26,30 +26,28 @@ from core.definition.enums import *
 def application(request):
     res = {
         "code": "00000000",
-        "data": {
-            "status": 200,
-        }
+        "data": {}
     }
     res['data']['app'] = {"name": "Bistu Postgraduate Manager System", "description": "Using for Bistu College CMS"}
-    res['data']['menu'] = [
-        {
-            'text': '快捷中心',
-            'group': True,
-            'children': [
-                {
-                    'text': '工作总览',
-                    'link': '/dashboard',
-                    'icon': {'type': 'icon', 'value': 'appstore'},
-                },
-                {
-                    'text': '快捷入口',
-                    'link': '/dashboard',
-                    'icon': {'type': 'icon', 'value': 'rocket'},
-                    'shortcutRoot': True,
-                },
-            ],
-        },
-    ]
+    # res['data']['menu'] = [
+    #     {
+    #         'text': '快捷中心',
+    #         'group': True,
+    #         'children': [
+    #             {
+    #                 'text': '工作总览',
+    #                 'link': '/dashboard',
+    #                 'icon': {'type': 'icon', 'value': 'appstore'},
+    #             },
+    #             {
+    #                 'text': '快捷入口',
+    #                 'link': '/dashboard',
+    #                 'icon': {'type': 'icon', 'value': 'rocket'},
+    #                 'shortcutRoot': True,
+    #             },
+    #         ],
+    #     },
+    # ]
     return Response(res)
 
 
@@ -58,15 +56,13 @@ def application(request):
 @permission_classes(())
 @excepts
 def translation(request):
-    request.encoding = 'utf-8'
-    trans = request.GET.get("i18n", "zh-CN")
     res = {
         "code": "00000000",
-        "data": {
-            "status": 200,
-            "default": trans
-        }
+        "data": {}
     }
+    request.encoding = 'utf-8'
+    trans = request.GET.get("i18n", "zh-CN")
+    res['data']['default'] = trans
     with open(os.path.join(settings.TRANSLATE_DIRS, '{}.json'.format(trans)), "r") as translate:
         res['data']['translation'] = json.loads(translate.read())
     return Response(res)
@@ -77,19 +73,22 @@ def translation(request):
 @permission_classes(())
 @excepts
 def definitions(request):
-    res = dict()
-    res['degree_choice'] = {tag.name: tag.value for tag in DegreeType}
-    res['gender_choice'] = {tag.name: tag.value for tag in GenderType}
-    res['title_choice'] = {tag.name: tag.value for tag in TitleType}
-    res['political_choice'] = {tag.name: tag.value for tag in PoliticalType}
-    res['status_choice'] = {tag.name: tag.value for tag in StudentStatusType}
-    res['student_type'] = {tag.name: tag.value for tag in StudentLearnType}
-    res['student_category'] = {tag.name: tag.value for tag in StudentCategoryType}
-    res['cultivating_mode'] = {tag.name: tag.value for tag in CultivatingModeType}
-    res['enrollment_category'] = {tag.name: tag.value for tag in EnrollmentCategoryType}
-    res['special_program'] = {tag.name: tag.value for tag in SpecialProgramType}
-    res['major_type'] = {tag.name: tag.value for tag in MajorType}
-    res['major_degree'] = {tag.name: tag.value for tag in MajorDegree}
+    res = {
+        "code": "00000000",
+        "data": {}
+    }
+    res['data']['degree_choice'] = {tag.name: tag.value for tag in DegreeType}
+    res['data']['gender_choice'] = {tag.name: tag.value for tag in GenderType}
+    res['data']['title_choice'] = {tag.name: tag.value for tag in TitleType}
+    res['data']['political_choice'] = {tag.name: tag.value for tag in PoliticalType}
+    res['data']['status_choice'] = {tag.name: tag.value for tag in StudentStatusType}
+    res['data']['student_type'] = {tag.name: tag.value for tag in StudentLearnType}
+    res['data']['student_category'] = {tag.name: tag.value for tag in StudentCategoryType}
+    res['data']['cultivating_mode'] = {tag.name: tag.value for tag in CultivatingModeType}
+    res['data']['enrollment_category'] = {tag.name: tag.value for tag in EnrollmentCategoryType}
+    res['data']['special_program'] = {tag.name: tag.value for tag in SpecialProgramType}
+    res['data']['major_type'] = {tag.name: tag.value for tag in MajorType}
+    res['data']['major_degree'] = {tag.name: tag.value for tag in MajorDegree}
     return Response(res)
 
 
