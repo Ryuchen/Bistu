@@ -12,11 +12,13 @@ import xlrd
 import xlwt
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import generics, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.decorators.excepts import excepts
 from contrib.accounts.models import Student

@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import url
+from django.views.static import serve
+from . import settings
 
 urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
@@ -24,8 +27,11 @@ urlpatterns = [
     path("settings/", include("apps.settings.urls")),
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
+    path("statistic/", include("apps.statistic.urls")),
     path("", admin.site.urls),
     path("history_data/", include("apps.history_data.urls")),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'

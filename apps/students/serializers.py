@@ -24,7 +24,7 @@ class StudentSerializers(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
-        depth = 3
+        depth = 2
 
     def to_representation(self, instance):
         instance.stu_gender = instance.get_stu_gender_display()

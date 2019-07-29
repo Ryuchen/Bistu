@@ -39,6 +39,8 @@ wrapt = "==1.11.1"
 xlrd = "==1.2.0"
 xlwt = "==1.3.0"
 whitenoise = "*"
+django-cors-headers = "*"
+djangorestframework-jwt = "*"
 
 [requires]
 python_version = "3.7"
