@@ -20,8 +20,8 @@
     {% endif %}
 
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}">
-    <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/base.css' %}">
-    <link rel="stylesheet" href="{% static '/admin/simpleui-x/theme/simpleui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/admin/simpleui-x/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/admin/simpleui-x/theme/simpleui.css' %}">
 
     {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
       <script type="text/javascript" src="{% static '/admin/simpleui-x/js/vue.min.js' %}"></script>
