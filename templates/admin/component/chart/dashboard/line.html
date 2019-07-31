@@ -1,9 +1,14 @@
-<div id="display-trend" style="width: 1100px; height: 240px;">
+<div id="displayChart">
+  <el-container>
+    <el-main>
+      <div id="line-chart" style="width: 1100px; height: 320px;"></div>
+    </el-main>
+  </el-container>
 </div>
 
 <script>
 new Vue({
-  el: '#display-trend',
+  el: '#displayChart',
   data: function () {
     return {
       trendingStatistic: {
@@ -13,31 +18,36 @@ new Vue({
       },
     }
   },
-  mounted: function () {
-    const dom = document.getElementById("display-trend");
-    this.chart = echarts.init(dom, '', {renderer: 'svg', width: 'auto', height: 'auto'});
+  created: function () {
     this.getEnrollTrendingData(this.drawLine);
-    window.addEventListener("resize", this.onResize, false);
   },
   methods: {
-    onResize(){
-        if(this.chart){
-            this.chart.resize();
-        }
-    },
     drawLine() {
-      this.chart.setOption({
+      const dom = document.getElementById("line-chart");
+      const height = dom.style.height;
+      const width = dom.style.width;
+      const lineChart = echarts.init(dom, '', { 'width': width, 'height': height });
+      lineChart.setOption({
+        title: {
+          text: '各学院招生统计对比图'
+        },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
           data: this.trendingStatistic.academies,
           x: 'center', // 'center' | 'left' | {number},
-          y: 'top', // 'center' | 'bottom' | {number}
+          y: 'bottom', // 'center' | 'bottom' | {number}
         },
         grid: {
-          left: '5px',
+          left: '3%',
+          right: '3%',
           containLabel: true
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
         },
         xAxis: {
           type: 'category',
@@ -47,7 +57,6 @@ new Vue({
         yAxis: {
           type: 'value'
         },
-        autoresize: true,
         series: this.trendingStatistic.series
       })
     },

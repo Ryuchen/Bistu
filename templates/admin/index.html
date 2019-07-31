@@ -24,6 +24,9 @@
   <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/index.css' %}?_=2.1.4.619">
   <link rel="stylesheet" href="{% static '/admin/simpleui-x/waves/waves.min.css' %}?_=2.1">
 
+  <script type="text/javascript" src="{% static '/admin/js/vendor/jquery/jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/js/jquery.init.js' %}"></script>
+
   {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
     <script type="text/javascript" src="{% static '/admin/simpleui-x/js/vue.min.js' %}"></script>
     <script type="text/javascript" src="{% static '/admin/simpleui-x/js/axios.min.js' %}"></script>
@@ -98,13 +101,13 @@
     }
   </script>
 
-  <script type="text/javascript" src="{% static '/admin/simpleui-x/automatic/dicts.js' %}?_=2.1"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/automatic/dicts.js' %}"></script>
   <script type="text/javascript" src="{% static '/admin/simpleui-x/automatic/segment.js' %}"></script>
-  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/en-us.js' %}?_=2.1.2"></script>
-  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/' %}{% get_language %}.js?_=2.1.2" onerror="localeError()"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/en-us.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/' %}{% get_language %}.js" onerror="localeError()"></script>
   <script type="text/javascript" src="{% static '/admin/simpleui-x/js/cookie.js' %}"></script>
   <script type="text/javascript" src="{% static '/admin/simpleui-x/theme/theme.js' %}"></script>
-  <script type="text/javascript" src="{% static '/admin/simpleui-x/waves/waves.min.js' %}?_=2.0.5"></script>
-  <script type="text/javascript" src="{% static '/admin/simpleui-x/js/index.js' %}?_=2.6"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/waves/waves.min.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/js/index.js' %}"></script>
 </body>
 </html>

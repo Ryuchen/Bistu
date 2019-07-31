@@ -3,21 +3,18 @@
 {% load simpletags %}
 
 <div id="home">
-  <div style="background-color: #ffffff;height: 240px;width: 100%">
-  {# 描述标题的地方 #}
+  <div id="content-main" style="padding: 10px">
+    <el-card class="box-card" style="margin-bottom: 0">
+      <div slot="header">
+        <i class="fas fa-link"></i>
+        <span v-text="getTranslate('Last enroll trend')"></span>
+      </div>
+      {% include "admin/component/chart/dashboard/line.html" %}
+    </el-card>
   </div>
 
   <el-row>
     <el-col :span="16">
-
-      <el-card class="box-card">
-        <div slot="header">
-          <i class="fas fa-link"></i>
-          <span v-text="getTranslate('Last enroll trend')"></span>
-        </div>
-        {% include "admin/component/chart/dashboard/line.html" %}
-      </el-card>
-
       <el-card class="box-card">
         <div slot="header">
           <i class="fas fa-link"></i>

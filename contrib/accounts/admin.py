@@ -83,7 +83,6 @@ class TutorAdmin(ExportActionMixin, admin.ModelAdmin):
         'tut_academy',
         'tut_political',
         'tut_title',
-        'tut_degree'
     ]
     list_display = (
         'tut_number', 'tut_name', 'get_gender', 'tut_telephone', 'tut_cardID',
@@ -194,7 +193,9 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
         'stu_enrollment_category',
         'stu_academy',
         'stu_major',
-        'stu_political'
+        'stu_political',
+        'stu_nation',
+        'stu_source',
     )
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
@@ -202,7 +203,8 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
         'get_stu_type', 'stu_entrance_time',
     )
     list_per_page = 20
-    search_fields = ('stu_name', 'stu_telephone')
+    search_fields = ('stu_number', 'stu_name', 'stu_nation', 'stu_source', 'stu_telephone')
+    date_hierarchy = 'stu_entrance_time'
     empty_value_display = '--'
     change_list_template = 'admin/web/Student/change_list.html'
 
