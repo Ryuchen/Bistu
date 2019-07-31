@@ -1,0 +1,211 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% if request.GET.e == 'simpleui_json' %}
+  {% context_to_json %}
+{% else %}
+  <!DOCTYPE html>
+  <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %} dir="rtl" {% endif %}>
+  <head>
+    <title>{{ title }} | {{ site_title|default:_('Django site admin') }}</title>
+    {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+      <link rel="stylesheet" href="{% static '/admin/simpleui-x/elementui/theme-chalk/index.css' %}">
+      <link rel="stylesheet" href="{% static '/admin/simpleui-x/fontawesome/css/all.min.css' %}">
+    {% else %}
+      <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+      <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css">
+    {% endif %}
+
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}">
+    <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/base.css' %}">
+    <link rel="stylesheet" href="{% static '/admin/simpleui-x/theme/simpleui.css' %}">
+
+    {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+      <script type="text/javascript" src="{% static '/admin/simpleui-x/js/vue.min.js' %}"></script>
+      <script type="text/javascript" src="{% static '/admin/simpleui-x/js/axios.min.js' %}"></script>
+      <script type="text/javascript" src="{% static '/admin/simpleui-x/js/echarts.min.js' %}"></script>
+      <script type="text/javascript" src="{% static '/admin/simpleui-x/elementui/index.js' %}"></script>
+    {% else %}
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.js"></script>
+      <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    {% endif %}
+
+    <script type="text/javascript" src="{% static '/admin/js/vendor/jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/js/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/language.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/en-us.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/' %}{% get_language %}.js"></script>
+
+    {% if ""|get_language_code != 'zh-hans' %}
+      <script type="text/javascript" src="{% static '/admin/simpleui-x/elementui/umd/locale/en.js' %}"></script>
+      <script type="text/javascript">
+          ELEMENT.locale(ELEMENT.lang.en)
+      </script>
+    {% endif %}
+
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/cookie.js' %}"></script>
+
+    {% block extrahead %}
+
+    {% endblock %}
+
+    {% block extrastyle %}
+
+    {% endblock %}
+
+    {% if LANGUAGE_BIDI %}
+        <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>
+    {% endif %}
+
+    {% block responsive %}
+      <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+      <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}"/>
+      {% if LANGUAGE_BIDI %}
+        <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}"/>
+      {% endif %}
+    {% endblock %}
+  </head>
+  <body class="{% if is_popup %} popup {% endif %} {% block bodyclass %} {% endblock %}" data-admin-utc-offset="{% now "Z" %}">
+    <!-- theme section -->
+    {% verbatim dynamicCss %}
+      <style type="text/css" id="dynamicCss" v-if="fontSize!=0">
+          *{
+              font-size: {{ fontSize }}px!important;
+          }
+      </style>
+    {% endverbatim dynamicCss %}
+    <div id="theme">
+        <link v-if="theme!=''" rel="stylesheet" :href="theme">
+    </div>
+    <script type="text/javascript">
+       const fontConfig = new Vue({
+          el: '#dynamicCss',
+          data: {
+            fontSize: 14
+          },
+          created: function () {
+            const val = getCookie('fontSize');
+            if (val) {
+              this.fontSize = parseInt(val);
+            } else {
+              this.fontSize = 0;
+            }
+          },
+          methods: {}
+      });
+
+      new Vue({
+        el: '#theme',
+        data: {
+            theme: '',
+        },
+        created: function () {
+          this.theme = getCookie('theme');
+
+          const self = this;
+          //向父组件注册事件
+          if (parent.addEvent) {
+            parent.addEvent('theme', function (theme) {
+              self.theme = theme;
+            });
+
+            parent.addEvent('font', function (font) {
+              fontConfig.fontSize = font;
+            });
+          }
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if(window.beforeLoad){
+          window.beforeLoad();
+        }
+      });
+    </script>
+    <!-- theme section -->
+
+    <!-- container section -->
+    <div id="container">
+      {# 这里获取 django template engine 中的 messages 转换成 element 的 messages 告警出来 #}
+      {% block messages %}
+        {% autoescape off %}
+          {% load_message %}
+        {% endautoescape %}
+        <script type="text/javascript">
+          new Vue({
+            created: function () {
+              const self = this;
+              messages.forEach(item => {
+                self.$notify({
+                  title: getTranslate('Tips'),
+                  message: item.msg,
+                  type: item.tag,
+                  dangerouslyUseHTMLString: true
+                });
+              });
+            }
+          })
+        </script>
+      {% endblock messages %}
+
+      <!-- menu section -->
+      <div class="menu-content">
+        {% for app in app_list %}
+          {{ app }}
+        {% endfor %}
+      </div>
+      <!-- menu section -->
+
+      <!-- content section -->
+      <div id="content" class="{% block coltype %}colM{% endblock %}" style="border-radius: 5px;">
+        <div id="content-header">
+          <el-row :gutter="20">
+            <el-col :span="16">
+              {% block pretitle %}
+                {# 页面的面包屑展示 #}
+              {% endblock %}
+            </el-col>
+            <el-col :span="8">
+              {% block object-tools %}
+                {# 页面内容的工具栏 #}
+              {% endblock %}
+            </el-col>
+          </el-row>
+        </div>
+        <script>
+          new Vue({
+            el: '#content-header'
+          })
+        </script>
+        {% block content_title %}
+          {# 默认不显示标题内容页头 #}
+          {% if title %}
+            <div style="display: none">{{ title }}</div>
+          {% endif %}
+        {% endblock %}
+
+        {% block content %}
+          {{ content }}
+        {% endblock %}
+
+        {% block sidebar %}
+          {# 内容部分的侧边栏 #}
+        {% endblock %}
+        <br class="clear"/>
+      <!-- content section -->
+
+      <!-- footer section -->
+      {% block footer %}
+        <div id="footer"></div>
+      {% endblock %}
+      <!-- footer section -->
+    </div>
+    <!-- container section -->
+    </body>
+  </html>
+{% endif %}

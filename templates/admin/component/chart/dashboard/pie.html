@@ -1,0 +1,49 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+{% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/js/g2.min.js' %}"></script>
+{% else %}
+  <script src="https://gw.alipayobjects.com/os/lib/antv/g2/3.5.7/dist/g2.min.js"></script>
+{% endif %}
+
+<div id="mountNode"></div>
+<script>
+  var data = [{
+    year: '1951 年',
+    sales: 38
+  }, {
+    year: '1952 年',
+    sales: 52
+  }, {
+    year: '1956 年',
+    sales: 61
+  }, {
+    year: '1957 年',
+    sales: 145
+  }, {
+    year: '1958 年',
+    sales: 48
+  }, {
+    year: '1959 年',
+    sales: 38
+  }, {
+    year: '1960 年',
+    sales: 38
+  }, {
+    year: '1962 年',
+    sales: 38
+  }];
+  var chart = new G2.Chart({
+    container: 'mountNode',
+    width: 600,
+    height: window.innerHeight - 300,
+  });
+  chart.source(data);
+  chart.scale('sales', {
+    tickInterval: 20
+  });
+  chart.interval().position('year*sales');
+  chart.render();
+</script>

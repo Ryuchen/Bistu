@@ -7,6 +7,8 @@
 # @File : admin.py
 # @Desc : 
 # ==================================================
+from django.conf.urls import url
+from django.template.response import TemplateResponse
 from import_export import resources
 from import_export.fields import Field
 from import_export.admin import ExportActionMixin
@@ -142,6 +144,20 @@ class StudentResource(resources.ModelResource):
 
 @admin.register(models.Student)
 class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
+
+    def get_urls(self):
+        urls = super(StudentAdmin, self).get_urls()
+        extend_urls = [
+            url(r'^import_students/$', self.admin_site.admin_view(self.import_students), name='import-students')
+        ]
+        return extend_urls + urls
+
+    def import_students(self, request):
+        context = dict(
+            self.admin_site.each_context(request),
+        )
+        return TemplateResponse(request, "admin/web/Student/import_students.html", context)
+
     resource_class = StudentResource
     form = forms.StudentForm
     fieldsets = [

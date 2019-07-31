@@ -1,0 +1,77 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+<div id="home">
+  <div style="background-color: #ffffff;height: 240px;width: 100%">
+  {# 描述标题的地方 #}
+  </div>
+
+  <el-row>
+    <el-col :span="16">
+
+      <el-card class="box-card">
+        <div slot="header">
+          <i class="fas fa-link"></i>
+          <span v-text="getTranslate('Last enroll trend')"></span>
+        </div>
+        {% include "admin/component/chart/dashboard/line.html" %}
+      </el-card>
+
+      <el-card class="box-card">
+        <div slot="header">
+          <i class="fas fa-link"></i>
+          <span v-text="getTranslate('Quick navigation')"></span>
+        </div>
+        <div>
+          {% if "SIMPLEUI_HOME_QUICK"|get_config != False %}
+            <div v-for="(c,j) in models" :key="c.name" class="quick-wrap">
+              <a href="javascript:void(0);" @click="openTab(c,(j+1)+'')">
+                <span class="icon" :class="c.icon"></span>
+                <span v-text="c.name"></span>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </el-card>
+
+      <el-card class="box-card">
+        <div slot="header">
+          <span>{% trans 'Recent actions' %}</span>
+          <el-button v-waves style="float: right; padding: 3px 0" type="text" :icon="timeline?'el-icon-arrow-up':'el-icon-arrow-down'" @click="displayTimeline()"></el-button>
+        </div>
+        {% load log %}
+        {% get_admin_log 10 as admin_log for_user user %}
+        {% if admin_log %}
+          <transition name="el-zoom-in-top">
+            <div class="block" v-if="timeline">
+              <el-timeline>
+                {% for entry in admin_log %}
+                  <el-timeline-item timestamp="{{ entry.action_time }}" placement="top">
+                    <el-card>
+                      <p>{{ entry.user }} {{ entry.action_time }}</p>
+                      <h4>{{ entry.content_type }}: {{ entry }}</h4>
+                    </el-card>
+                  </el-timeline-item>
+                {% endfor %}
+              </el-timeline>
+            </div>
+          </transition>
+        {% endif %}
+      </el-card>
+
+    </el-col>
+
+    <el-col :span="8">
+
+      <el-card class="box-card">
+        <div slot="header">
+          <i class="fas fa-link"></i>
+          <span v-text="getTranslate('Last enroll ratio')"></span>
+        </div>
+        {% include "admin/component/chart/dashboard/pie.html" %}
+      </el-card>
+
+    </el-col>
+  </el-row>
+</div>
