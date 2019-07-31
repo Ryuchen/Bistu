@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+<el-header class="navbar" style="font-size: 12px;padding: 10px;height: auto">
+  <div class="float-wrap">
+    <div class="left">
+      <el-button v-waves circle icon="fas fa-bars" style="margin-right: 10px;border: none" @click="foldClick()"></el-button>
+    </div>
+
+    <div class="right">
+      {#  字体大小  #}
+      <el-button icon="fas fa-font" @click="fontClick()" circle v-waves></el-button>
+      {#  全屏显示  #}
+      <el-button :icon="this.zoom?'fas fa-compress-arrows-alt':'fas fa-expand-arrows-alt'" @click="goZoom()" circle v-waves></el-button>
+      {#  选择主题  #}
+      <el-button icon="fas fa-palette" @click="themeDialogVisible=true" circle v-waves></el-button>
+        <el-dropdown>
+          <el-button v-waves>
+            <i class="fas fa-user"></i>
+            {{ user }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          {% verbatim myCode %}
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-waves icon="far fa-edit" @click.native="changePassword()">
+                {{ language.change_password }}
+              </el-dropdown-item>
+              </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-close" @click.native="logout()" divided>
+                {{ language.logout }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          {% endverbatim myCode %}
+        </el-dropdown>
+      </div>
+  </div>
+</el-header>
+
+{#  字体大小的弹出框  #}
+<el-dialog :title="getTranslate('Set font size')" :visible.sync="fontDialogVisible" :width="small?'90%':'50%'">
+  <el-slider v-model="fontSlider" :min="14" :max="22" show-input @change="fontSlideChange"></el-slider>
+  <div style="text-align: right;padding-top: 20px">
+    <el-button type="primary" @click="reset()" v-text="getTranslate('Reset')"></el-button>
+  </div>
+</el-dialog>
+
+{#  修改密码的弹出框  #}
+<el-dialog title="{% trans 'Change password' %}" :visible.sync="pwdDialog.show">
+  <iframe frameborder="0" :src="pwdDialog.url" width="100%" height="500"></iframe>
+</el-dialog>
+
+{#  更改主题的弹出框  #}
+<el-dialog :title="getTranslate('Change theme')" :visible.sync="themeDialogVisible" :width="small?'90%':'50%'">
+  <div class="change-theme clearfix">
+    <div v-waves :class="{'theme-item':true,active:themeName==item.text}" v-for="(item,i) in themes" :key="item.text" :title="getTranslate(item.text)" @click="setTheme(item)">
+      <div class="theme-menu" :style="{background:item.menu}">
+        <div class="theme-logo" :style="{background: item.logo}"></div>
+      </div>
+      <div class="theme-top" :style="{background: item.top}"></div>
+    </div>
+  </div>
+</el-dialog>

@@ -1,0 +1,110 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %} dir="rtl" {% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+  <title>{{ site_title }}</title>
+
+  {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+    <link rel="stylesheet" href="{% static '/admin/simpleui-x/elementui/theme-chalk/index.css' %}">
+    <link rel="stylesheet" href="{% static '/admin/simpleui-x/fontawesome/css/all.min.css' %}">
+  {% else %}
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css">
+  {% endif %}
+
+  <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/index.css' %}?_=2.1.4.619">
+  <link rel="stylesheet" href="{% static '/admin/simpleui-x/waves/waves.min.css' %}?_=2.1">
+
+  {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/vue.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/axios.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/echarts.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/elementui/index.js' %}"></script>
+  {% else %}
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echart"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  {% endif %}
+</head>
+
+<body>
+  <style type="text/css">
+    .el-tabs__nav .el-tabs__item:nth-child(1) .el-icon-close {
+      display: none;
+    }
+
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    [v-block]{
+      display: none;
+    }
+  </style>
+
+  {% verbatim dynamicCss %}
+    <style type="text/css" id="dynamicCss" v-if="fontSize!=0">
+      * {
+        font-size: {{ fontSize }}px;
+      }
+    </style>
+  {% endverbatim dynamicCss %}
+
+  {% autoescape off %}
+    {% menus %}
+  {% endautoescape %}
+
+  <div id="main" @click="mainClick($event)" v-block>
+    <link v-if="theme!=''" rel="stylesheet" :href="theme">
+    <el-container :style="{height: height+'px'}">
+      {#  nav菜单  #}
+      {% include "admin/component/navbar.html" %}
+      <el-container>
+        {#  header导航  #}
+        {% include "admin/component/header.html" %}
+        {#  main主体  #}
+        {% include "admin/component/wapper.html" %}
+      </el-container>
+    </el-container>
+  </div>
+
+  <script type="text/javascript">
+    window.language = {
+      change_password: '{% trans 'Change password' %}',
+      logout: '{% trans 'Log out' %}',
+      yes: '{% trans 'Yes' %}',
+      no: '{% trans 'No' %}',
+      confirm: '{% trans 'Are you sure?' %}'
+    };
+    window.themeUrl = "{% static '/admin/simpleui-x/theme/' %}";
+    window.urls = {
+      changePassword: "{% url 'admin:password_change' %}",
+      logout: "{% url 'admin:logout' %}"
+    };
+    const languageCode = '{% get_language %}';
+    function localeError() {
+      console.warn("Please add the {% get_language %}.js language file to the '/simpleui-x/theme' directory.");
+      console.log("See simpleui i18n:https://github.com/newpanjing/simpleui/blob/master/i18n.md");
+    }
+  </script>
+
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/automatic/dicts.js' %}?_=2.1"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/automatic/segment.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/en-us.js' %}?_=2.1.2"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/locale/' %}{% get_language %}.js?_=2.1.2" onerror="localeError()"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/js/cookie.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/theme/theme.js' %}"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/waves/waves.min.js' %}?_=2.0.5"></script>
+  <script type="text/javascript" src="{% static '/admin/simpleui-x/js/index.js' %}?_=2.6"></script>
+</body>
+</html>

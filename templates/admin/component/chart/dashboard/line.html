@@ -1,0 +1,106 @@
+<div id="display-trend" style="width: 1100px; height: 240px;">
+</div>
+
+<script>
+new Vue({
+  el: '#display-trend',
+  data: function () {
+    return {
+      trendingStatistic: {
+        academies: [],
+        years: [],
+        series: []
+      },
+    }
+  },
+  mounted: function () {
+    const dom = document.getElementById("display-trend");
+    this.chart = echarts.init(dom, '', {renderer: 'svg', width: 'auto', height: 'auto'});
+    this.getEnrollTrendingData(this.drawLine);
+    window.addEventListener("resize", this.onResize, false);
+  },
+  methods: {
+    onResize(){
+        if(this.chart){
+            this.chart.resize();
+        }
+    },
+    drawLine() {
+      this.chart.setOption({
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: this.trendingStatistic.academies,
+          x: 'center', // 'center' | 'left' | {number},
+          y: 'top', // 'center' | 'bottom' | {number}
+        },
+        grid: {
+          left: '5px',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: this.trendingStatistic.years
+        },
+        yAxis: {
+          type: 'value'
+        },
+        autoresize: true,
+        series: this.trendingStatistic.series
+      })
+    },
+    getEnrollTrendingData(callback) {
+      Vue.prototype.$http = axios;
+      let _this = this;
+      let academies = [];
+      let seriesData = [];
+      let enrollYears = [];
+      this.$http.get("{% url 'student-enroll-trending' %}", {})
+          .then(function (res) {
+            const { statistic } = res.data;
+            statistic.forEach(item => {
+              const {
+                stu_academy__aca_cname: academy,
+                stu_entrance_time__year: enrollYear
+              } = item;
+              if (!academies.includes(academy)) {
+                academies.push(academy);
+              }
+              if (!enrollYears.includes(enrollYear)) {
+                enrollYears.push(enrollYear);
+              }
+            });
+            _this.trendingStatistic.academies = academies;
+            _this.trendingStatistic.years = enrollYears;
+            academies.forEach(academy => {
+              let item = {};
+              item.name = academy;
+              item.type = 'line';
+              item.smooth = true;
+              item.lineStyle = { width: 3 };
+              item.data = [];
+              statistic.forEach(member => {
+                  const {
+                    stu_academy__aca_cname: academy,
+                  } = member;
+                  if (item.name === academy) {
+                      item.data.push(member.count);
+                  }
+              });
+              seriesData.push(item);
+            });
+            _this.trendingStatistic.series = seriesData;
+            callback();
+          })
+          .catch(function (error) {
+            _this.$notify.error({
+              title: '错误',
+              message: '查询过程中发现错误'
+            });
+          });
+    },
+  }
+})
+</script>

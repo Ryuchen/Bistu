@@ -1,0 +1,45 @@
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+<el-main id="main-wrapper">
+  <el-tabs v-model="tabModel" type="border-card" editable :style="isResize?'height:100%':'height: calc(100% - 97px)'" @edit="handleTabsEdit" @tab-click="tabClick">
+    <el-tab-pane v-for="(item,index) in tabs" :closable="index!=0" :label="item.name" :name="item.id" :key="item.id" lazy="true">
+      {% home_page %}
+      {% if home %}
+        <span v-if="index==0" slot="label">
+          <i class="{{ icon }}"></i>
+          <span>{{ title }}</span>
+        </span>
+        <span v-else slot="label" @contextmenu.prevent="contextmenu(item,$event)">
+      {% else %}
+        <span slot="label" @contextmenu.prevent="contextmenu(item,$event)">
+      {% endif %}
+        <i :class="item.loading?'el-icon-loading':item.icon"></i>
+        <span v-text="item.name"></span>
+      </span>
+
+      <div v-if="index==0" style="height:100%">
+        {% include 'admin/home.html' %}
+      </div>
+      <div v-else class="iframe-wrap">
+        <iframe :src="item.url" :id="item.id" @load="iframeLoad(item,$event)"></iframe>
+        {% if "SIMPLEUI_LOADING"|get_config != False %}
+          <div v-if="loading" class="loading" @dblclick="loading=false">
+            <div class="center">
+              <span class="el-icon-loading"></span>
+              <span>loading...</span>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </el-tab-pane>
+  </el-tabs>
+</el-main>
+
+<ul v-if="popup.show" class="el-dropdown-menu el-popper" :style="{position: 'absolute',top: popup.top+'px',left: popup.left+'px'}" x-placement="top-end">
+  <li v-for="(item,index) in popup.menus" tabindex="-1" class="el-dropdown-menu__item" @click="item.handler(popup.tab,item)">
+    <i :class="item.icon"></i>
+    <span v-text="item.text"></span>
+  </li>
+</ul>
