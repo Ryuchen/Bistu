@@ -21,20 +21,22 @@
     <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css">
   {% endif %}
 
-  <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/index.css' %}?_=2.1.4.619">
-  <link rel="stylesheet" href="{% static '/admin/simpleui-x/waves/waves.min.css' %}?_=2.1">
+  <link rel="stylesheet" href="{% static '/admin/simpleui-x/css/index.css' %}">
+  <link rel="stylesheet" href="{% static '/admin/simpleui-x/waves/waves.min.css' %}">
 
   <script type="text/javascript" src="{% static '/admin/js/vendor/jquery/jquery.min.js' %}"></script>
   <script type="text/javascript" src="{% static '/admin/js/jquery.init.js' %}"></script>
 
   {% if "SIMPLEUI_STATIC_OFFLINE"|get_config %}
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/g2.min.js' %}"></script>
     <script type="text/javascript" src="{% static '/admin/simpleui-x/js/vue.min.js' %}"></script>
-    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/axios.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/admin/simpleui-x/js/axios.js' %}"></script>
     <script type="text/javascript" src="{% static '/admin/simpleui-x/js/echarts.min.js' %}"></script>
     <script type="text/javascript" src="{% static '/admin/simpleui-x/elementui/index.js' %}"></script>
   {% else %}
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/echart"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@antv/g2@3.5.7/build/g2.min.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   {% endif %}
@@ -48,10 +50,6 @@
 
     * {
       -webkit-overflow-scrolling: touch;
-    }
-
-    [v-block]{
-      display: none;
     }
   </style>
 
@@ -67,8 +65,10 @@
     {% menus %}
   {% endautoescape %}
 
-  <div id="main" @click="mainClick($event)" v-block>
+  <div id="main" @click="mainClick($event)">
+    <!-- section 装载可变样式文件 start -->
     <link v-if="theme!=''" rel="stylesheet" :href="theme">
+    <!-- section 装载可变样式文件 end -->
     <el-container :style="{height: height+'px'}">
       {#  nav菜单  #}
       {% include "admin/component/navbar.html" %}
@@ -79,9 +79,28 @@
         {% include "admin/component/wapper.html" %}
       </el-container>
     </el-container>
+
   </div>
 
   <script type="text/javascript">
+    {% if home %}
+       const home = {
+          id: '0',
+          index: '1',
+          name: '{{ title }}',
+          icon: '{{ icon }}',
+          active: true
+      };
+    {% else %}
+      const home = {
+          id: '0',
+          index: '1',
+          name: "{% trans 'Home' %}",
+          icon: 'fas fa-home'
+      };
+    {% endif %}
+    menus.unshift(home);
+
     window.language = {
       change_password: '{% trans 'Change password' %}',
       logout: '{% trans 'Log out' %}',

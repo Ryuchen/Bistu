@@ -4,21 +4,18 @@
     }
 
     window.addEventListener('hashchange', function (e) {
-        // console.log(e)
-        // console.log('hash')
-        if (e.newURL != e.oldURL) {
+        if (e.newURL !== e.oldURL) {
             openByHash()
         }
     });
 
     function openByHash() {
-        var hash = location.hash;
-        hash = hash.substring(1)
-
-        for (var i = 0; i < app.menuData.length; i++) {
-            var item = app.menuData[i]
-            if ((item.url || '/') == hash) {
-                app.openTab(item, item.index)
+        let hash = location.hash;
+        hash = hash.substring(1);
+        for (let i = 0; i < app.menuData.length; i++) {
+            let item = app.menuData[i];
+            if ((item.url || '/') === hash) {
+                app.openTab(item, item.index);
                 break;
             }
         }
@@ -30,15 +27,15 @@
 
     window.callback = function () {
         window.location.reload()
-    }
+    };
 
-    var fontConfig = new Vue({
+    const fontConfig = new Vue({
         el: '#dynamicCss',
         data: {
             fontSize: 14
         },
         created: function () {
-            var val = getCookie('fontSize');
+            const val = getCookie('fontSize');
             if (val) {
                 this.fontSize = parseInt(val);
             } else {
@@ -47,8 +44,6 @@
         },
         methods: {}
     });
-
-    // Waves.init();
 
     //为元素注册水波纹效果
     Vue.directive('waves', {
@@ -60,12 +55,11 @@
         }
     });
 
-
     window.getTranslate = function (key) {
         if (!window.Lanuages) {
             return "";
         }
-        var val = Lanuages[key];
+        let val = Lanuages[key];
         if (!val || val === "") {
             val = key;
         }
@@ -122,7 +116,7 @@
                     icon: 'far fa-copy',
                     handler: function (tab) {
                         app.tabs.forEach(item => {
-                            if (item.id != tab.id) {
+                            if (item.id !== tab.id) {
                                 app.handleTabsEdit(item.id, 'remove');
                             }
                         })
@@ -138,7 +132,7 @@
                             type: 'warning'
                         }).then(function () {
                             app.tabs.forEach((tab, index) => {
-                                if (index != 0) {
+                                if (index !== 0) {
                                     app.handleTabsEdit(tab.id, 'remove');
                                 }
                             });
@@ -159,23 +153,22 @@
             //菜单里面的模块
             models: [],
             fontDialogVisible: false,
-            fontSlider: 12,
+            fontSlider: 14,
             loading: false,
             menuTextShow: true,
             menuData: []
         },
         watch: {
             fold: function (newValue, oldValue) {
-                // console.log(newValue)
+                console.log(newValue);
+                console.log(oldValue);
             },
             menus: function (newValue, oldValue) {
-                var self = this;
-
+                let self = this;
                 newValue.forEach(item => {
-                    if (item.id == '0') {
+                    if (item.id === '0') {
                         return;
                     }
-
                     if (item.models) {
                         item.models.forEach(child => {
                             self.models.push(child);
@@ -185,45 +178,34 @@
                     }
                 });
             }
-            /*,
-            tabs: function (newValue, oldValue) {
-
-                //改变tab时把状态储存到sessionStorage
-                console.log(newValue)
-            }*/
         },
         created: function () {
-
-
-            var val = getCookie('fold') == 'true';
-            this.small = this.fold = val;
-            this.menuTextShow = !this.fold;
-
-            var self = this;
+            const self = this;
+            let val = getCookie('fold') === 'true';
+            self.small = self.fold = val;
+            self.menuTextShow = !this.fold;
             window.onresize = function () {
-
-                self.height = document.documentElement.clientHeight || document.body.clientHeight
-                var width = document.documentElement.clientWidth || document.body.clientWidth;
-
+                self.height = document.documentElement.clientHeight || document.body.clientHeight;
+                const width = document.documentElement.clientWidth || document.body.clientWidth;
                 if (!self.small) {
-
                     self.menuTextShow = !(width < 800);
                     self.$nextTick(() => {
                         self.fold = width < 800;
                     })
                 }
-                self.isResize = true
-
+                self.isResize = true;
                 //判断全屏状态
                 try {
                     self.zoom = document.webkitIsFullScreen;
                 } catch (e) {
-                    //不是非webkit内核下，无能为力
+                    console.log(e);
                 }
+            };
+            //导致页面不能正常撑开，调用resize使其重新计算
+            if(window.onresize){
+                window.onresize(undefined);
             }
             window.app = this;
-
-
             window.menus.forEach(item => {
                 item.icon = getIcon(item.name, item.icon);
 
@@ -236,35 +218,25 @@
                     self.menuData.push(item)
                 }
             });
-
-            this.menus = window.menus
-
+            this.menus = window.menus;
             this.theme = getCookie('theme');
             this.themeName = getCookie('theme_name');
-
             //接收子页面的事件注册
             window.themeEvents = [];
             window.fontEvents = [];
             window.addEvent = function (name, handler) {
-                if (name == 'theme') {
+                if (name === 'theme') {
                     themeEvents.push(handler);
-                } else if (name == 'font') {
+                } else if (name === 'font') {
                     fontEvents.push(handler);
                 }
-            }
-            var temp_tabs = sessionStorage['tabs'];
-
-            if (temp_tabs && temp_tabs != '') {
+            };
+            const temp_tabs = sessionStorage['tabs'];
+            if (temp_tabs && temp_tabs !== '') {
                 this.tabs = JSON.parse(temp_tabs);
-                console.log(this.tabs)
             }
-            if (location.hash != '') {
+            if (location.hash !== '') {
                 openByHash();
-            }
-
-            //elementui布局问题，导致页面不能正常撑开，调用resize使其重新计算
-            if(window.onresize){
-                window.onresize(undefined);
             }
         },
         methods: {
@@ -276,9 +248,7 @@
             reset: function () {
                 this.fontSlider = 14;
                 fontConfig.fontSize = 0;
-
                 setCookie('fontSize', 0);
-
                 this.fontDialogVisible = false;
                 fontEvents.forEach(handler => {
                     handler(0);
@@ -298,21 +268,20 @@
 
             },
             iframeLoad: function (tab, e) {
-                url = e.target.contentWindow.location.href
-
+                const url = e.target.contentWindow.location.href;
                 tab.newUrl = url;
                 tab.loading = false;
                 this.$forceUpdate();
-                var self = this;
+                let self = this;
                 e.target.contentWindow.beforeLoad = function () {
                     tab.loading = true;
                     self.$forceUpdate();
-                }
+                };
                 this.loading = false;
             },
             setTheme: function (item) {
-                var url = window.themeUrl;
-                if (item.file && item.file != '') {
+                const url = window.themeUrl;
+                if (item.file && item.file !== '') {
                     this.theme = url + item.file;
                 } else {
                     this.theme = '';
@@ -320,8 +289,7 @@
                 this.themeName = item.text;
                 setCookie('theme', this.theme);
                 setCookie('theme_name', item.text);
-
-                var self = this;
+                let self = this;
                 //通知子页面
                 window.themeEvents.forEach(handler => {
                     handler(self.theme)
@@ -333,7 +301,7 @@
             contextmenu: function (item, e) {
 
                 //home没有popup menu
-                if (item.id == '0') {
+                if (item.id === '0') {
                     return;
                 }
                 this.popup.tab = item;
@@ -352,7 +320,6 @@
                 changeUrl(item);
             },
             handleTabsEdit: function (targetName, action) {
-
                 var self = this;
                 if (action === 'remove') {
                     var next = '0';
@@ -374,10 +341,8 @@
                     }
                     this.syncTabs();
                 }
-            }
-            ,
+            },
             openTab: function (data, index) {
-
                 this.breadcrumbs = data.breadcrumbs;
                 var exists = null;
                 //判断是否存在，存在就直接打开
@@ -404,8 +369,7 @@
                 }
                 changeUrl(data)
                 this.syncTabs();
-            }
-            ,
+            },
             foldClick: function () {
                 this.menuTextShow = !this.menuTextShow;
                 this.$nextTick(() => {
@@ -414,8 +378,7 @@
                     //设置进cookie
                     setCookie('fold', this.fold);
                 });
-            }
-            ,
+            },
             changePassword: function () {
                 var width = document.documentElement.clientWidth || document.body.clientWidth;
                 if (width > 800) {
@@ -436,8 +399,7 @@
                     })
                     app.breadcrumbs = [language.change_password];
                 }
-            }
-            ,
+            },
             logout: function () {
                 this.$confirm(language.confirm, Lanuages.Tips, {
                     confirmButtonText: language.yes,
@@ -448,21 +410,18 @@
                 }).catch(function () {
 
                 });
-            }
-            ,
+            },
             goIndex: function (url) {
-                if (!url || url == 'None') {
+                if (!url || url === 'None') {
                     url = '/';
                 }
                 window.open(url);
-            }
-            ,
+            },
             getTranslate: getTranslate,
             getIcon: getIcon,
             goZoom: function () {
                 var el = window.document.body;
                 if (!this.zoom) {
-
                     var isFullscreen = document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
                     if (!isFullscreen) {//进入全屏,多重短路表达式
                         (el.requestFullscreen && el.requestFullscreen()) ||
@@ -471,14 +430,12 @@
                     }
                     this.zoom = true;
                 } else {
-
                     document.exitFullscreen ? document.exitFullscreen() :
                         document.mozCancelFullScreen ? document.mozCancelFullScreen() :
                             document.webkitExitFullscreen ? document.webkitExitFullscreen() : '';
                     this.zoom = false;
                 }
-            }
-            ,
+            },
             displayTimeline: function () {
                 this.timeline = !this.timeline;
             },
@@ -487,6 +444,4 @@
             }
         }
     })
-
-
 })();

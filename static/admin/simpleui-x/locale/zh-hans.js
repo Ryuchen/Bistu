@@ -35,6 +35,7 @@ var Lanuages = {
     "to": "至",
     "Quick navigation": "快捷操作",
     "Last enroll ratio": "历年招生占比",
+    "Last enroll trend": "历年招生趋势",
     "Go back": '返回',
 
     'Set font size': '设置字体大小',
