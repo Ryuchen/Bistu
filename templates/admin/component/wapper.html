@@ -3,7 +3,7 @@
 {% load simpletags %}
 
 <el-main id="main-wrapper">
-  <el-tabs v-model="tabModel" type="border-card" editable :style="isResize?'height:100%':'height: calc(100% - 97px)'" @edit="handleTabsEdit" @tab-click="tabClick">
+  <el-tabs v-model="tabModel" type="border-card" editable style="border: none; height: 100%;" @edit="handleTabsEdit" @tab-click="tabClick">
     <el-tab-pane v-for="(item,index) in tabs" :closable="index!=0" :label="item.name" :name="item.id" :key="item.id" lazy="true">
       {% home_page %}
       {% if home %}
@@ -19,7 +19,7 @@
         <span v-text="item.name"></span>
       </span>
 
-      <div v-if="index==0" style="height:100%">
+      <div v-if="index==0" class="flex">
         {% include 'admin/home.html' %}
       </div>
       <div v-else class="iframe-wrap">

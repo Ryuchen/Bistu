@@ -3,33 +3,31 @@
 {% load simpletags %}
 
 <div id="home">
-  <div id="content-main" style="padding: 10px">
-    <el-card class="box-card" style="margin-bottom: 0">
-      <div slot="header">
-        <i class="fas fa-link"></i>
-        <span v-text="getTranslate('Last enroll trend')"></span>
-      </div>
-      {% include "admin/component/chart/dashboard/line.html" %}
-    </el-card>
-  </div>
+  <el-card class="box-card" style="margin-bottom: 10px;">
+    <div slot="header">
+      <i class="fas fa-chart-line"></i>
+      <span v-text="getTranslate('Last enroll trend')"></span>
+    </div>
+    {% include "admin/component/chart/dashboard/line.html"|safe %}
+  </el-card>
 
-  <el-row>
+  <el-row :gutter="20">
     <el-col :span="16">
-      <el-card class="box-card">
+      <el-card class="box-card" style="margin-bottom: 20px;">
         <div slot="header">
           <i class="fas fa-link"></i>
           <span v-text="getTranslate('Quick navigation')"></span>
         </div>
-        <div>
+        <el-row :gutter="20">
           {% if "SIMPLEUI_HOME_QUICK"|get_config != False %}
-            <div v-for="(c,j) in models" :key="c.name" class="quick-wrap">
+            <el-col :span="4" v-for="(c,j) in models" :key="c.name" class="quick-wrap">
               <a href="javascript:void(0);" @click="openTab(c,(j+1)+'')">
                 <span class="icon" :class="c.icon"></span>
                 <span v-text="c.name"></span>
               </a>
-            </div>
+            </el-col>
           {% endif %}
-        </div>
+        </el-row>
       </el-card>
 
       <el-card class="box-card">
@@ -56,19 +54,16 @@
           </transition>
         {% endif %}
       </el-card>
-
     </el-col>
 
     <el-col :span="8">
-
       <el-card class="box-card">
         <div slot="header">
-          <i class="fas fa-link"></i>
+          <i class="fas fa-chart-pie"></i>
           <span v-text="getTranslate('Last enroll ratio')"></span>
         </div>
-        {% include "admin/component/chart/dashboard/pie.html" %}
+        {% include "admin/component/chart/dashboard/pie.html"|safe %}
       </el-card>
-
     </el-col>
   </el-row>
 </div>

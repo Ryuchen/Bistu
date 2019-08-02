@@ -1,115 +1,86 @@
-<div id="displayChart">
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+{% verbatim javascript %}
+<div id="display-line-chart">
   <el-container>
     <el-main>
-      <div id="line-chart" style="width: 1100px; height: 320px;"></div>
+      <div id="line-chart" style="width: 100%;"></div>
     </el-main>
   </el-container>
 </div>
+{% endverbatim javascript %}
 
 <script>
-new Vue({
-  el: '#displayChart',
-  data: function () {
-    return {
-      trendingStatistic: {
-        academies: [],
-        years: [],
-        series: []
+  if (document.getElementById("line-chart")) {
+    new Vue({
+      el: '#display-line-chart',
+      mounted: function () {
+        this.getEnrollTrendingData(this.drawLine);
       },
-    }
-  },
-  created: function () {
-    this.getEnrollTrendingData(this.drawLine);
-  },
-  methods: {
-    drawLine() {
-      const dom = document.getElementById("line-chart");
-      const height = dom.style.height;
-      const width = dom.style.width;
-      const lineChart = echarts.init(dom, '', { 'width': width, 'height': height });
-      lineChart.setOption({
-        title: {
-          text: '各学院招生统计对比图'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: this.trendingStatistic.academies,
-          x: 'center', // 'center' | 'left' | {number},
-          y: 'bottom', // 'center' | 'bottom' | {number}
-        },
-        grid: {
-          left: '3%',
-          right: '3%',
-          containLabel: true
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
-          }
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: this.trendingStatistic.years
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: this.trendingStatistic.series
-      })
-    },
-    getEnrollTrendingData(callback) {
-      Vue.prototype.$http = axios;
-      let _this = this;
-      let academies = [];
-      let seriesData = [];
-      let enrollYears = [];
-      this.$http.get("{% url 'student-enroll-trending' %}", {})
-          .then(function (res) {
-            const { statistic } = res.data;
-            statistic.forEach(item => {
-              const {
-                stu_academy__aca_cname: academy,
-                stu_entrance_time__year: enrollYear
-              } = item;
-              if (!academies.includes(academy)) {
-                academies.push(academy);
-              }
-              if (!enrollYears.includes(enrollYear)) {
-                enrollYears.push(enrollYear);
+      methods: {
+        drawLine(data) {
+          const chart = new G2.Chart({
+              container: 'line-chart',
+              forceFit: true,
+              height: '320',
+              padding: [120, 20, 20, 20] // 上右下左
+            });
+            chart.source(data);
+            chart.tooltip({
+              follow: false,
+              crosshairs: 'y',
+              htmlContent: function htmlContent(title, items) {
+                let html = '<div class="custom-tooltip">';
+                for (let i = 0; i < items.length; i++) {
+                  let item = items[i];
+                  var domHead = '<div class="custom-tooltip-item" style="border-left-color:' + item.color + '">';
+                  var domName = '<div class="custom-tooltip-item-name">' + item.name + '</div>';
+                  var domValue = '<div class="custom-tooltip-item-value">' + item.value + '</div>';
+                  var domTail = '</div>';
+                  html += domHead + domName + domValue + domTail;
+                }
+                return html + '</div>';
               }
             });
-            _this.trendingStatistic.academies = academies;
-            _this.trendingStatistic.years = enrollYears;
-            academies.forEach(academy => {
-              let item = {};
-              item.name = academy;
-              item.type = 'line';
-              item.smooth = true;
-              item.lineStyle = { width: 3 };
-              item.data = [];
-              statistic.forEach(member => {
-                  const {
-                    stu_academy__aca_cname: academy,
-                  } = member;
-                  if (item.name === academy) {
-                      item.data.push(member.count);
-                  }
+            chart.axis('stu_entrance_time__year', {
+              label: {
+                textStyle: {
+                  fill: '#aaaaaa'
+                }
+              }
+            });
+            chart.axis('count', {
+              label: {
+                textStyle: {
+                  fill: '#aaaaaa'
+                },
+                formatter: function formatter(text) {
+                  return text.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+                }
+              }
+            });
+            chart.legend(false);
+            chart.line().position('stu_entrance_time__year*count').color('stu_academy__aca_cname');
+            chart.render();
+        },
+        getEnrollTrendingData(callback) {
+          Vue.prototype.$http = axios;
+          let _this = this;
+          this.$http.get("{% url 'student-enroll-trending' %}", {})
+              .then(function (res) {
+                const { statistic } = res.data;
+                callback(statistic);
+              })
+              .catch(function (error) {
+                _this.$notify.error({
+                  title: '错误',
+                  message: '查询过程中发现错误'
+                });
               });
-              seriesData.push(item);
-            });
-            _this.trendingStatistic.series = seriesData;
-            callback();
-          })
-          .catch(function (error) {
-            _this.$notify.error({
-              title: '错误',
-              message: '查询过程中发现错误'
-            });
-          });
-    },
+        },
+      }
+    })
   }
-})
 </script>

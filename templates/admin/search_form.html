@@ -102,18 +102,15 @@
 
         <el-col :span="4">
           <el-button class="simpleui-form-item"
-                     style="float: right; width: auto;"
+                     style="float: left; width: auto;"
                      type="primary"
                      icon="el-icon-search"
                      size="mini"
                      @click="formSubmit()">
             {% trans 'Search' %}
           </el-button>
-        </el-col>
-
-        {% if show_result_count %}
-          <el-col :span="4">
-            <div class="small quiet">
+          {% if show_result_count %}
+            <div class="quiet">
               {% blocktrans count counter=cl.result_count %} {{ counter }} result {% plural %} {{ counter }} results {% endblocktrans %}
               (<a href="?{% if cl.is_popup %}_popup=1{% endif %}">
                 {% if cl.show_full_result_count %}
@@ -125,8 +122,10 @@
                 {% endif %}
               </a>)
             </div>
-          </el-col>
-        {% endif %}
+          {% endif %}
+        </el-col>
+
+
 
         {% for pair in cl.params.items %}
           {% if pair.0 != search_var %}

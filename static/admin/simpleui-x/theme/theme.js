@@ -175,4 +175,4 @@ var SimpleuiThemes = [
         logo: '#1E9FFF',
         menu: 'rgb(38, 50, 56)'
     }
-]
+];
