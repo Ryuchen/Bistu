@@ -37,7 +37,7 @@
   margin-bottom: 10px;
 }
 .el-alert:last-child {
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
 }
 a:link,
 a:visited {
@@ -65,26 +65,22 @@ tbody tr:hover th {
 .submit-row input[type='submit'] {
   height: auto;
 }
-.submit-row input[type='submit'] {
-  padding: 12px 20px !important;
-}
 @media (max-width: 767px) {
   .submit-row > * {
-    margin-left: 0px !important;
+    margin-left: 0 !important;
     margin-bottom: 10px;
   }
   .form-main {
-    padding: 0px;
+    padding: 0;
   }
   #content {
-    padding: 0px 3px !important;
+    padding: 0 3px !important;
   }
   .simpleui-form .el-input {
     width: 100px;
-    padding-left: 0px !important;
-    padding-right: 0px !important;
-    margin: 0px;
-    margin-right: 10px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 10px 0 0;
   }
   .object-tools {
     margin-top: 10px;
@@ -99,10 +95,10 @@ body,
 }
 @media (max-width: 767px) {
   .change-list #content {
-    margin: 0px;
+    margin: 0;
   }
   #content #changelist-form {
-    padding: 0px 5px;
+    padding: 0 5px;
   }
   #content {
     box-shadow: none;
@@ -119,19 +115,18 @@ body,
   }
   .object-tools {
     top: 6px !important;
-    margin: 0px;
+    margin: 0;
   }
   .el-pagination__total {
     display: block !important;
   }
   .el-pagination__jump {
     display: block !important;
-    margin: 0px;
-    margin-top: 10px;
+    margin: 10px 0 0;
   }
   .el-pager {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
   }
   .el-dialog {
     width: 90%;
@@ -143,13 +138,13 @@ body,
   .filtered #toolbar,
   .filtered .actions,
   .filtered div.xfull {
-    margin-right: 0px !important;
+    margin-right: 0 !important;
   }
   #changelist-search > div {
     max-width: 100% !important;
   }
   #content {
-    padding: 0px !important;
+    padding: 0 !important;
   }
 }
 #changelist .actions {
@@ -158,5 +153,5 @@ body,
 }
 #changelist .actions .btn-group {
   position: absolute;
-  right: 0px;
+  right: 0;
 }
