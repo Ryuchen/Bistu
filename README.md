@@ -39,7 +39,7 @@
   docker build -t Ryuchen/bistu:latest --rm=true
 
 # 启动 docker
-  docker run -p 9377:8080 --name tomcat_xiao Ryuchen/bistu:latest
+  docker run -p 9377:8080 --name bistu Ryuchen/bistu:latest
 ```
 
 
