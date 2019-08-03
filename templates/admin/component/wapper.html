@@ -6,15 +6,7 @@
   <el-tabs v-model="tabModel" type="border-card" editable style="border: none; height: 100%;" @edit="handleTabsEdit" @tab-click="tabClick">
     <el-tab-pane v-for="(item,index) in tabs" :closable="index!=0" :label="item.name" :name="item.id" :key="item.id" lazy="true">
       {% home_page %}
-      {% if home %}
-        <span v-if="index==0" slot="label">
-          <i class="{{ icon }}"></i>
-          <span>{{ title }}</span>
-        </span>
-        <span v-else slot="label" @contextmenu.prevent="contextmenu(item,$event)">
-      {% else %}
-        <span slot="label" @contextmenu.prevent="contextmenu(item,$event)">
-      {% endif %}
+      <span slot="label" @contextmenu.prevent="contextmenu(item,$event)">
         <i :class="item.loading?'el-icon-loading':item.icon"></i>
         <span v-text="item.name"></span>
       </span>

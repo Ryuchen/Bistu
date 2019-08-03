@@ -2,7 +2,7 @@ FROM alpine:latest
 
 LABEL maintainer="Ryuchen <chenhaom1993@hotmail.com>"
 
-RUN mkdir -p /opt/web && mkdir -p /opt/simpleui
+RUN mkdir -p /opt/web
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
@@ -14,16 +14,11 @@ RUN apk add --update sqlite sqlite-dev vim git python3 \
 
 COPY ./ /opt/web
 
-RUN git clone https://github.com/Ryuchen/simpleui-modify.git /opt/simpleui
-
 WORKDIR /opt/web
 
 RUN pip3 install whitenoise gunicorn --no-cache-dir --trusted-host repo --index-url https://mirrors.aliyun.com/pypi/simple/
 
 RUN pip3 install -r requirements.txt --no-cache-dir --trusted-host repo --index-url https://mirrors.aliyun.com/pypi/simple/
-
-RUN rm -rf ls /usr/lib/python3.7/site-packages/simpleui
-RUN ln -s /opt/simpleui/simpleui /usr/lib/python3.7/site-packages/simpleui
 
 ENV DJANGO_SETTINGS_MODULE=web.settings
 

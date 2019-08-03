@@ -87,8 +87,8 @@
        const home = {
           id: '0',
           index: '1',
-          name: '{{ title }}',
-          icon: '{{ icon }}',
+          name: '{{ home.title }}',
+          icon: '{{ home.icon }}',
           active: true
       };
     {% else %}
@@ -99,7 +99,6 @@
           icon: 'fas fa-home'
       };
     {% endif %}
-    menus.unshift(home);
 
     window.language = {
       change_password: '{% trans 'Change password' %}',

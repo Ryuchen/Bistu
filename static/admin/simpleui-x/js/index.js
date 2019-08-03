@@ -66,7 +66,7 @@
         return val
     };
 
-    new Vue({
+    var main = new Vue({
         el: '#main',
         data: {
             isResize: false,
@@ -441,6 +441,9 @@
             },
             report: function () {
                 window.open('https://github.com/newpanjing/simpleui/issues')
+            },
+            selectEnrollYear: function() {
+                console.log(1231);
             }
         }
     })

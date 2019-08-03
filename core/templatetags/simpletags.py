@@ -102,10 +102,6 @@ def home_page(context):
     处理首页，通过设置判断打开的是默认页还是自定义的页面
     :return:
     """
-    home = __get_config('SIMPLEUI_HOME_PAGE')
-    if home:
-        context['home'] = home
-
     title = __get_config('SIMPLEUI_HOME_TITLE')
     if not title:
         title = '首页'
@@ -114,8 +110,10 @@ def home_page(context):
     if not icon:
         icon = 'el-icon-menu'
 
-    context['title'] = title
-    context['icon'] = icon
+    context['home'] = {
+        'title': title,
+        'icon': icon
+    }
     return ''
 
 
@@ -202,6 +200,8 @@ def menus(context):
             display_data.append(_app)
         display_data.sort(key=lambda x: x['_weight'])
         data = display_data
+
+    home_page(context)
     return '<script type="text/javascript">var menus={}</script>'.format(json.dumps(data, cls=LazyEncoder))
 
 

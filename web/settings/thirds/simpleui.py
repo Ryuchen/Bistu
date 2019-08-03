@@ -14,6 +14,8 @@ SIMPLEUI_FAVICON_ICON = "/static/bistu/img/logo.png"
 SIMPLEUI_LOGIN_LOGO = "/static/bistu/img/caiselogo.png"
 SIMPLEUI_INDEX_LOGO = "/static/bistu/img/logo.png"
 SIMPLEUI_LOGO = "/static/bistu/img/logo.png"
+SIMPLEUI_HOME_TITLE = '工作台'
+SIMPLEUI_HOME_ICON = 'fas fa-tachometer-alt'
 SIMPLEUI_CONFIG = {
     'system_keep': False,
     'menus': [
