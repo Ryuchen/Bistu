@@ -19,20 +19,30 @@
     
 ### 📖 安装说明:
 
-```
-安装依赖
+```python
+# 安装依赖
    pip install -r requirements.txt
 
-生成数据库
+# 生成数据库
    rm -rf db.sqlite3
    python manage.py makemigrations && python manage.py migrate && python manage.py migrate --run-syncdb
    
-生成假数据
+# 生成假数据
    python manage.py fake_data
    
-运行 demo
+# 运行 demo
    python manage.py runserver 0:9377
 ```
+
+```shell
+# 构建 docker
+  docker build -t Ryuchen/bistu:latest --rm=true
+
+# 启动 docker
+  docker run -p 9377:8080 --name tomcat_xiao Ryuchen/bistu:latest
+```
+
+
  > 查看 demo 地址: [http://127.0.0.1:9377](http://127.0.0.1:9377)
  > 账户信息: admin&ant.design(账户&密码)
  
