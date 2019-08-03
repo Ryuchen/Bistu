@@ -23,9 +23,6 @@
 安装依赖
    pip install -r requirements.txt
 
-然后需要 fork 我的 simpleui 项目源码
-   ln -s simpleui(fork 的源码) venv/lib/site-packages/simpleui/(这是你的 pip 安装后的 simpleui 源码路径)
-   
 生成数据库
    rm -rf db.sqlite3
    python manage.py makemigrations && python manage.py migrate && python manage.py migrate --run-syncdb
@@ -39,8 +36,20 @@
  > 查看 demo 地址: [http://127.0.0.1:9377](http://127.0.0.1:9377)
  > 账户信息: admin&ant.design(账户&密码)
  
- > 查看 demo 地址: [http://58.87.67.126:8554](http://58.87.67.126:8554)
+ > 查看 demo 地址: [http://39.106.85.217:8009/](http://39.106.85.217:8009/)
  > 账户信息: admin&ant.design(账户&密码)
+
+### 📷 界面展示:
+
+#### 登录页
+![](https://github.com/Ryuchen/Bistu/raw/develop/images/login.png)
+
+#### 工作台
+![](https://github.com/Ryuchen/Bistu/raw/develop/images/dashboard.png)
+
+#### 内容页
+![](https://github.com/Ryuchen/Bistu/raw/develop/images/list.png)
+
 
 ### 👤 作者介绍:
 
