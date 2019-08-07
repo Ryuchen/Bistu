@@ -1,0 +1,21 @@
+<script type="text/x-template" id="home-overview-content">
+  <div v-bind:style="contentStyle">
+    <div>overview</div>
+  </div>
+</script>
+
+<script type="text/javascript">
+  Vue.component('overview', {
+    delimiters: ['<%', '%>'],
+    template: '#home-overview-content',
+    data() {
+      return {
+        contentStyle: {
+          margin: '24px 16px',
+          padding: '0',
+          borderRadius: '5px',
+        }
+      }
+    }
+  })
+</script>

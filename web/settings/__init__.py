@@ -11,3 +11,4 @@ from .product import *
 
 from .thirds.simpleui import *
 from .thirds.jwttoken import *
+from .thirds.antdesignvue import *

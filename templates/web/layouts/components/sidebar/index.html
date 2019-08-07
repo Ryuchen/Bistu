@@ -1,0 +1,74 @@
+{% load vuetags %}
+
+{% include "web/layouts/components/sidebar/submenu.html" %}
+
+<script type="text/x-template" id="demo-sidebar">
+  <a-layout-sider :trigger="null" collapsible v-model="collapsed" style="background: none;">
+    <a-menu
+      mode="inline"
+      :style="{ height: '100%', borderRight: 0 }"
+      :inlineCollapsed="collapsed"
+      :selectedKeys="activeKeys"
+      :openKeys="openKeys"
+      @click='select'
+      @openChange="onOpenChange"
+    >
+      <template v-for="item in menus">
+        <a-menu-item v-if="!item.models" :key="item.key" :url="item.url" :title="item.name" :name="item.name" :icon="item.icon">
+          <a-icon :type="item.icon" />
+          <span><% item.name %></span>
+        </a-menu-item>
+        <sub-menu v-else :menus="item" :key="item.key" />
+      </template>
+    </a-menu>
+  </a-layout-sider>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-sidebar', {
+    delimiters: ['<%', '%>'],
+    template: '#demo-sidebar',
+    data: function () {
+      return {
+        menus: JSON.parse(`{% adv_menu %}`),
+        openKeys: [],
+        rootSubmenuKeys: [],
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activeKeys: 'activeKeys'
+      })
+    },
+    created: function () {
+      this.setSubmenuKeys();
+    },
+    methods: {
+      setSubmenuKeys () {
+        this.menus.map(menu => {
+          if (menu.key.indexOf("sub") !== -1) {
+            this.rootSubmenuKeys.push(menu.key);
+          }
+        });
+      },
+      onOpenChange (openKeys) {
+        const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1);
+        if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+          this.openKeys = openKeys
+        } else {
+          this.openKeys = latestOpenKey ? [latestOpenKey] : []
+        }
+      },
+      select ({ item, key }) {
+        const payload = {
+          name: item.$attrs.name,
+          content: item.$attrs.url,
+          icon: item.$attrs.icon,
+          key: key,
+        };
+        Bus.$emit('menuSelected', payload);
+      }
+    },
+  })
+</script>

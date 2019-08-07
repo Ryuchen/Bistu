@@ -1,0 +1,115 @@
+{% load static %}
+{% load vuetags %}
+
+{# common component import section #}
+{# !!! Don't import in any other pages again !!! #}
+{% include 'web/components/iframe/iframe.html' %}
+{# common component import section #}
+
+{% include 'web/layouts/components/header/index.html' %}
+{% include 'web/layouts/components/sidebar/index.html' %}
+{% include 'web/layouts/components/footer/index.html' %}
+
+{% if 'ANT_DESIGN_VUE_HOME_TYPE'|config == 'Workplace' %}
+  {% include 'web/pages/dashboard/workplace.html' %}
+{% elif 'ANT_DESIGN_VUE_HOME_TYPE'|config == 'Overview' %}
+  {% include 'web/pages/dashboard/overview.html' %}
+{% endif %}
+
+<link href="{% static 'web/css/pages/dashboard.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="layout-demo-a">
+  <a-layout>
+    <demo-header></demo-header>
+    <a-layout style="height: calc(100vh - 64px)">
+      <demo-sidebar></demo-sidebar>
+      <a-layout>
+        <a-layout-content>
+          <div class="card-container" id="content-wrapper">
+            <a-tabs
+                hideAdd
+                type="editable-card"
+                :tabBarGutter=2
+                v-model="activeKey"
+                @edit="onEdit"
+                @prevClick="callback"
+                @nextClick="callback"
+                @tabClick="onSelect"
+            >
+              <a-tab-pane v-if="home.type == 'Workplace'" key="0" closable>
+                <span slot="tab"><a-icon type="home"></a-icon><% home.title %></span>
+                <workplace></workplace>
+              </a-tab-pane>
+              <a-tab-pane v-else-if="home.type == 'Overview'" key="0" closable>
+                <span slot="tab"><a-icon type="home"></a-icon><% home.title %></span>
+                <overview></overview>
+              </a-tab-pane>
+              <a-tab-pane v-else key="0" closable>
+                <span slot="tab"><a-icon type="home"></a-icon><% home.title %></span>
+                <customize :href="home.url"></customize>
+              </a-tab-pane>
+              <a-tab-pane v-for="(pane, index) in activePanes" :key="pane.key">
+                <span slot="tab"><a-icon :type="pane.icon"></a-icon><% pane.name %></span>
+                <iframe-wrapper :href="pane.content" :height="height"></iframe-wrapper>
+              </a-tab-pane>
+            </a-tabs>
+          </div>
+        </a-layout-content>
+        <demo-footer></demo-footer>
+      </a-layout>
+    </a-layout>
+  </a-layout>
+</script>
+
+<script type="text/javascript">
+  Vue.component('layout-demo-a', {
+    delimiters: ['<%', '%>'],
+    template: '#layout-demo-a',
+    data: function () {
+      return {
+        home: JSON.parse(`{% adv_home %}`),
+        height: `${window.innerHeight - 280}px`
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activeKey: 'activeKey',
+        activePanes: 'activePanes'
+      })
+    },
+    created: function () {
+      const _this = this;
+      Bus.$on('menuSelected', function(payload){
+        _this.add(payload);
+      });
+    },
+    methods: {
+      callback (key) {
+        console.log(key)
+      },
+      onEdit (key, action) {
+        this[action](key)
+      },
+      onSelect (key) {
+        this.$store.commit('app/changeActiveKey', `${key}`);
+      },
+      add (payload) {
+        this.$store.commit('app/changeActiveKey', `${payload.key}`);
+        if (this.activePanes.indexOf(payload) === -1) {
+          this.$store.commit('app/addActivePanes', payload);
+        }
+      },
+      remove (key) {
+        let nextActiveKey = '0';
+        let deleteIndex;
+        this.activePanes.map((item, index) => {
+          if (item.key === key) deleteIndex = index;
+        });
+        this.$store.commit('app/delActivePanes', deleteIndex);
+        if (this.activePanes.length > 0) nextActiveKey = this.activePanes[this.activePanes.length - 1].key;
+        this.$store.commit('app/changeActiveKey', nextActiveKey);
+      },
+    },
+  })
+</script>

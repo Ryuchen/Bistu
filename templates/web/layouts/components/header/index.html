@@ -1,0 +1,15 @@
+{% include 'web/layouts/components/header/widgets/logo.html' %}
+{% include 'web/layouts/components/header/widgets/toolbox.html' %}
+
+<script type="text/x-template" id="demo-header">
+  <a-layout-header :style="{ padding: '0' }">
+    <demo-header-logo></demo-header-logo>
+    <demo-header-toolbox @toggle-collapsed="$emit('toggle-collapsed')"></demo-header-toolbox>
+  </a-layout-header>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-header', {
+    template: '#demo-header',
+  })
+</script>

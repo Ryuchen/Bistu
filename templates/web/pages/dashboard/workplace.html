@@ -1,0 +1,23 @@
+{% include 'web/components/pageheader/index.html' %}
+
+<script type="text/x-template" id="home-workplace-content">
+  <div v-bind:style="contentStyle">
+    <page-header></page-header>
+  </div>
+</script>
+
+<script type="text/javascript">
+  Vue.component('workplace', {
+    delimiters: ['<%', '%>'],
+    template: '#home-workplace-content',
+    data() {
+      return {
+        contentStyle: {
+          margin: '24px 16px',
+          padding: '0',
+          borderRadius: '5px',
+        }
+      }
+    }
+  })
+</script>

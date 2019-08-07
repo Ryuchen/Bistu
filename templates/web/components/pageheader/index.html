@@ -1,0 +1,27 @@
+{% load i18n %}
+
+<script type="text/x-template" id="page-header">
+  <div>
+    <div v-bind:class="pageHeaderTitle">{% trans '工作台' %}</div>
+  </div>
+</script>
+
+<script type="text/javascript">
+  Vue.component('page-header', {
+    delimiters: ['<%', '%>'],
+    props: {
+      title: {
+          type: String,
+          required: false
+      }
+    },
+    template: '#page-header',
+    data() {
+      return {
+        pageHeaderTitle: {
+
+        }
+      }
+    }
+  })
+</script>
