@@ -1,0 +1,77 @@
+#content-main {
+    .object-tools {
+        display: flex;
+        justify-content: end;
+        float: right;
+        margin-top: -48px;
+    }
+
+    .change-list-results {
+        margin: 8px 16px;
+        display: flex;
+        justify-content: start;
+    }
+
+    #toolbar {
+        margin: 4px 0;
+    }
+
+    #xfull {
+        margin: 8px 0 8px 10px;
+        /* font-size: 1.2em; */
+        display: inline-flex;
+
+        div.tags-group {
+            margin: -1px 0 0 20px;
+        }
+    }
+
+    #changelist-filter {
+        .ant-advanced-search-form {
+          padding: 8px;
+          margin: 4px 0 8px 0;
+          background: #fbfbfb;
+          border-radius: 6px;
+        }
+
+        .ant-advanced-search-form .ant-form-item {
+            display: flex;
+            margin: 10px 0;
+
+            .ant-form-item-label {
+                width: 90px;
+            }
+        }
+
+        .ant-advanced-search-form .ant-form-item-control-wrapper {
+            flex: 1;
+            max-width: calc(100% - 90px);
+        }
+
+        #components-form-demo-advanced-search .ant-form {
+            max-width: none;
+        }
+    }
+
+    #changelist-form {
+        #result_list {
+            width: 100%;
+
+            .ant-table-tbody > tr {
+                th {
+                    padding: 16px 16px;
+                    border-bottom: 1px solid #e8e8e8;
+                    transition: all .3s,border 0s;
+                }
+
+                &:hover:not(.ant-table-expanded-row) > th {
+                    background: #e6f7ff;
+                }
+            }
+        }
+        .pagination {
+            text-align: right;
+            padding: 10px 0;
+        }
+    }
+}

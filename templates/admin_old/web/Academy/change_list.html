@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+{% load static %}
+{% load simpletags %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+    <el-link id="enroll-statistic" type="primary" href="enroll-statistic/">招生统计</el-link>
+  </li>
+  <script>
+    new Vue({
+      el: '#enroll-statistic'
+    })
+  </script>
+{% endblock %}

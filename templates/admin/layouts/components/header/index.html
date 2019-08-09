@@ -1,0 +1,74 @@
+{% load i18n static vuetags %}
+
+{% include 'admin/layouts/components/header/widgets/logo.html' %}
+{% include 'admin/layouts/components/header/widgets/search.html' %}
+{% include 'admin/layouts/components/header/widgets/notice.html' %}
+{% include 'admin/layouts/components/header/widgets/utility.html' %}
+{% include 'admin/layouts/components/header/widgets/setting.html' %}
+
+<link href="{% static 'web/css/layouts/components/widgets/header/toolbox.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="demo-header">
+  <a-layout-header :style="{ padding: '0' }">
+    <demo-header-logo></demo-header-logo>
+    <div class="demo-header-toolbox-wrapper">
+      <ul class="toolbox-items-wrapper">
+        <li>
+          <div class="toolbox-item">
+            <a-button type="primary" @click="$store.commit('app/changeCollapsed')">
+              <a-icon :style="toolboxIconStyle" :type="collapsed ? 'menu-unfold' : 'menu-fold'"></a-icon>
+            </a-button>
+          </div>
+        </li>
+        <li v-show="toolbox.lock.enable">
+          <div class="toolbox-item">
+            <a-button type="primary">
+              <a-icon :style="toolboxIconStyle" type="lock"></a-icon>
+            </a-button>
+          </div>
+        </li>
+        <li v-show="toolbox.github.enable">
+          <div class="toolbox-item">
+            <a-button type="primary" @click="openGithub">
+              <a-icon :style="toolboxIconStyle" type="github"></a-icon>
+            </a-button>
+          </div>
+        </li>
+      </ul>
+      <div class="toolbox-search">
+        <demo-header-search :show="toolbox.search.enable"></demo-header-search>
+      </div>
+      <ul class="toolbox-items-wrapper">
+        <demo-header-notice :show="toolbox.notice.enable"></demo-header-notice>
+        <demo-header-utility :show="toolbox.utility.enable"></demo-header-utility>
+        <demo-header-setting :show="toolbox.setting.enable"></demo-header-setting>
+      </ul>
+    </div>
+  </a-layout-header>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-header', {
+    delimiters: ['<%', '%>'],
+    template: '#demo-header',
+    data: function () {
+      return {
+        toolbox: JSON.parse(`{% adv_toolbox %}`),
+        toolboxIconStyle: {
+          fontSize: '16px',
+          padding: '4px'
+        },
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed'
+      })
+    },
+    methods: {
+      openGithub() {
+        window.open(`${this.toolbox.github.link}`);
+      }
+    }
+  })
+</script>

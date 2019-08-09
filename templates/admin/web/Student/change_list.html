@@ -5,12 +5,7 @@
 
 {% block object-tools-items %}
   {{ block.super }}
-  <li>
-    <el-link id="import-students" type="primary" href="import_students/">导入 学生</el-link>
-  </li>
-  <script>
-    new Vue({
-      el: '#import-students'
-    })
-  </script>
+  <a-button>
+    <a href="{% url 'admin:import-students' %}">导入 学生</a>
+  </a-button>
 {% endblock %}

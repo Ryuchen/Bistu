@@ -24,13 +24,18 @@ ANT_DESIGN_VUE_HEADER_TOOLBOX_LOCK = True
 # Enable author github function ？
 ANT_DESIGN_VUE_HEADER_TOOLBOX_GITHUB = True
 # Enable haystack function ？ (django-haystack global search function)
-ANT_DESIGN_VUE_HEADER_TOOLBOX_SEARCH = False
+ANT_DESIGN_VUE_HEADER_TOOLBOX_SEARCH = True
 # Enable notice function ?
 ANT_DESIGN_VUE_HEADER_TOOLBOX_NOTICE = True
 # Enable utility function ?
 ANT_DESIGN_VUE_HEADER_TOOLBOX_UTILITY = True
 # Enable setting function ?
 ANT_DESIGN_VUE_HEADER_TOOLBOX_SETTING = True
+
+# #Footer Copyright Settings
+ANT_DESIGN_VUE_FOOTER_COPYRIGHT_YEAR = 2019
+ANT_DESIGN_VUE_FOOTER_COPYRIGHT_AUTHOR = 'Ryuchen'
+ANT_DESIGN_VUE_FOOTER_COPYRIGHT_LINK = "https://github.com/ryuchen"
 
 # Global NavMenu Settings
 # NavMenu items

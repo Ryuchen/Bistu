@@ -1,0 +1,58 @@
+{% load i18n vuetags %}
+
+<script type="text/x-template" id="demo-header-logo">
+  <div :style="logoWrapperStyle">
+    <a href="{% url 'admin:index' %}" style="display: inherit;">
+      <img v-show="collapsed" :style="logoImgStyle" :src="src.mini.src" :alt="alt" />
+    </a>
+    <a href="{% url 'admin:index' %}" style="display: inherit;">
+      <img v-show="!collapsed" :style="logoImgStyle" :src="src.full.src" :alt="alt" />
+    </a>
+  </div>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-header-logo', {
+    delimiters: ['<%', '%>'],
+    template: '#demo-header-logo',
+    data: function () {
+      const logo = JSON.parse(`{% adv_logo %}`);
+      return {
+        width: '200px',
+        src: logo,
+        alt: logo.alt,
+        img: '',
+      }
+    },
+    watch: {
+      collapsed: function (val) {
+        this.width = val ? '80px' : '200px';
+      },
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed'
+      }),
+      logoWrapperStyle: function () {
+        return {
+          width: this.width,
+          height: '32px',
+          margin: '16px auto',
+          float: 'left'
+        }
+      },
+      logoImgStyle: function () {
+        return {
+          width: this.width,
+          height: '32px',
+          display: 'inherit',
+          padding: '0 24px'
+        }
+      }
+    },
+    created: function () {
+      this.width = this.collapsed ? '80px' : '200px';
+      this.alt = `{% trans 'Home' %}`;
+    }
+  })
+</script>

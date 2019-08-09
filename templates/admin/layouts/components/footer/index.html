@@ -1,0 +1,21 @@
+{% load vuetags %}
+
+<script type="text/x-template" id="demo-footer">
+  <a-layout-footer style="text-align: center">
+    <div class="ant-breadcrumb">
+      <a class="ant-breadcrumb-link" :href="link">
+        {{ title }} | {{ site_title|default:_('Django site admin') }} © <% year %> Created by <% author %>
+      </a>
+    </div>
+  </a-layout-footer>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-footer', {
+    delimiters: ['<%', '%>'],
+    template: '#demo-footer',
+    data () {
+      return JSON.parse(`{% adv_footer %}`)
+    }
+  })
+</script>

@@ -1,0 +1,62 @@
+{% load log i18n static%}
+
+<link href="{% static 'web/css/components/timeline.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="demo-workplace-timeline">
+  <a-card :bordered="false">
+    <span slot="title">
+      <a-icon type="link" ></a-icon> {% trans 'Recent actions' %}
+    </span>
+    <a-timeline mode="alternate">
+      {% get_admin_log 20 as admin_log %}
+      {% if not admin_log %}
+        <a-timeline-item>{% trans 'None available' %}</a-timeline-item>
+      {% else %}
+        {% for entry in admin_log %}
+          <a-timeline-item>
+            {% if entry.is_addition %}
+              <a-icon slot="dot" type="plus-circle" style="color:green; font-size: 18px;"></a-icon>
+              <a-alert type="success">
+                <div slot="message">
+                  <p>{{ entry.action_time }}</p>
+                  <span>{{ user.get_full_name }}: {{ entry }}</span>
+                </div>
+              </a-alert>
+            {% elif entry.is_change %}
+              <a-icon slot="dot" type="edit" style="color: #91d5ff; font-size: 18px;"></a-icon>
+              <a-alert type="info">
+                <div slot="message">
+                  <p>{{ entry.action_time }}</p>
+                  <span>{{ user.get_full_name }}: {{ entry }}</span>
+                </div>
+              </a-alert>
+            {% elif entry.is_deletion %}
+              <a-icon slot="dot" type="delete" style="color: red; font-size: 18px;"></a-icon>
+              <a-alert type="error">
+                <div slot="message">
+                  <p>{{ entry.action_time }}</p>
+                  <span>{{ user.get_full_name }}: {{ entry }}</span>
+                </div>
+              </a-alert>
+            {% else %}
+              <a-icon slot="dot" type="info-circle" style="color: rgb(250, 204, 20); font-size: 18px;"></a-icon>
+              <a-alert type="warning">
+                <div slot="message">
+                  <p>{{ entry.action_time }}</p>
+                  <span>{{ user.get_full_name }}: {{ entry }}</span>
+                </div>
+              </a-alert>
+            {% endif %}
+          </a-timeline-item>
+        {% endfor %}
+      {% endif %}
+    </a-timeline>
+  </a-card>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-workplace-timeline', {
+      delimiters: ['<%', '%>'],
+      template: '#demo-workplace-timeline'
+  });
+</script>

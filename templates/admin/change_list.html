@@ -1,14 +1,11 @@
-{% extends "admin/base.html" %}
-{% load i18n %}
-{% load static %}
-{% load admin_urls %}
-{% load admin_list %}
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_list admin_urls vuetags %}
 
 {% block extrastyle %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static "web/css/changelist.css" %}">
   {% if cl.formset %}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
   {% endif %}
   {% if cl.formset or action_form %}
     <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
@@ -16,9 +13,7 @@
   {{ media.css }}
   {% if not actions_on_top and not actions_on_bottom %}
     <style>
-      #changelist table thead th:first-child {
-        width: inherit
-      }
+      #changelist table thead th:first-child { width: inherit }
     </style>
   {% endif %}
 {% endblock %}
@@ -26,77 +21,94 @@
 {% block extrahead %}
   {{ block.super }}
   {{ media.js }}
-{% endblock extrahead %}
+{% endblock %}
 
-{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
-
-{% if not is_popup %}
-  {% block pretitle %}
-    <div id="breadcrumb" style="padding: 24px;">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>{% trans 'Home' %}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ cl.opts.verbose_name_plural }}</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-    <script>
-      new Vue({
-        el: '#breadcrumb'
-      })
-    </script>
-  {% endblock %}
-  {% block object-tools %}
-    <ul class="object-tools" style="display: none;">
-      {% block object-tools-items %}
-        {{ block.super }}
-      {% endblock %}
-    </ul>
-  {% endblock %}
-{% endif %}
-
-{% block coltype %}flex{% endblock %}
+{% block x-template %}
+  {% include 'admin/filter.html' %}
+  {% include 'admin/components/pagination/index.html' %}
+{% endblock %}
 
 {% block content %}
+
+  <a-breadcrumb style="font-size: 1.2em;margin-bottom: 24px">
+    <a-breadcrumb-item>{{ cl.opts.app_config.verbose_name }}</a-breadcrumb-item>
+    <a-breadcrumb-item>{{ cl.opts.verbose_name_plural|capfirst }}</a-breadcrumb-item>
+  </a-breadcrumb>
+
   <div id="content-main">
-    {% if cl.formset.errors %}
-      <p class="errornote">
-        {% if cl.formset.total_error_count == 1 %}
-          {% trans "Please correct the error below." %}
-        {% else %}
-          {% trans "Please correct the errors below." %}
-        {% endif %}
-      </p>
-      {{ cl.formset.non_form_errors }}
+    <div class="object-tools">
+      {% block object-tools %}
+        <a-button-group size="small">
+          {% block object-tools-items %}
+            {% change_list_object_tools %}
+          {% endblock %}
+        </a-button-group>
+      {% endblock %}
+    </div>
+
+    {% if cl.formset and cl.formset.errors %}
+        <p class="errornote">
+        {% if cl.formset.total_error_count == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        </p>
+        {{ cl.formset.non_form_errors }}
     {% endif %}
-    <div class="module{% if cl.has_filters %} filtered {% endif %}" id="changelist">
+
+    <div id="changelist">
+
       {% block search %}
         {% search_form cl %}
       {% endblock %}
+
       {% block date_hierarchy %}
-        {% date_hierarchy cl %}
+        {% if cl.date_hierarchy %}
+          {% adv_date_hierarchy cl %}
+        {% endif %}
       {% endblock %}
 
-      <form id="changelist-form" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+      {% block filters %}
+        {% if cl.has_filters %}
+          <div id="changelist-filter">
+            <a-form class="ant-advanced-search-form">
+              <a-row :gutter="24">
+                {% for spec in cl.filter_specs %}
+                  <a-col :span="8">
+                    <demo-filter-select :data='JSON.parse(`{% adv_list_filter cl spec %}`)'></demo-filter-select>
+                  </a-col>
+                {% endfor %}
+              </a-row>
+            </a-form>
+          </div>
+        {% endif %}
+      {% endblock %}
+
+      <form id="changelist-form" method="post" {% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data" {% endif %} novalidate>
         {% csrf_token %}
+
         {% if cl.formset %}
           <div>{{ cl.formset.management_form }}</div>
         {% endif %}
+
+        <a-row type="flex" justify="space-between">
+          <a-col :span="12">
+            <div style="display: none">
+              {% if action_form and cl.show_admin_actions %}
+                {% admin_actions %}
+              {% endif %}
+            </div>
+          </a-col>
+          <a-col :span="12">
+            {% block pagination %}
+              <div class="pagination">
+                <demo-component-pagination></demo-component-pagination>
+              </div>
+            {% endblock %}
+          </a-col>
+        </a-row>
+
         {% block result_list %}
-          {% admin_actions %}
           {% result_list cl %}
-        {% endblock %}
-        {% block pagination %}
-          {% pagination cl %}
         {% endblock %}
       </form>
     </div>
   </div>
-  <script type="text/javascript">
-    $(".object-tools").hide().find('li a').each(function () {
-      console.log($(this));
-      _action.exts.push({
-        name:$(this).text(),
-        url:$(this).attr('href')
-      })
-    })
-  </script>
 {% endblock %}

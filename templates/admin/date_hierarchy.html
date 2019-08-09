@@ -1,23 +1,28 @@
+{% load i18n %}
+{% load vuetags %}
+{% load simpletags %}
+
 {% if show %}
-  <div class="date-hierarchy" style="border-bottom: 1px solid #ddd; padding: 10px;">
-    <ul class="toplinks">
-      {% if back %}
-        <li class="date-back">
-          <a href="{{ back.link }}">&lsaquo; {{ back.title }}</a>
-        </li>
-      {% endif %}
-      {% for choice in choices %}
-        <li>
-          {% if choice.link %}
-            <a href="{{ choice.link }}">
+  <div id="xfull">
+    <strong>{{ name }}:</strong>
+    <div class="tags-group">
+      {% block date-hierarchy-toplinks %}
+        {% block date-hierarchy-choices %}
+          {% for choice in choices %}
+            <a-tag key="{{ choice.title }}" style="borderStyle: dashed;">
+              {% if choice.link %}<a href="{{ choice.link }}">{% endif %}{{ choice.title }}{% if choice.link %}</a>{% endif %}
+            </a-tag>
+          {% endfor %}
+        {% endblock %}
+
+        {% block date-hierarchy-back %}
+          {% if back %}
+            <a-tag key="back" style="background: #fff;">
+              <a href="{{ back.link }}">{{ back.title }}</a>
+            </a-tag>
           {% endif %}
-          {{ choice.title }}
-          {% if choice.link %}
-            </a>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-    <br class="clear"/>
+        {% endblock %}
+      {% endblock %}
+    </div>
   </div>
 {% endif %}

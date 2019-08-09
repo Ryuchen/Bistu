@@ -1,0 +1,53 @@
+{% load i18n static %}
+
+<link href="{% static 'web/css/components/quicklink.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="workplace-quick-link">
+  <a-card :bordered="false">
+    <span slot="title"><a-icon type="link" ></a-icon> {% trans '快捷方式' %}</span>
+    {% if app_list %}
+      <a-carousel autoplay>
+        <a slot="customPaging">
+          <button></button>
+        </a>
+        {% for app in app_list %}
+          <div>
+            <a-row :gutter="16">
+              {% for model in app.models %}
+                <a-col class="gutter-row" :span="4">
+                  <a-card hoverable>
+                    <template class="ant-card-actions" slot="actions">
+                      {% if model.add_url %}
+                        <a href="{{ model.add_url }}"><a-icon type="plus-circle" /></a>
+                      {% else %}
+                        <a-icon type="ellipsis" />
+                      {% endif %}
+                      {% if model.admin_url %}
+                        <a href="{{ model.admin_url }}"><a-icon type="folder-open" /></a>
+                      {% else %}
+                        <a-icon type="ellipsis" />
+                      {% endif %}
+                    </template>
+                    <a-card-meta title="{{ model.name }}">
+                      <span slot="description">{{ app.name }}</span>
+                      <a-avatar slot="avatar">{{ model.object_name|first }}</a-avatar>
+                    </a-card-meta>
+                  </a-card>
+                </a-col>
+              {% endfor %}
+            </a-row>
+          </div>
+        {% endfor %}
+      </a-carousel>
+    {% else %}
+      <p>{% trans "You don't have permission to view or edit anything." %}</p>
+    {% endif %}
+  </a-card>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-workplace-quick-link', {
+    delimiters: ['<%', '%>'],
+    template: '#workplace-quick-link'
+  })
+</script>

@@ -1,8 +1,45 @@
-{% load i18n %}
-<h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
-<ul>
-{% for choice in choices %}
-    <li{% if choice.selected %} class="selected"{% endif %}>
-    <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}">{{ choice.display }}</a></li>
-{% endfor %}
-</ul>
+{% load i18n vuetags %}
+
+<script type="text/x-template" id="demo-filter-select">
+  <a-form-item :label="data.title">
+    <a-select :defaultValue="selectValue" @change="handleChange">
+      <template v-for="(choice, index) in data.choices">
+        <a-select-option :value="choice.query_string">{% templatetag openvariable %} choice.display {% templatetag closevariable %}</a-select-option>
+      </template>
+    </a-select>
+  </a-form-item>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-filter-select', {
+    props: {
+      data: {
+        type: Object,
+        required: true
+      }
+    },
+    template: '#demo-filter-select',
+    data: function () {
+      return {
+        selectValue: ''
+      }
+    },
+    created: function () {
+      this.data.choices.map(item => {
+        if (item.selected) {
+          this.selectValue = item.query_string;
+        }
+      })
+    },
+    methods: {
+      handleChange(value) {
+        window.location.href = value;
+      }
+    }
+  })
+</script>
+
+
+
+
+

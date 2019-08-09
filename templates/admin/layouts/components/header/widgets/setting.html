@@ -1,0 +1,74 @@
+{% load i18n %}
+
+<script type="text/x-template" id="demo-header-setting">
+  <li v-show="show">
+    <div class="toolbox-item">
+      <a-dropdown :trigger="['click']" placement="bottomCenter">
+        <a-button type="primary">
+          <a-icon :style="toolboxIconStyle" type="setting"></a-icon>
+        </a-button>
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="showPassword">
+            <a-icon type="edit"></a-icon>
+            <span>{% trans "修改密码" %}</span>
+          </a-menu-item>
+          <a-menu-divider />
+          <a-menu-item key="0" @click="logout">
+            <a-icon type="logout"></a-icon>
+            <span>{% trans "注销用户" %}</span>
+          </a-menu-item>
+        </a-menu>
+      </a-dropdown>
+    </div>
+
+    {# Change Passwod Dialog Section #}
+    <a-modal title="{% trans 'Change password' %}" v-model="pwdVisible" :footer="null" width="648px" @cancel="passwordClose">
+      <iframe-wrapper :href="pwdLink" height="420px" width="600px" overflow="hidden"></iframe-wrapper>
+    </a-modal>
+    {# Change Passwod Dialog Section #}
+  </li>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-header-setting', {
+    delimiters: ['<%', '%>'],
+    props: {
+      show: {
+        default: false,
+        type: Boolean,
+        required: true
+      }
+    },
+    template: '#demo-header-setting',
+    data: function () {
+      return {
+        toolboxIconStyle: {
+          fontSize: '16px',
+          padding: '4px'
+        },
+        pwdVisible: false,
+        pwdLink: `{% url "admin:password_change" %}`,
+      }
+    },
+    methods: {
+      showPassword () {
+        this.pwdVisible = true;
+      },
+      passwordClose () {
+        this.pwdVisible = false;
+      },
+      logout: function () {
+        this.$confirm({
+          title: '{% trans "Log out" %}',
+          content: '{% trans "Are you sure?" %}',
+          okText: '{% trans "Yes" %}',
+          okType: 'danger',
+          cancelText: '{% trans "No" %}',
+          onOk() {
+            window.location.href = '{% url "admin:logout" %}';
+          }
+        });
+      },
+    },
+  })
+</script>

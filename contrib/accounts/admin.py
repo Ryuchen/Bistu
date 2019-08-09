@@ -205,6 +205,7 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
     list_per_page = 20
     search_fields = ('stu_number', 'stu_name', 'stu_nation', 'stu_source', 'stu_telephone')
     date_hierarchy = 'stu_entrance_time'
+    date_hierarchy_drilldown = False
     empty_value_display = '--'
     change_list_template = 'admin/web/Student/change_list.html'
 

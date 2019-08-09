@@ -1,0 +1,26 @@
+{% load vuetags %}
+
+<script type="text/x-template" id="demo-component-pagination">
+  <a-pagination size="small" :defaultPageSize="20" v-model="current" :total="pagination.total" @change="onChange" ></a-pagination>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-component-pagination', {
+    delimiters: ['<%', '%>'],
+    template: '#demo-component-pagination',
+    data: function () {
+      return {
+        pagination: JSON.parse(`{% adv_pagination cl %}`),
+        current: 1
+      }
+    },
+    created: function () {
+      this.current = this.pagination.current + 1;
+    },
+    methods: {
+      onChange(pageNumber) {
+        window.location.href = window.location.pathname + `${this.pagination.link}`.replace(/\?p=([0-9])/g, `?p=${pageNumber - 1}`);
+      }
+    }
+  })
+</script>

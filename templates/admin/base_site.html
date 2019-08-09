@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% load i18n static vuetags %}
+
+{# appliaction site information #}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{# appliaction site information #}
+
+{# site style section #}
+{% block stylesheet %}{% static 'web/css/themes/default.css' %}{% endblock %}
+{# site style section #}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'web/css/themes/default.css' %}">
+{% endblock %}
+
+{# site javascript section #}
+{% block javascript %}
+  <script src="{% static 'web/thirds/es6promise/es6-promise.auto.js' %}"></script>
+  <script src="{% static 'web/thirds/g2/g2.min.js' %}"></script>
+  <script src="{% static 'web/thirds/axios/axios.js' %}"></script>
+  <script src="{% static 'web/thirds/moment/moment.min.js' %}"></script>
+  <script src="{% static 'web/thirds/jspdf/jspdf.debug.js' %}"></script>
+  <script src="{% static 'web/thirds/html2canvas/html2canvas.js' %}"></script>
+  <script src="{% static 'web/thirds/vue/vue.js' %}"></script>
+  <script src="{% static 'web/thirds/vuex/vuex.min.js' %}"></script>
+  <script src="{% static 'web/thirds/ant-design-vue/dist/antd.min.js' %}"></script>
+{% endblock %}
+{# site javascript section #}

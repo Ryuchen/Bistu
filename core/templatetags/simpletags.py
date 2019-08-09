@@ -247,6 +247,7 @@ def load_message(context):
 @register.simple_tag(takes_context=True)
 def context_to_json(context):
     json_str = '{}'
+    print(context)
     return mark_safe(json_str)
 
 

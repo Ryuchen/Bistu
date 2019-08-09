@@ -1,0 +1,61 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div id="contentWrapper">
+  <el-container>
+    <el-header>
+      <el-page-header @back="javascript:history.go(-1);" content="硕士生分专业招生人数汇总表"></el-page-header>
+      <el-form :inline="true" :model="formInline" class="demo-form-inline" size="small" style="text-align: right; font-size: 12px">
+        <el-form-item label="招生年份">
+          <el-select v-model="formInline.year" placeholder="全部年份">
+            <el-option v-for="option in options" :value="option">{{ option }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">查询</el-button>
+          <el-button type="primary" @click="onExport">导出</el-button>
+        </el-form-item>
+      </el-form>
+    </el-header>
+
+    <el-main>
+      <template>
+        <div id="drag-upload">
+          <el-upload class="el-upload" drag action="{% url 'student-list' %}" :on-error="handleError" :on-success="handleSuccess">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
+          </el-upload>
+        </div>
+      </template>
+    </el-main>
+  </el-container>
+</div>
+<script type="text/javascript">
+  new Vue({
+    el: '#contentWrapper',
+    methods: {
+      handleSuccess(response) {
+        this.$notify({
+          title: '上传成功',
+          message: "",
+          type:'success',
+          dangerouslyUseHTMLString: true,
+          showClose: false
+        });
+      },
+      handleError(response) {
+        const { message } = response;
+        const body = JSON.parse(message);
+        this.$notify({
+          title: '解析失败',
+          message: body.meta.details,
+          type:'error',
+          dangerouslyUseHTMLString: true,
+          showClose: false
+        });
+      }
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% include 'admin/components/quicklink/index.html' %}
+{% include 'admin/components/timeline/index.html' %}
+{% include 'admin/components/chart/line.html' %}
+{% include 'admin/components/chart/pie.html' %}
+
+<script type="text/x-template" id="home-workplace-content">
+  <div style="height: 100vh">
+    <div :style="contentStyle">
+      <demo-workplace-quick-link></demo-workplace-quick-link>
+    </div>
+    <div :style="contentStyle">
+      <demo-workplace-line-chart source="{% url 'student-enroll-trending' %}"></demo-workplace-line-chart>
+    </div>
+    <a-row :gutter="8">
+      <a-col :span="16">
+        <div :style="contentStyle">
+          <demo-workplace-timeline></demo-workplace-timeline>
+        </div>
+        <div :style="contentStyle">
+          <demo-workplace-timeline></demo-workplace-timeline>
+        </div>
+      </a-col>
+      <a-col :span="8">
+        <div :style="contentStyle">
+          <demo-workplace-pie-chart source="{% url 'student-enroll-ratio' %}"></demo-workplace-pie-chart>
+        </div>
+      </a-col>
+    </a-row>
+  </div>
+</script>
+
+<script type="text/javascript">
+  Vue.component('workplace', {
+    delimiters: ['<%', '%>'],
+    template: '#home-workplace-content',
+    data() {
+      return {
+        contentStyle: {
+          margin: '0 0 8px 0',
+          padding: '0',
+          border: '1px dashed #e8e8e8',
+          borderRadius: '5px',
+        }
+      }
+    }
+  })
+</script>

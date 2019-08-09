@@ -1,0 +1,88 @@
+{% load i18n %}
+{% load static %}
+
+<link href="{% static 'web/css/components/linechart.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="demo-workplace-line-chart">
+  <a-card :bordered="false">
+    <span slot="title">
+      <a-icon type="link" ></a-icon> {% trans '招生趋势' %}
+    </span>
+    <div id="demo-line-chart"></div>
+  </a-card>
+</script>
+
+<script type="text/javascript">
+  Vue.component('demo-workplace-line-chart', {
+    delimiters: ['<%', '%>'],
+    props: ['source'],
+    template: '#demo-workplace-line-chart',
+    data: function () {
+      return {
+        staticsData: {},
+      }
+    },
+    created: function () {
+      this.getEnrollTrendingData(this.drawLine);
+    },
+    methods: {
+      drawLine() {
+        const chart = new G2.Chart({
+            container: 'demo-line-chart',
+            forceFit: true,
+            height: '320',
+            padding: [120, 20, 20, 20] // 上右下左
+          });
+          chart.source(this.staticsData);
+          chart.tooltip({
+            follow: false,
+            crosshairs: 'y',
+            htmlContent: function htmlContent(title, items) {
+              let html = '<div class="custom-tooltip">';
+              for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                var domHead = '<div class="custom-tooltip-item" style="border-left-color:' + item.color + '">';
+                var domName = '<div class="custom-tooltip-item-name">' + item.name + '</div>';
+                var domValue = '<div class="custom-tooltip-item-value">' + item.value + '</div>';
+                var domTail = '</div>';
+                html += domHead + domName + domValue + domTail;
+              }
+              return html + '</div>';
+            }
+          });
+          chart.axis('stu_entrance_time__year', {
+            label: {
+              textStyle: {
+                fill: '#aaaaaa'
+              }
+            }
+          });
+          chart.axis('count', {
+            label: {
+              textStyle: {
+                fill: '#aaaaaa'
+              },
+              formatter: function formatter(text) {
+                return text.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+              }
+            }
+          });
+          chart.legend(false);
+          chart.line().position('stu_entrance_time__year*count').color('stu_academy__aca_cname');
+          chart.render();
+      },
+      getEnrollTrendingData(callback) {
+        Vue.prototype.$http = axios;
+        let _this = this;
+        this.$http.get(_this.source, {})
+            .then(function (res) {
+              _this.staticsData = res.data.statistic;
+              callback();
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+      },
+    }
+  })
+</script>
