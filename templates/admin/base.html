@@ -5,13 +5,18 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-
   {# site header section #}
   <title>{% block title %}{% endblock %}</title>
   {# site header section #}
 
+  {# can replace whole site stylesheet section #}
+  <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static 'web/css/themes/default.css' %}{% endblock %}">
+  {# can replace whole site stylesheet section #}
+
   {# site stylesheet section #}
-  <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+  {% block extrastyle %}
+
+  {% endblock %}
   {# site stylesheet section #}
 
   {# site javascript section #}
@@ -20,28 +25,13 @@
   {% endblock %}
   {# site javascript section #}
 
-  {% block extrastyle %}
-    {# addtional extra stylesheet #}
-  {% endblock %}
-
-{#  {% if LANGUAGE_BIDI %}#}
-{#    <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">#}
-{#  {% endif %}#}
-
+  {# addtional extra stylesheet or javascript #}
   {% block extrahead %}
-    {# addtional extra stylesheet or javascript #}
-  {% endblock %}
 
-  {# responsive stylesheet section #}
-  {% block responsive %}
-      <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
-{#      <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">#}
-{#      {% if LANGUAGE_BIDI %}#}
-{#        <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">#}
-{#      {% endif %}#}
   {% endblock %}
-  {# responsive stylesheet section #}
+  {# addtional extra stylesheet or javascript #}
 
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
   {% block blockbots %}
     <meta name="robots" content="NONE,NOARCHIVE">
   {% endblock %}
@@ -49,6 +39,7 @@
 
 <body>
   {% block x-template %}{% endblock %}
+
   <div id="app">
     {# site application section #}
     {% block app %}
@@ -67,7 +58,7 @@
       {# message content section #}
 
       {# admin site content section #}
-      <div>
+      <div class="vue-content">
         {% block content %}
           {% block object-tools %}{% endblock %}
           {{ content }}
@@ -78,79 +69,8 @@
     {# site application section #}
   </div>
 
-  <script type="text/javascript">
-    const Bus = new Vue(); //事件总线
-    Vue.use(Vuex);
-    const store = new Vuex.Store({
-      modules: {
-        app: {
-          namespaced: true,
-          state: {
-            collapsed: false,
-            activeKey: '0',
-            activePanes: [],
-          },
-          getters: {
-            collapsed: function (state) {
-              const value = JSON.parse(window.localStorage.getItem('collapsed') || null);
-              if (value) state.collapsed = value;
-              return state.collapsed;
-            },
-            activeKey: function (state) {
-              const value = JSON.parse(window.localStorage.getItem('activeKey') || null);
-              if (value) state.activeKey = value;
-              return state.activeKey;
-            },
-            activeKeys: function (state) {
-              const value = JSON.parse(window.localStorage.getItem('activeKey') || null);
-              if (value) state.activeKey = value;
-              return [state.activeKey];
-            },
-            activePanes: function (state) {
-              const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
-              if (value) state.activePanes = value;
-              return state.activePanes;
-            }
-          },
-          mutations: {
-            changeCollapsed: function (state){
-              state.collapsed = !state.collapsed;
-              window.localStorage.setItem('collapsed', JSON.stringify(state.collapsed));
-            },
-            changeActiveKey: function (state, payload) {
-              state.activeKey = payload;
-              window.localStorage.setItem('activeKey', JSON.stringify(state.activeKey));
-            },
-            addActivePanes: function (state, payload) {
-              if (state.activePanes.findIndex(obj => obj.key === payload.key) === -1) {
-                state.activePanes.push(payload);
-              }
-              window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
-            },
-            delActivePanes: function (state, payload) {
-              state.activePanes.splice(payload, 1);
-              window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
-            }
-          }
-        }
-      }
-    });
-    const app = new Vue({
-      delimiters: ['<%', '%>'],
-      el: '#app',
-      store,
-      data: function () {
-        return {
-          placeholder: '{% trans 'Search' %}：{% adv_search_placeholder %}',
-          searchInput: '{{ cl.query }}',
-        }
-      },
-      methods: {
-        onSearch (value) {
-          console.log(value)
-        },
-      }
-    });
-  </script>
+  {% block scripts %}
+    <script src="{% static 'web/js/index.js' %}"></script>
+  {% endblock %}
 </body>
 </html>

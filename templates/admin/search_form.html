@@ -23,7 +23,7 @@
           </span>
         </a-divider>
 
-        <a-input-search :placeholder="placeholder" @search="onSearch" name="{{ search_var }}" v-model="searchInput">
+        <a-input-search :placeholder="placeholder" name="{{ search_var }}" v-model="searchInput">
           <a-button html-type="submit" type="primary" slot="enterButton">{% trans 'Search' %}</a-button>
         </a-input-search>
         {% for pair in cl.params.items %}

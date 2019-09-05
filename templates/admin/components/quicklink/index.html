@@ -14,7 +14,7 @@
           <div>
             <a-row :gutter="16">
               {% for model in app.models %}
-                <a-col class="gutter-row" :span="4">
+                <a-col class="gutter-row" :lg="8" :xl="6" :xxl="4">
                   <a-card hoverable>
                     <template class="ant-card-actions" slot="actions">
                       {% if model.add_url %}

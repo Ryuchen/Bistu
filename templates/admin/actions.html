@@ -1,34 +1,42 @@
-{% load i18n %}
+{% load i18n vuetags %}
 
 <div class="actions">
   {% block actions %}
-    {% block actions-form %}
-      {% for field in action_form %}
-        {% if field.label %}
-          <label>{{ field.label }}
-        {% endif %}
-        {{ field }}
-        {% if field.label %}
-          </label>
-        {% endif %}
-      {% endfor %}
-    {% endblock %}
+    <div>
+      {% block actions-form %}
+        {% for field in action_form %}
+          {% if field.label %}
+            <label><strong>{{ field.label }}</strong>:</label>
+          {% endif %}
+          {% if field.field.widget.input_type == 'select' and not field.field.widget.is_hidden %}
+            <input type="hidden" name="{{ field.html_name }}" v-model="{{ field.html_name }}">
+            <a-select size="small" name="{{ field.html_name }}" style="width: 160px" @change="handleChange">
+              {% for value, dispaly in field.field.widget.choices %}
+                <a-select-option select-name="{{ field.html_name }}" value="{{ value }}">{{ dispaly }}</a-select-option>
+              {% endfor %}
+            </a-select>
+          {% else %}
+            {{ field }}
+          {% endif %}
+        {% endfor %}
+      {% endblock %}
 
-    {% block actions-submit %}
-      <button type="submit" class="button" title="{% trans "Run the selected action" %}" name="index" value="{{ action_index|default:0 }}"> {% trans "Go" %} </button>
-    {% endblock %}
+      {% block actions-submit %}
+        <a-button size="small" title="{% trans "Run the selected action" %}" name="index" value="{{ action_index|default:0 }}" @click="doAction">{% trans "Go" %}</a-button>
+      {% endblock %}
+    </div>
 
-    {% block actions-counter %}
-      {% if actions_selection_counter %}
-        <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
-        {% if cl.result_count != cl.result_list|length %}
-          <span class="all">{{ selection_note_all }}</span>
-          <span class="question">
-            <a href="#" title="{% trans "Click here to select the objects across all pages" %}">{% blocktrans with cl.result_count as total_count %}Select all {{ total_count }} {{ module_name }}{% endblocktrans %}</a>
-          </span>
-          <span class="clear"><a href="#">{% trans "Clear selection" %}</a></span>
+    <div>
+      {% block actions-counter %}
+        {% if actions_selection_counter %}
+          <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
+          {% if cl.result_count != cl.result_list|length %}
+            <span class="all" style="display: none">{{ selection_note_all }}</span>
+            <span class="question" style="display: none">(<a href="#">{% trans "Select all" %}</a>)</span>
+            <span class="clear" style="display: none">(<a href="#">{% trans "Clear selection" %}</a>)</span>
+          {% endif %}
         {% endif %}
-      {% endif %}
-    {% endblock %}
+      {% endblock %}
+    </div>
   {% endblock %}
 </div>

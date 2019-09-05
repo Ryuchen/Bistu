@@ -8,7 +8,6 @@
 # ==================================================
 import re
 import xlrd
-import json
 
 objects = []
 

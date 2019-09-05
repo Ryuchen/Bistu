@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static vuetags %}
 
 {% if result_hidden_fields %}
   <div class="hiddenfields">
@@ -7,8 +7,16 @@
 {% endif %}
 
 {% if results %}
-  <div class="ant-table-body">
-    <table id="result_list">
+  <div id="result_list" class="ant-table-body">
+{#    <a-table#}
+{#        :columns="{{ result_headers|vue_table_columns }}"#}
+{#        :data-source="{{ results|vue_table_data }}"#}
+{#        :row-selection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"#}
+{#        :scroll="{ x: 1500 }"#}
+{#        :pagination="false"#}
+{#    >#}
+{#    </a-table>#}
+    <table>
       <thead class="ant-table-thead">
         <tr>
           {% for header in result_headers %}
