@@ -17,7 +17,9 @@ from . import forms
 from . import models
 
 from django.contrib import admin
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+
+from .auth.user import BistuUserAdmin
 
 
 class StudentInline(admin.TabularInline):
@@ -61,6 +63,20 @@ class TutorResource(resources.ModelResource):
 
 @admin.register(models.Tutor)
 class TutorAdmin(ExportActionMixin, admin.ModelAdmin):
+
+    def get_urls(self):
+        urls = super(TutorAdmin, self).get_urls()
+        extend_urls = [
+            url(r'^import_tutors/$', self.admin_site.admin_view(self.import_tutors), name='import-tutors')
+        ]
+        return extend_urls + urls
+
+    def import_tutors(self, request):
+        context = dict(
+            self.admin_site.each_context(request),
+        )
+        return TemplateResponse(request, "admin/web/Tutor/import_tutors.html", context)
+
     resource_class = TutorResource
     form = forms.TutorForm
     inlines = [StudentInline]
@@ -209,11 +225,13 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
     change_list_template = 'admin/web/Student/change_list.html'
 
 
-# admin.site.unregister(User)
-# admin.site.unregister(Group)
-#
-#
-# @admin.register(User)
+admin.site.unregister(User)
+admin.site.register(User, BistuUserAdmin)
+
 # class AccountAdmin(admin.ModelAdmin):
 #     list_per_page = 20
 #     empty_value_display = '--'
+#     search_fields = ('stu_number', 'stu_name', 'stu_nation', 'stu_source', 'stu_telephone')
+#     date_hierarchy = 'stu_entrance_time'
+#     empty_value_display = '--'
+
