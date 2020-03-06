@@ -26,7 +26,7 @@ urlpatterns = [
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
     path("statistic/", include("apps.statistic.urls")),
-    path("admin/", admin.site.urls),
+    path("", admin.site.urls),
     path("client/", TemplateView.as_view(template_name="client/index.html")),
     path("history_data/", include("apps.history_data.urls")),
 ]

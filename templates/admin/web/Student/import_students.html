@@ -9,13 +9,15 @@
 
     <el-main>
       <div style="text-align: center">
-        <div id="drag-upload" style="align-self: center">
+        <div id="drag-upload">
           <el-upload class="el-upload" drag action="{% url 'student-list' %}" :on-error="handleError" :on-success="handleSuccess">
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
             <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
           </el-upload>
         </div>
+        <br/>
+        <el-link type="primary">导入模板下载</el-link>
       </div>
     </el-main>
   </el-container>

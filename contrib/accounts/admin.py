@@ -212,6 +212,7 @@ class StudentAdmin(ExportActionMixin, admin.ModelAdmin):
         'stu_political',
         'stu_nation',
         'stu_source',
+        'stu_tutor'
     )
     list_display = (
         'stu_number', 'stu_name', 'get_gender', 'stu_telephone', 'stu_card_type', 'stu_cardID',
