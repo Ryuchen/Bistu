@@ -78,7 +78,7 @@ Vue.component('display-pie-chart', {
       // 辅助文本
       this.chart.guide().html({
         position: ['50%', '50%'],
-        html: `<div style="color:#8c8c8c;font-size: 14px;text-align: center;width: 10em;"><strong><div>${this.radioYear} 年招生人数 </div><div>${this.total}</div></strong></div>`,
+        html: `<div style="color:#8c8c8c;font-size: 14px;text-align: center;width: 10em;"><strong><div><span id="selectYear">${this.radioYear}</span> 年招生人数 </div><div id="totalNumber">${this.total}</div></strong></div>`,
         alignX: 'middle',
         alignY: 'middle',
       });
@@ -128,6 +128,7 @@ Vue.component('display-pie-chart', {
     },
     selectEnrollYear(value) {
       let _this = this;
+      _this.radioYear = value;
       this.$http.get(_this.source, { params: { year: value }})
           .then(function (res) {
             const data = res.data.data.ratio;
@@ -140,6 +141,8 @@ Vue.component('display-pie-chart', {
               };
             });
             _this.chart.changeData(_this.ratioData);
+            document.getElementById("selectYear").innerText = _this.radioYear;
+            document.getElementById("totalNumber").innerText = _this.total;
           })
           .catch(function (error) {
             console.log(error);
