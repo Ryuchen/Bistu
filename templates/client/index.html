@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+</head>
+<body>
+<div id="app">
+改编不是乱编，{% verbatim %}{{ words_from_api }}{% endverbatim %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@latest/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min.js"></script>
+<script>
+var app = new Vue({
+    el: '#app',
+    data () {
+        return {
+            string_from_api: '要向全国人民谢罪的！'
+        }
+    },
+mounted () {
+    axios
+    .get('api/666')
+    .then(response => (this.string_from_api = response.data))
+    }
+})
+</script>
+</body>
+</html>
