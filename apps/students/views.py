@@ -79,7 +79,7 @@ class StudentDetail(SimpleStudent, generics.RetrieveUpdateDestroyAPIView):
         return Response(status.HTTP_200_OK)
 
 
-class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView):
+class StudentList(SimpleStudent, generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = self.queryset
@@ -113,7 +113,6 @@ class StudentList(SimpleStudent, mixins.ListModelMixin, generics.GenericAPIView)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # 添加
     @excepts
     @csrf_exempt
     def put(self, request, *args, **kwargs):
