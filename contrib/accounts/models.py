@@ -211,7 +211,6 @@ class MidCheckReport(models.Model):
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, verbose_name="唯一标识ID")
     time = models.DateField(null=False, default='2019', verbose_name="年份")
-    # stu_count = models.IntegerField(null=False, default=0, verbose_name="学生数量")  # 根据学生查处来
     schedule_count = models.IntegerField(null=False, default=0, verbose_name="按期考核人数")
     pass_count = models.IntegerField(null=False, default=0, verbose_name="延期考核人数")
     pass_proportion = models.IntegerField(null=False, default=0, verbose_name="延期考核比例")
