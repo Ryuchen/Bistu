@@ -1,3 +1,4 @@
+pypinyin
 astroid==2.2.5
 backports.csv==1.0.7
 defusedxml==0.6.0

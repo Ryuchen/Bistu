@@ -39,6 +39,7 @@ typed-ast = "*"
 wrapt = "*"
 xlrd = "*"
 xlwt = "*"
+pypinyin = "*"
 
 [requires]
 python_version = "3.7"
