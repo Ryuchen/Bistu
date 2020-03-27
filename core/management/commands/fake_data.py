@@ -9,7 +9,6 @@
 # ==================================================
 import os
 import time
-import xlrd
 import random
 import string
 import datetime
@@ -135,41 +134,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("User/Group/Permission 相关内容清除完毕！"))
         self.stdout.write(self.style.NOTICE('清除完毕！'))
 
-    def xls_reader(self):
-        data = xlrd.open_workbook('/Users/ryuchen/GitHub/Bistu-backend/utils/greenbirds.xlsx')
-
-        # 读取学生信息表
-        table = data.sheet_by_index(0)
-        # 第一步：将excel的数据格式化
-        students = []
-        classes = set()
-        majors = set()
-        academies = set()
-
-        rows_num = table.nrows  # 行
-
-        keys = table.row_values(1)
-        for r in range(2, rows_num - 1):
-            values = table.row_values(r)
-            classes.add(values[11])
-            majors.add((values[5], values[6]))
-
-            academies.add(values[15])
-            student = dict(zip(keys, values))
-            students.append(student)
-        return {
-            'academies': academies,
-            'majors': majors,
-            'classes': classes,
-            'students': students
-        }
-
     def fake_data(self):
         self.clear_all_data()
         fake = Faker('zh_CN')
-
-        data = self.xls_reader()
-
         self.stdout.write(self.style.NOTICE('开始生成测试使用的假数据~~~~~~'))
         permissions = Permission.objects.all()
 
@@ -237,12 +204,13 @@ class Command(BaseCommand):
         # 生成研究生学生账户
         student_list = []
         default_password = make_password('123456')
-        for _ in data['students']:
+        for _ in range(1000):
+            student_username = fake.name()
             student = User(
                 username='student-{0}'.format(_),
                 password=default_password,
-                first_name=_['姓名'][:1],
-                last_name=_['姓名'][1:],
+                first_name=student_username[:1],
+                last_name=student_username[1:],
                 email=fake.email(),
                 is_active=False
             )
@@ -257,7 +225,7 @@ class Command(BaseCommand):
         research_list = []
         major_list = []
         academy_list = []
-        for item in data['academies']:
+        for item in AcademiesList:
             academy = Academy.objects.create(
                 aca_nickname=''.join(random.sample(string.ascii_letters + string.digits, 8)),
                 aca_cname=item,
@@ -418,7 +386,7 @@ class Command(BaseCommand):
         # TODO: rebuild reducer the mock students method
         students_num = len(student_list)
         entrance_time = datetime.datetime.now().replace(month=9, day=1, hour=0, minute=0, second=0, microsecond=0)
-        entrance_years = [entrance_time.replace(year=(2018 - i)) for i in range(10)]
+        entrance_years = [entrance_time.replace(year=(2019 - i)) for i in range(10)]
         for entrance_year in entrance_years:
             _student_list = []
             student_num = int('{0}0101001'.format(entrance_year.year))
