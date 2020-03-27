@@ -31,12 +31,10 @@ TitleChoice = [(tag.name, tag.value) for tag in TitleType]
 
 
 class PoliticalType(Enum):
-    P1 = "中国共产党党员"
-    P2 = "中国共产主义青年团团员"
+    P1 = "党员"
+    P2 = "团员"
     P3 = "群众"
     P4 = "民主党派"
-    P5 = "无党派民族人士"
-    P6 = "中国共产党预备党员"
 
 
 PoliticalChoice = [(tag.name, tag.value) for tag in PoliticalType]
