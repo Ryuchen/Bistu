@@ -1,0 +1,33 @@
+{% extends "client/pages/base.html" %}
+{% load i18n static %}
+
+{% block stylesheet %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/passport.css' %}">
+{% endblock %}
+
+<!-- site javascript section -->
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
+<!-- site javascript section -->
+
+{% block x-template %}
+  {% include 'client/pages/passport/components/reset/index.html' %}
+{% endblock %}
+
+{% block app %}
+  <div id="passport-container">
+    <div class="passport-wrapper">
+      <div class="passport-header">
+        <img src="../static/client/img/logo-mini.png" alt="passport-header" />
+        <div class="passport-title">
+          <span>{{ site_title|default:_('Django site admin') }}</span>
+          <hr/>
+        </div>
+      </div>
+      <suit-reset></suit-reset>
+    </div>
+  </div>
+{% endblock %}
+

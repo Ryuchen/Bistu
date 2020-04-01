@@ -1,0 +1,116 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-header-utility">
+  <li v-show="show">
+    <div class="toolbox-item">
+      <a-button type="primary" @click="showUtility">
+        <a-icon :style="toolboxIconStyle" type="appstore"></a-icon>
+      </a-button>
+    </div>
+
+    {# Utility Box Drawer Section #}
+    <a-drawer title="{% trans '工具箱' %}" placement="top" @close="utilityClose" :visible="utilityVisible" height="auto">
+      <a-row :gutter="8" type="flex" justify="start">
+        <a-col :span="4">
+          <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;" @click="siteClear">
+            <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
+              <a-avatar shape="square" size="large" slot="avatar" src="{% static 'web/img/svg/clean.svg' %}"></a-avatar>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+        <a-col :span="4">
+          <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;" @click="pageRender">
+            <a-card-meta title="{% trans '导出页面' %}" description="{% trans '生成页面为 PDF' %}">
+              <a-avatar shape="square" size="large" slot="avatar" src="{% static 'web/img/svg/screen shot.svg' %}"></a-avatar>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </a-row>
+    </a-drawer>
+    {# Utility Box Drawer Section #}
+  </li>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-header-utility', {
+    delimiters: ['<%', '%>'],
+    props: {
+      show: {
+        default: false,
+        type: Boolean,
+        required: true
+      }
+    },
+    template: '#suit-header-utility',
+    data: function () {
+      return {
+        toolboxIconStyle: {
+          fontSize: '16px',
+          padding: '4px'
+        },
+        utilityVisible: false,
+      }
+    },
+    methods: {
+      /**
+       * Utility Box Method Section
+       */
+      showUtility () {
+        this.utilityVisible = true
+      },
+      utilityClose () {
+        this.utilityVisible = false
+      },
+      siteClear () {
+        this.$confirm({
+          title: '{% trans "Clear site data" %}',
+          content: '{% trans "Are you sure?" %}',
+          okText: '{% trans "Yes" %}',
+          okType: 'danger',
+          cancelText: '{% trans "No" %}',
+          onOk() {
+            window.localStorage.clear();
+            window.location.reload();
+          }
+        });
+      },
+      pageRender () {
+        const element = document.getElementById("content-wrapper").getElementsByClassName('ant-tabs-tabpane-active')[0];
+        html2canvas(element)
+          .then((canvas) => {
+            // 一页 PDF 显示 html 页面生成的 canvas 高度
+            const pageHeight = canvas.width / 592.28 * 841.89;
+            // 未生成 PDF 的 html 页面高度
+            let leftHeight = canvas.height;
+            // 页面偏移
+            let position = 0;
+            // A4 纸的尺寸 [595.28,841.89]，html 页面生成的 canvas 在 PDF 中图片的宽高
+            const imgWidth = 595.28;
+            const imgHeight = 592.28 / canvas.width * canvas.height;
+            const pageData = canvas.toDataURL('image/jpeg', 1.0);
+            const PDFRender = new jsPDF('', 'pt', 'a4');
+
+            // 有两个高度需要区分，一个是 html 页面的实际高度，和生成 PDF 的页面高度 (841.89)
+            // 当内容未超过 PDF 一页显示的范围，无需分页
+            if (leftHeight < pageHeight) {
+              PDFRender.addImage(pageData, 'JPEG', 20, 0, imgWidth, imgHeight );
+            } else {
+              while(leftHeight > 0) {
+                PDFRender.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight);
+                leftHeight -= pageHeight;
+                position -= 841.89;
+                // 避免添加空白页
+                if(leftHeight > 0) {
+                  PDFRender.addPage();
+                }
+              }
+            }
+            PDFRender.save('HomePage.pdf');
+          });
+      },
+      /**
+       * Utility Box Method Section
+       */
+    },
+  })
+</script>

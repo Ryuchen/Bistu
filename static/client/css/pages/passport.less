@@ -1,0 +1,67 @@
+body {
+  background-color: #EEEEEE;
+}
+
+#passport-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .passport-wrapper {
+    padding: 40px 20px;
+    border: 1px solid #dadada;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 9px 30px -6px rgba(0,0,0,.2), 0 18px 20px -10px rgba(0,0,0,.04), 0 18px 20px -10px rgba(0,0,0,.04), 0 10px 20px -10px rgba(0,0,0,.04);
+
+    .passport-header {
+      text-align: center;
+
+      img {
+        width: 80px;
+      }
+
+      .passport-title {
+        margin: 20px 0 10px 0;
+        font-size: 20px;
+        hr {
+          margin-bottom: 20px;
+        }
+      }
+    }
+
+    .login-form {
+      width: 320px;
+
+      .login-form-forgot {
+        float: right;
+      }
+
+      .login-form-button {
+        width: 100%;
+      }
+    }
+
+    .register-form {
+      width: 480px;
+      padding-right: 20px;
+
+      .register-form-button {
+        width: 100%;
+      }
+    }
+
+    .reset-form {
+      width: 320px;
+
+      .ant-form-item-label {
+        text-align: left;
+      }
+
+      .reset-form-button {
+        width: 100%;
+      }
+    }
+  }
+}

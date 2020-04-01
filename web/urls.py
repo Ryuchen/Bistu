@@ -14,10 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import include, path
 from django.views.generic import TemplateView
+from . import views
 
+# API's router
 urlpatterns = [
+    path('', lambda request: redirect('client/', permanent=True)),
     path("accounts/", include("apps.accounts.urls")),
     path("colleges/", include("apps.colleges.urls")),
     path("teachers/", include("apps.teachers.urls")),
@@ -26,9 +30,20 @@ urlpatterns = [
     path("reports/", include("apps.midcheckreports.urls")),
     path("thesis/", include("apps.thesis.urls")),
     path("statistic/", include("apps.statistic.urls")),
-    path("", admin.site.urls),
-    path("client/", TemplateView.as_view(template_name="client/index.html")),
     path("history_data/", include("apps.history_data.urls")),
+]
+
+# server's router
+urlpatterns += [
+    path("server/", admin.site.urls),
+]
+
+# client's router
+urlpatterns += [
+    path("client/", views.index, name="index"),
+    path("client/login", TemplateView.as_view(template_name="client/pages/passport/login.html")),
+    path("client/register", TemplateView.as_view(template_name="client/pages/passport/register.html")),
+    path("client/reset", TemplateView.as_view(template_name="client/pages/passport/reset.html")),
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'

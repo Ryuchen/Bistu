@@ -1,0 +1,92 @@
+{% load i18n static %}
+
+{% include 'client/layout/components/header/widgets/logo.html' %}
+{% include 'client/layout/components/header/widgets/search.html' %}
+{% include 'client/layout/components/header/widgets/notice.html' %}
+{% include 'client/layout/components/header/widgets/utility.html' %}
+{% include 'client/layout/components/header/widgets/setting.html' %}
+
+<link href="{% static 'client/css/layouts/components/widgets/header/toolbox.css' %}" rel="stylesheet">
+
+<script type="text/x-template" id="suit-header">
+  <a-layout-header :style="{ padding: '0' }">
+    <suit-header-logo></suit-header-logo>
+    <div class="demo-header-toolbox-wrapper">
+      <ul class="toolbox-items-wrapper">
+        <li>
+          <div class="toolbox-item">
+            <a-button type="primary" @click="$store.commit('app/changeCollapsed')">
+              <a-icon :style="toolboxIconStyle" :type="collapsed ? 'menu-unfold' : 'menu-fold'"></a-icon>
+            </a-button>
+          </div>
+        </li>
+        <li v-show="toolbox.lock.enable">
+          <div class="toolbox-item">
+            <a-button type="primary">
+              <a-icon :style="toolboxIconStyle" type="lock"></a-icon>
+            </a-button>
+          </div>
+        </li>
+        <li v-show="toolbox.github.enable">
+          <div class="toolbox-item">
+            <a-button type="primary" @click="openGithub">
+              <a-icon :style="toolboxIconStyle" type="github"></a-icon>
+            </a-button>
+          </div>
+        </li>
+      </ul>
+      <div class="toolbox-search">
+        <suit-header-search :show="toolbox.search.enable"></suit-header-search>
+      </div>
+      <ul class="toolbox-items-wrapper">
+        <suit-header-notice :show="toolbox.notice.enable"></suit-header-notice>
+        <suit-header-utility :show="toolbox.utility.enable"></suit-header-utility>
+        <suit-header-setting></suit-header-setting>
+      </ul>
+    </div>
+  </a-layout-header>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-header', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-header',
+    data: function () {
+      return {
+        toolbox: {
+          "lock": {
+            "enable": true,
+            "verify": "email"
+          },
+          "github": {
+            "enable": true,
+            "link": "https://github.com/ryuchen"
+          },
+          "search": {
+            "enable": true,
+          },
+          "notice": {
+            "enable": true,
+          },
+          "utility": {
+            "enable": true,
+          }
+        },
+        toolboxIconStyle: {
+          fontSize: '16px',
+          padding: '4px'
+        },
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed'
+      })
+    },
+    methods: {
+      openGithub() {
+        window.open(`${this.toolbox.github.link}`);
+      }
+    }
+  })
+</script>

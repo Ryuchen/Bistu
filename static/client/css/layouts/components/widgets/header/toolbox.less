@@ -1,0 +1,54 @@
+@import "../../../../themes/default";
+
+.demo-header-toolbox-wrapper {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-flex: 1;
+    flex: 1;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+
+    ul.toolbox-items-wrapper {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-align: center;
+        align-items: center;
+        margin: 0 16px;
+        padding: 0;
+        list-style-type: disc;
+        height: 64px;
+
+        li {
+            display: inline-block;
+            vertical-align: middle;
+
+            div.toolbox-item {
+                display: block;
+                min-width: 50px;
+                padding: 8px 2px;
+                line-height: 100%;
+                text-align: center;
+                border-radius: 2px;
+                outline: none;
+                cursor: pointer;
+                -webkit-transition: background-color 300ms;
+                transition: background-color 300ms;
+                color: #fff;
+                button[type='button'] {
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+
+    .toolbox-search {
+        position: relative;
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-flex: 1;
+        flex: 1;
+        -webkit-box-align: center;
+        align-items: center;
+        margin: 0 24px;
+    }
+}

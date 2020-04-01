@@ -1,0 +1,90 @@
+{% load i18n static %}
+
+{# !!! Don't import in any other pages again !!! #}
+{% include 'client/layout/components/header/index.html' %}
+{% include 'client/layout/components/sidebar/index.html' %}
+{% include 'client/layout/components/footer/index.html' %}
+{% include 'client/components/iframe/index.html' %}
+
+<script type="text/x-template" id="suit-layout">
+  <a-layout>
+    <suit-header></suit-header>
+    <a-layout style="height: calc(100vh - 64px)">
+      <suit-sidebar></suit-sidebar>
+      <a-layout>
+        <a-layout-content>
+          <div class="card-container" id="content-wrapper">
+            <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey"
+                @edit="onEdit"
+                @prevClick="callback"
+                @nextClick="callback"
+                @tabClick="onSelect"
+            >
+              <a-tab-pane key="0" closable>
+                <span slot="tab"><a-icon type="home"></a-icon>{% trans 'Dashboard' %}</span>
+                <suit-iframe :href="'https://www.baidu.com'" :height="height"></suit-iframe>
+              </a-tab-pane>
+              <a-tab-pane v-for="(pane, index) in activePanes" :key="pane.key">
+                <span slot="tab"><a-icon :type="pane.icon"></a-icon><% pane.name %></span>
+                <suit-iframe :href="pane.content" :height="height"></suit-iframe>
+              </a-tab-pane>
+            </a-tabs>
+          </div>
+        </a-layout-content>
+        <suit-footer></suit-footer>
+      </a-layout>
+    </a-layout>
+  </a-layout>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-layout', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-layout',
+    data: function () {
+      return {
+        height: `${window.innerHeight - 240}px`
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activeKey: 'activeKey',
+        activePanes: 'activePanes'
+      })
+    },
+    created: function () {
+      const _this = this;
+      Bus.$on('menuSelected', function(payload){
+        _this.add(payload);
+      });
+    },
+    methods: {
+      callback (key) {
+        console.log(key)
+      },
+      onEdit (key, action) {
+        this[action](key)
+      },
+      onSelect (key) {
+        this.$store.commit('app/changeActiveKey', `${key}`);
+      },
+      add (payload) {
+        this.$store.commit('app/changeActiveKey', `${payload.key}`);
+        if (this.activePanes.indexOf(payload) === -1) {
+          this.$store.commit('app/addActivePanes', payload);
+        }
+      },
+      remove (key) {
+        let nextActiveKey = '0';
+        let deleteIndex;
+        this.activePanes.map((item, index) => {
+          if (item.key === key) deleteIndex = index;
+        });
+        this.$store.commit('app/delActivePanes', deleteIndex);
+        if (this.activePanes.length > 0) nextActiveKey = this.activePanes[this.activePanes.length - 1].key;
+        this.$store.commit('app/changeActiveKey', nextActiveKey);
+      },
+    },
+  })
+</script>

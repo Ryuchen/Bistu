@@ -13,6 +13,7 @@ import datetime
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -27,7 +28,9 @@ from contrib.colleges.models import Academy
 log = logging.getLogger('default')
 
 
-@api_view(["POST"])
+
+
+@api_view(["POST", "GET"])
 @authentication_classes(())
 @permission_classes(())
 @excepts
@@ -37,30 +40,33 @@ def login_view(request):
     :param request:
     :return:
     """
-    res = {
-        "code": "00000000",
-        "data": {}
-    }
-
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    remember = request.POST.get('remember')
-
-    jwt_payload_handler = token_settings.JWT_PAYLOAD_HANDLER
-    jwt_encode_handler = token_settings.JWT_ENCODE_HANDLER
-
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        if not remember:
-            token_settings.JWT_EXPIRATION_DELTA = datetime.timedelta(hours=3)
-
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-        res['data']['token'] = token
-        return JsonResponse(res)
+    if request.method is "POST":
+        res = {
+            "code": "00000000",
+            "data": {}
+        }
+    
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember = request.POST.get('remember')
+    
+        jwt_payload_handler = token_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = token_settings.JWT_ENCODE_HANDLER
+    
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            if not remember:
+                token_settings.JWT_EXPIRATION_DELTA = datetime.timedelta(hours=3)
+    
+            payload = jwt_payload_handler(user)
+            token = jwt_encode_handler(payload)
+            res['data']['token'] = token
+            return JsonResponse(res)
+        else:
+            raise AuthenticateError("Username or Password is incorrect!")
     else:
-        raise AuthenticateError("Username or Password is incorrect!")
+        return render(request, "client/pages/passport/login.html")
 
 
 @api_view(["GET"])

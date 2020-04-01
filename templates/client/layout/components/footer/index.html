@@ -1,0 +1,23 @@
+<script type="text/x-template" id="suit-footer">
+  <a-layout-footer style="text-align: center">
+    <div class="ant-breadcrumb">
+      <a class="ant-breadcrumb-link" :href="link">
+        {{ title }} | {{ site_title|default:_('Django site admin') }} © <% year %> Created by <% author %>
+      </a>
+    </div>
+  </a-layout-footer>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-footer', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-footer',
+    data () {
+      return {
+        "author": "Ryuchen",
+        "year": "2019",
+        "link": "https://github.com/ryuchen"
+      }
+    }
+  })
+</script>

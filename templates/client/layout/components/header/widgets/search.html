@@ -1,0 +1,38 @@
+{% load i18n %}
+
+<script type="text/x-template" id="suit-header-search">
+  <div v-show="show" style="width: 100%">
+    <a-input placeholder="{% trans 'Global Searching ...' %}" v-model="globalSearchPattern">
+      <a-icon slot="prefix" type="search" ></a-icon>
+      <a-icon v-if="globalSearchPattern" slot="suffix" type="close-circle" @click="emitEmptyGlobalSearch"></a-icon>
+    </a-input>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-header-search', {
+    delimiters: ['<%', '%>'],
+    props: {
+      show: {
+        default: false,
+        type: Boolean,
+        required: true
+      }
+    },
+    template: '#suit-header-search',
+    data: function () {
+      return {
+        toolboxIconStyle: {
+          fontSize: '16px',
+          padding: '4px'
+        },
+        globalSearchPattern: '',
+      }
+    },
+    methods: {
+      emitEmptyGlobalSearch() {
+          this.globalSearchPattern = '';
+      }
+    }
+  })
+</script>
