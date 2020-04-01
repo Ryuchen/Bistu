@@ -1,0 +1,52 @@
+{% load i18n static %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+  <head>
+    <meta charset="utf-8">
+    <!-- site header section -->
+    <title>{% block title %}{% endblock %}</title>
+    <!-- site header section -->
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    {% block blockbots %}
+      <meta name="robots" content="NONE,NOARCHIVE">
+    {% endblock %}
+
+    <!-- site stylesheet section -->
+    {% block stylesheet %}
+      <link rel="stylesheet" type="text/css" href="{% static 'client/css/themes/default.css' %}">
+    {% endblock %}
+    <!-- site stylesheet section -->
+
+    <!-- site javascript section -->
+    {% block javascript %}
+      <script src="{% static 'client/vendor/es6promise/es6-promise.auto.js' %}"></script>
+      <script src="{% static 'client/vendor/axios/axios.js' %}"></script>
+      <script src="{% static 'client/vendor/moment/moment.min.js' %}"></script>
+      <script src="{% static 'client/vendor/vue/vue.js' %}"></script>
+      <script src="{% static 'client/vendor/vuex/vuex.min.js' %}"></script>
+      <script src="{% static 'client/vendor/jscookie/js.cookie.js' %}"></script>
+      <script src="{% static 'client/vendor/ant-design-vue/dist/antd.min.js' %}"></script>
+    {% endblock %}
+    <!-- site javascript section -->
+  </head>
+  <body>
+    <!-- template load section -->
+    {% block x-template %}
+
+    {% endblock %}
+    <!-- template load section -->
+    <div id="app">
+      <!-- site application section -->
+      {% block app %}
+
+      {% endblock %}
+      <!-- site application section -->
+    </div>
+  </body>
+  <!-- Customize django vueSuit mixin function for global -->
+  <script src="{% static 'client/js/mixin.js' %}"></script>
+  <script src="{% static 'client/js/index.js' %}"></script>
+</html>

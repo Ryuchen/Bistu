@@ -1,0 +1,73 @@
+<script type="text/x-template" id="suit-reset">
+  <div id="components-form-demo-vuex">
+    <a-form :form="form" class="reset-form" @submit="handleSubmit">
+      <a-form-item label="邮箱">
+        <a-input
+          v-decorator="[
+            'username',
+            {
+              rules: [{ required: true, message: 'Username is required!' }],
+            },
+          ]"
+        />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" class="reset-form-button" html-type="submit">
+          Submit
+        </a-button>
+        Or Already remember ?
+        <a href="login">
+          login now!
+        </a>
+      </a-form-item>
+    </a-form>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-reset', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-reset',
+    computed: {
+      username() {
+        return this.$store.state.username;
+      },
+    },
+    watch: {
+      username(val) {
+        console.log('this.$store.state.username: ', val);
+        this.form.setFieldsValue({ username: val });
+      },
+    },
+    created() {
+      this.form = this.$form.createForm(this, {
+        onFieldsChange: (_, changedFields) => {
+          this.$emit('change', changedFields);
+        },
+        mapPropsToFields: () => {
+          return {
+            username: this.$form.createFormField({
+              value: this.username,
+            }),
+          };
+        },
+        onValuesChange: (_, values) => {
+          console.log(values);
+          // Synchronize to vuex store in real time
+          // this.$store.commit('update', values)
+        },
+      });
+    },
+    methods: {
+      handleSubmit(e) {
+        e.preventDefault();
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log('Received values of form: ', values);
+            this.$store.commit('update', values);
+          }
+        });
+      },
+    },
+  });
+</script>

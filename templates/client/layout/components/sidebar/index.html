@@ -1,0 +1,86 @@
+{% load i18n static %}
+
+{% include "client/components/submenu/index.html" %}
+
+<link rel="stylesheet" type="text/css" href="{% static "client/css/layouts/components/sidebar.css" %}">
+
+<script type="text/x-template" id="suit-sidebar">
+  <a-layout-sider :trigger="null" collapsible v-model="collapsed" theme="light">
+    <div style="text-align: center; margin: 20px auto;">
+      <div class="demo-user-avatar">
+        <a-avatar :size="collapsed ? 32 : 64" icon="user"></a-avatar>
+      </div>
+      <div class="demo-user-info">
+        <div><strong>{{ user.get_full_name }}</strong></div>
+        <div v-show="!collapsed">{{ user.email }}</div>
+        <div v-show="!collapsed">{{ user.last_login }}</div>
+      </div>
+    </div>
+    <a-menu
+      mode="inline"
+      :style="{ height: 'calc(100%- 120px)', borderRight: 0 }"
+      :inlineCollapsed="collapsed"
+      :selectedKeys="activeKeys"
+      :openKeys="openKeys"
+      @click='select'
+      @openChange="onOpenChange"
+    >
+      <template v-for="item in menus">
+        <a-menu-item v-if="!item.models" :key="item.key" :url="item.admin_url" :title="item.name" :name="item.name" :icon="item.icon">
+          <a-icon :type="item.icon"></a-icon>
+          <span><% item.app_label %></span>
+        </a-menu-item>
+        <sub-menu v-else :menus="item" :key="item.key"></sub-menu>
+      </template>
+    </a-menu>
+  </a-layout-sider>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-sidebar', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-sidebar',
+    data: function () {
+      return {
+        menus: JSON.parse(`{{ menus }}`),
+        openKeys: [],
+        rootSubmenuKeys: [],
+      }
+    },
+    computed: {
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activeKeys: 'activeKeys'
+      })
+    },
+    created: function () {
+      this.setSubmenuKeys();
+    },
+    methods: {
+      setSubmenuKeys () {
+        this.menus.map(menu => {
+          if (menu.key.indexOf("sub") !== -1) {
+            this.rootSubmenuKeys.push(menu.key);
+          }
+        });
+      },
+      onOpenChange (openKeys) {
+        const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1);
+        if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+          this.openKeys = openKeys
+        } else {
+          this.openKeys = latestOpenKey ? [latestOpenKey] : []
+        }
+      },
+      select ({ item, key }) {
+        const payload = {
+          name: item.$attrs.name,
+          content: item.$attrs.url,
+          icon: item.$attrs.icon,
+          key: key,
+        };
+        Bus.$emit('menuSelected', payload);
+      }
+    },
+  })
+</script>

@@ -1,0 +1,46 @@
+<script type="text/x-template" id="suit-iframe">
+  <div :style="contentStyle">
+    <iframe :src="href" :style="iframeStyle" frameborder="0"></iframe>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-iframe', {
+    delimiters: ['<%', '%>'],
+    props: {
+      href: {
+        type: String,
+        required: true
+      },
+      height: {
+        type: String,
+        required: false
+      },
+      width: {
+        default: '100%',
+        type: String,
+        required: false
+      },
+      overflow: {
+        default: 'auto',
+        type: String,
+        required: false
+      }
+    },
+    template: '#suit-iframe',
+    data() {
+      return {
+        contentStyle: {
+          margin: '0',
+          padding: '0',
+          borderRadius: '5px',
+        },
+        iframeStyle: {
+          height: this.height,
+          width: this.width,
+          overflow: this.overflow
+        }
+      }
+    }
+  })
+</script>
