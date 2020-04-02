@@ -1,11 +1,11 @@
-{% load i18n %}
+{% load i18n static %}
 
 <script type="text/x-template" id="suit-header-logo">
   <div :style="logoWrapperStyle">
-    <a href="{% url 'admin:index' %}" style="display: inherit;">
+    <a href="{% url 'index' %}" style="display: inherit;">
       <img v-show="collapsed" :style="logoImgStyle" :src="src.mini.src" :alt="alt" />
     </a>
-    <a href="{% url 'admin:index' %}" style="display: inherit;">
+    <a href="{% url 'index' %}" style="display: inherit;">
       <img v-show="!collapsed" :style="logoImgStyle" :src="src.full.src" :alt="alt" />
     </a>
   </div>
@@ -18,10 +18,10 @@
     data: function () {
       const logo = {
         "full": {
-          "src": "../static/client/img/logo-full.png"
+          "src": "{% static 'client/img/logo-full.png' %}"
         },
         "mini": {
-          "src": "../static/client/img/logo-mini.png"
+          "src": "{% static 'client/img/logo-mini.png' %}"
         },
         "alt": "logo"
       };

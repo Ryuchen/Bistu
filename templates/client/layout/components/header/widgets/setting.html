@@ -21,11 +21,9 @@
       </a-dropdown>
     </div>
 
-    {# Change Passwod Dialog Section #}
     <a-modal title="{% trans 'Change password' %}" v-model="pwdVisible" :footer="null" width="648px" @cancel="passwordClose">
       <iframe-wrapper :href="pwdLink" height="420px" width="600px" overflow="hidden"></iframe-wrapper>
     </a-modal>
-    {# Change Passwod Dialog Section #}
   </li>
 </script>
 
@@ -58,7 +56,7 @@
           okType: 'danger',
           cancelText: '{% trans "No" %}',
           onOk() {
-            window.location.href = '{% url "admin:logout" %}';
+            window.location.href = '{% url "accounts:logout" %}';
           }
         });
       },

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -172,5 +173,7 @@ LOGGING = {
     }
 }
 
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+CSRF_COOKIE_NAME = "csrftoken"
+
+SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_HTTPONLY = True

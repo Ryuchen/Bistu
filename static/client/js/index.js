@@ -68,9 +68,18 @@
     store,
     mixins: window.mixins.mixins,
     created: function () {
+      const _this = this;
       if (window.innerWidth <= 992) {
         this.$store.commit('app/changeCollapsed');
       }
+      Bus.$on('notification', function(type, title, message){
+        console.log(123);
+        _this.$notification[type]({
+          message: title,
+          description:
+            message,
+        });
+      })
     }
   });
 })();
