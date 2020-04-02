@@ -16,13 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import include, path
-from django.views.generic import TemplateView
 from . import views
 
 # API's router
 urlpatterns = [
     path('', lambda request: redirect('client/', permanent=True)),
-    path("accounts/", include("apps.accounts.urls")),
+    path("accounts/", include(("apps.accounts.urls", "accounts"), namespace="accounts")),
     path("colleges/", include("apps.colleges.urls")),
     path("teachers/", include("apps.teachers.urls")),
     path("students/", include("apps.students.urls")),
@@ -40,10 +39,7 @@ urlpatterns += [
 
 # client's router
 urlpatterns += [
-    path("client/", views.index, name="index"),
-    path("client/login", TemplateView.as_view(template_name="client/pages/passport/login.html")),
-    path("client/register", TemplateView.as_view(template_name="client/pages/passport/register.html")),
-    path("client/reset", TemplateView.as_view(template_name="client/pages/passport/reset.html")),
+    path("client/", views.index, name="index")
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'

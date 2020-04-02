@@ -8,7 +8,6 @@
 # @Desc :
 # ==================================================
 import logging
-import datetime
 
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -16,9 +15,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-
-from rest_framework_jwt.settings import api_settings as token_settings
 
 from core.exceptions.errors import *
 from core.decorators.excepts import excepts
@@ -26,8 +24,6 @@ from core.decorators.excepts import excepts
 from contrib.colleges.models import Academy
 
 log = logging.getLogger('default')
-
-
 
 
 @api_view(["POST", "GET"])
@@ -40,7 +36,7 @@ def login_view(request):
     :param request:
     :return:
     """
-    if request.method is "POST":
+    if request.method == "POST":
         res = {
             "code": "00000000",
             "data": {}
@@ -50,18 +46,11 @@ def login_view(request):
         password = request.POST.get('password')
         remember = request.POST.get('remember')
     
-        jwt_payload_handler = token_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = token_settings.JWT_ENCODE_HANDLER
-    
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if not remember:
-                token_settings.JWT_EXPIRATION_DELTA = datetime.timedelta(hours=3)
-    
-            payload = jwt_payload_handler(user)
-            token = jwt_encode_handler(payload)
-            res['data']['token'] = token
+            if remember:
+                request.session.set_expiry(3600 * 24 * 7)
             return JsonResponse(res)
         else:
             raise AuthenticateError("Username or Password is incorrect!")
@@ -69,7 +58,30 @@ def login_view(request):
         return render(request, "client/pages/passport/login.html")
 
 
+@api_view(["POST", "GET"])
+@authentication_classes(())
+@permission_classes(())
+@excepts
+def reset_view(request):
+    """
+    用于重置接口
+    :param request:
+    :return:
+    """
+    if request.method is "POST":
+        res = {
+            "code": "00000000",
+            "data": {}
+        }
+        logout(request)
+        return JsonResponse(res)
+    else:
+        return render(request, "client/pages/passport/reset.html")
+
+
 @api_view(["GET"])
+@authentication_classes(())
+@permission_classes(())
 @excepts
 def logout_view(request):
     """
@@ -77,18 +89,33 @@ def logout_view(request):
     :param request:
     :return:
     """
-    res = {
-        "code": "00000000",
-        "data": {}
-    }
     logout(request)
-    return JsonResponse(res)
+    request.session.clear()
+    return redirect("/")
+
+
+@api_view(["POST", "GET"])
+@authentication_classes(())
+@permission_classes(())
+@excepts
+def register_view(request):
+    """
+    用户注册接口
+    """
+    if request.method is "POST":
+        res = {
+            "code": "00000000",
+            "data": {}
+        }
+    else:
+        return render(request, "client/pages/passport/register.html")
 
 
 @api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 @excepts
-def current_view(request):
+def profile_view(request):
     """
     用于查询当前账户详情接口
     :param request:

@@ -2,7 +2,7 @@
 
 {% include "client/components/submenu/index.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% static "client/css/layouts/components/sidebar.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static 'client/css/layouts/components/sidebar.css' %}">
 
 <script type="text/x-template" id="suit-sidebar">
   <a-layout-sider :trigger="null" collapsible v-model="collapsed" theme="light">
@@ -54,9 +54,28 @@
       })
     },
     created: function () {
+      this.getUserProfile();
       this.setSubmenuKeys();
     },
     methods: {
+      getUserProfile () {
+        const csrftoken = Cookies.get('csrftoken'); // Using JS Cookies library
+        axios({
+          url: "{% url 'accounts:profile' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            console.log(data);
+          }
+        }).catch(error => {
+          const {meta, data} = error.response.data;
+          Bus.$emit('notification', 'error', meta.code, meta.details);
+        });
+      },
       setSubmenuKeys () {
         this.menus.map(menu => {
           if (menu.key.indexOf("sub") !== -1) {

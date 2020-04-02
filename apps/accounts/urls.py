@@ -13,6 +13,8 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r"^login/$", views.login_view, name="login"),
+    url(r"^reset/$", views.reset_view, name="reset"),
     url(r"^logout/$", views.logout_view, name="logout"),
-    url(r"^current/$", views.current_view, name="current-user"),
+    url(r"^profile/$", views.profile_view, name="profile"),
+    url(r"^register/$", views.register_view, name="register"),
 ]
