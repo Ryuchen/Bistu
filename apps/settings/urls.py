@@ -11,7 +11,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r"^application/$", views.application, name="settings-application"),
-	url(r"^translation/$", views.translation, name="settings-translation"),
-	url(r"^definitions/$", views.definitions, name="common-settings"),
+	url(r"^accesslimit/$", views.accesslimit, name="accesslimit"),
+	url(r"^application/$", views.application, name="application"),
+	url(r"^translation/$", views.translation, name="translation"),
+	url(r"^definitions/$", views.definitions, name="definitions"),
 ]

@@ -9,6 +9,7 @@
       app: {
         namespaced: true,
         state: {
+          application: {},
           collapsed: false,
           activeKey: '0',
           activePanes: [],
@@ -73,13 +74,12 @@
         this.$store.commit('app/changeCollapsed');
       }
       Bus.$on('notification', function(type, title, message){
-        console.log(123);
         _this.$notification[type]({
           message: title,
           description:
             message,
         });
-      })
+      });
     }
   });
 })();

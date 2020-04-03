@@ -31,7 +31,7 @@
             </a-tabs>
           </div>
         </a-layout-content>
-        <suit-footer></suit-footer>
+        <suit-footer :app="app" :auth="auth"></suit-footer>
       </a-layout>
     </a-layout>
   </a-layout>
@@ -43,7 +43,10 @@
     template: '#suit-layout',
     data: function () {
       return {
-        height: `${window.innerHeight - 240}px`
+        app: {},
+        auth: {},
+        height: `${window.innerHeight - 240}px`,
+        csrftoken: Cookies.get('csrftoken')
       }
     },
     computed: {
@@ -58,8 +61,27 @@
       Bus.$on('menuSelected', function(payload){
         _this.add(payload);
       });
+      this.getApplication();
     },
     methods: {
+      getApplication () {
+        axios({
+          url: "{% url 'settings:application' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': this.csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            const {app, auth} = data;
+            this.app = app;
+            this.auth = auth;
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
       callback (key) {
         console.log(key)
       },
