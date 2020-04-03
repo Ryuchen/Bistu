@@ -13,6 +13,7 @@ import json
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
+from django.urls import reverse
 from django.conf import settings
 
 from core.decorators.excepts import excepts
@@ -23,31 +24,42 @@ from core.definition.enums import *
 @authentication_classes(())
 @permission_classes(())
 @excepts
+def accesslimit(request):
+    res = {
+        "code": "00000000",
+        "data": {
+            'menus': [
+                {
+                    "name": "工作台",
+                    "role": "admin",
+                    "icon": "appstore",
+                    "link": reverse('dashboard'),
+                }
+            ]
+        }
+    }
+    return Response(res)
+
+
+@api_view(["GET"])
+@authentication_classes(())
+@permission_classes(())
+@excepts
 def application(request):
     res = {
         "code": "00000000",
-        "data": {}
+        "data": {
+            'app': {
+                "name": "Postgraduate Manager System",
+                "description": "Using for College CMS"
+            },
+            'auth': {
+                "name": "Ryuchen",
+                "year": "2018",
+                "href": "https://github.com/Ryuchen"
+            }
+        }
     }
-    res['data']['app'] = {"name": "Bistu Postgraduate Manager System", "description": "Using for Bistu College CMS"}
-    # res['data']['menu'] = [
-    #     {
-    #         'text': '快捷中心',
-    #         'group': True,
-    #         'children': [
-    #             {
-    #                 'text': '工作总览',
-    #                 'link': '/dashboard',
-    #                 'icon': {'type': 'icon', 'value': 'appstore'},
-    #             },
-    #             {
-    #                 'text': '快捷入口',
-    #                 'link': '/dashboard',
-    #                 'icon': {'type': 'icon', 'value': 'rocket'},
-    #                 'shortcutRoot': True,
-    #             },
-    #         ],
-    #     },
-    # ]
     return Response(res)
 
 

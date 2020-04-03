@@ -7,13 +7,13 @@
 <script type="text/x-template" id="suit-sidebar">
   <a-layout-sider :trigger="null" collapsible v-model="collapsed" theme="light">
     <div style="text-align: center; margin: 20px auto;">
-      <div class="demo-user-avatar">
-        <a-avatar :size="collapsed ? 32 : 64" icon="user"></a-avatar>
+      <div class="user-avatar">
+        <a-avatar :size="collapsed ? 32 : 64" :src="profile.avatar" icon="user"></a-avatar>
       </div>
-      <div class="demo-user-info">
-        <div><strong>{{ user.get_full_name }}</strong></div>
-        <div v-show="!collapsed">{{ user.email }}</div>
-        <div v-show="!collapsed">{{ user.last_login }}</div>
+      <div class="user-info">
+        <div><strong><% profile.name %></strong></div>
+        <div v-show="!collapsed"><% profile.email %></div>
+        <div v-show="!collapsed"><% profile.group %></div>
       </div>
     </div>
     <a-menu
@@ -26,9 +26,9 @@
       @openChange="onOpenChange"
     >
       <template v-for="item in menus">
-        <a-menu-item v-if="!item.models" :key="item.key" :url="item.admin_url" :title="item.name" :name="item.name" :icon="item.icon">
+        <a-menu-item v-if="!item.models" :key="item.key" :url="item.link" :title="item.name" :name="item.name" :icon="item.icon">
           <a-icon :type="item.icon"></a-icon>
-          <span><% item.app_label %></span>
+          <span><% item.name %></span>
         </a-menu-item>
         <sub-menu v-else :menus="item" :key="item.key"></sub-menu>
       </template>
@@ -42,7 +42,9 @@
     template: '#suit-sidebar',
     data: function () {
       return {
-        menus: JSON.parse(`{{ menus }}`),
+        name: "chenhao",
+        menus: [{}],
+        profile: {},
         openKeys: [],
         rootSubmenuKeys: [],
       }
@@ -56,6 +58,7 @@
     created: function () {
       this.getUserProfile();
       this.setSubmenuKeys();
+      this.getAccesslimit();
     },
     methods: {
       getUserProfile () {
@@ -69,11 +72,29 @@
         }).then(response => {
           const {code, data} = response.data;
           if (code === "00000000") {
-            console.log(data);
+            const {profile, authority, permission} = data;
+            this.profile = profile;
+            console.log(permission);
           }
         }).catch(error => {
           const {meta, data} = error.response.data;
           Bus.$emit('notification', 'error', meta.code, meta.details);
+        });
+      },
+      getAccesslimit () {
+        axios({
+          url: "{% url 'settings:accesslimit' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': this.csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            this.menus = data.menus;
+          }
+        }).catch(error => {
+          console.log(error);
         });
       },
       setSubmenuKeys () {

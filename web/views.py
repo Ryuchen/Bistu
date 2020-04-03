@@ -23,3 +23,13 @@ def index(request):
         return render(request, "client/index.html")
     else:
         return redirect("/accounts/login")
+
+
+@excepts
+def dashboard(request):
+    """
+    dashboard
+    :param request:
+    :return:
+    """
+    return render(request, "client/pages/dashboard/index.html")
