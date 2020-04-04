@@ -19,6 +19,7 @@ INSTALLED_APPS += [
     'contrib.accounts.apps.AccountConfig',
     'contrib.colleges.apps.CollegeConfig',
     'contrib.education.apps.CultivateConfig',
+    'contrib.notices.apps.NoticesConfig',
     'core',
     'django_filters',
     'import_export',
