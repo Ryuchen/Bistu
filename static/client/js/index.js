@@ -13,6 +13,7 @@
           collapsed: false,
           activeKey: '0',
           activePanes: [],
+          permissions: [],
         },
         getters: {
           collapsed: function (state) {
@@ -34,6 +35,9 @@
             const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
             if (value) state.activePanes = value;
             return state.activePanes;
+          },
+          hasPermission: (state) => (permission) => {
+            return !(state.permissions.indexOf(permission));
           }
         },
         mutations: {
@@ -51,9 +55,8 @@
             }
             window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
           },
-          delActivePanes: function (state, payload) {
-            state.activePanes.splice(payload, 1);
-            window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
+          setPermissions: function (state, permissions) {
+            state.permissions = permissions;
           }
         }
       }
@@ -63,7 +66,7 @@
   /*
    * 全局 vue 实例
    */
-  const app = new Vue({
+  new Vue({
     delimiters: ['<%', '%>'],
     el: '#app',
     store,

@@ -26,7 +26,7 @@
       @openChange="onOpenChange"
     >
       <template v-for="item in menus">
-        <a-menu-item v-if="!item.models" :key="item.key" :url="item.link" :title="item.name" :name="item.name" :icon="item.icon">
+        <a-menu-item v-if="!item.subs" :key="item.key" :url="item.link" :title="item.name" :name="item.name" :icon="item.icon">
           <a-icon :type="item.icon"></a-icon>
           <span><% item.name %></span>
         </a-menu-item>
@@ -42,7 +42,6 @@
     template: '#suit-sidebar',
     data: function () {
       return {
-        name: "chenhao",
         menus: [{}],
         profile: {},
         openKeys: [],
@@ -52,12 +51,12 @@
     computed: {
       ...Vuex.mapGetters('app', {
         collapsed: 'collapsed',
-        activeKeys: 'activeKeys'
+        activeKeys: 'activeKeys',
+        hasPermission: 'hasPermission',
       })
     },
     created: function () {
       this.getUserProfile();
-      this.setSubmenuKeys();
       this.getAccesslimit();
     },
     methods: {
@@ -74,7 +73,7 @@
           if (code === "00000000") {
             const {profile, authority, permission} = data;
             this.profile = profile;
-            console.log(permission);
+            this.$store.commit('app/setPermissions', permission);
           }
         }).catch(error => {
           const {meta, data} = error.response.data;
@@ -92,6 +91,7 @@
           const {code, data} = response.data;
           if (code === "00000000") {
             this.menus = data.menus;
+            this.setSubmenuKeys();
           }
         }).catch(error => {
           console.log(error);
@@ -99,7 +99,7 @@
       },
       setSubmenuKeys () {
         this.menus.map(menu => {
-          if (menu.key.indexOf("sub") !== -1) {
+          if (menu.hasOwnProperty("subs")) {
             this.rootSubmenuKeys.push(menu.key);
           }
         });

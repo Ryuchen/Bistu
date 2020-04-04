@@ -4,8 +4,8 @@
       <a-icon :type="menus.icon"></a-icon>
       <span><% menus.name %></span>
     </span>
-    <template v-for="model in menus.models">
-      <a-menu-item v-if="!model.models" :key="model.key" :title="model.name" :url="model.admin_url" :name="model.name" :icon="model.icon">
+    <template v-for="model in menus.subs">
+      <a-menu-item v-if="!model.subs" :key="model.key" :title="model.name" :url="model.link" :name="model.name" :icon="model.icon">
         <a-icon :type="model.icon" />
         <span><% model.name %></span>
       </a-menu-item>
