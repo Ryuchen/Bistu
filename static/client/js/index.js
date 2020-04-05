@@ -59,8 +59,11 @@
             state.permissions = permissions;
           }
         }
+      },
+      auth: {
       }
     }
+
   });
 
   /*
