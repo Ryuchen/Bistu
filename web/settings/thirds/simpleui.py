@@ -10,10 +10,10 @@
 # SimpleUI settings
 # https://github.com/newpanjing/simpleui/blob/master/QUICK.md
 SIMPLEUI_STATIC_OFFLINE = True
-SIMPLEUI_FAVICON_ICON = "/static/bistu/img/logo.png"
-SIMPLEUI_LOGIN_LOGO = "/static/bistu/img/caiselogo.png"
-SIMPLEUI_INDEX_LOGO = "/static/bistu/img/logo.png"
-SIMPLEUI_LOGO = "/static/bistu/img/logo.png"
+SIMPLEUI_FAVICON_ICON = "/static/client/img/logo.png"
+SIMPLEUI_LOGIN_LOGO = "/static/client/img/caiselogo.png"
+SIMPLEUI_INDEX_LOGO = "/static/client/img/logo.png"
+SIMPLEUI_LOGO = "/static/client/img/logo.png"
 SIMPLEUI_HOME_TITLE = '工作台'
 SIMPLEUI_HOME_ICON = 'fas fa-tachometer-alt'
 SIMPLEUI_CONFIG = {

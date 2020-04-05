@@ -1,4 +1,6 @@
 {% extends 'admin/base.html' %}
+{% load i18n %}
+{% load static %}
 
 {% block content %}
 <div id="contentWrapper">
@@ -17,7 +19,7 @@
           </el-upload>
         </div>
         <br/>
-        <el-link type="primary">导入模板下载</el-link>
+        <el-link type="primary" :href="`{% static 'templates/teacher-template.xls' %}`">导入模板下载</el-link>
       </div>
     </el-main>
   </el-container>
