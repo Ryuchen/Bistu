@@ -1,0 +1,31 @@
+{% extends "client/pages/base.html" %}
+{% load i18n static %}
+
+{% block stylesheet %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/dashboard.css' %}">
+{% endblock %}
+
+<!-- site javascript section -->
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
+<!-- site javascript section -->
+
+{% block x-template %}
+  {% include 'client/pages/dashboard/components/overview/index.html' %}
+  {% include 'client/pages/dashboard/components/shortcut/index.html' %}
+  {% include 'client/pages/dashboard/components/activity/index.html' %}
+{% endblock %}
+
+{% block app %}
+  <div id="dashboard-container">
+    <div class="dashboard-wrapper">
+      <suit-overview></suit-overview>
+
+      <suit-shortcut></suit-shortcut>
+
+      <suit-activity></suit-activity>
+    </div>
+  </div>
+{% endblock %}

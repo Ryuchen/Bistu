@@ -1,6 +1,6 @@
 (function () {
+  moment.locale('zh-cn');
   window.Bus = new Vue(); // 将 vue 的事件总线注册到 window 上
-
   /*
    * 声明 vuex 的状态管理
    */

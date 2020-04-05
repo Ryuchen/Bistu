@@ -1,34 +1,49 @@
-.card-container {
-  background: #F5F5F5;
-  overflow: hidden;
-  padding: 24px;
+#dashboard-container {
+  .dashboard-wrapper {
+    padding: 0 20px;
+    .dashboard-overview {
+      width: 100%;
 
-  .ant-tabs-card {
+      .overview-left {
+        margin: 20px;
+        text-align: left;
 
-    .ant-tabs-content {
-      margin-top: -16px;
+        div.overview-avatar {
+          display: inline-block;
+          vertical-align: middle;
+        }
 
-      .ant-tabs-tabpane {
-        background: #fff;
-        padding: 16px;
-        height: calc(100vh - 197px);
-        overflow: auto;
+        div.overview-greeting {
+          display: inline-block;
+          vertical-align: middle;
+          margin-left: 20px;
+        }
+      }
+
+      .overview-right {
+        margin: 20px;
+        vertical-align: middle;
+
+        div.overview-ranks {
+          text-align: center;
+
+          div:first-child {
+            font-size: 1.2rem;
+          }
+
+          div:last-child {
+            font-size: 2rem;
+          }
+        }
       }
     }
 
-    .ant-tabs-bar {
-      border-color: #fff;
+    .dashboard-shortcut {
+      width: 100%;
+    }
 
-      .ant-tabs-tab {
-        border-color: transparent;
-        background: transparent;
-        font-weight: 500;
-      }
-
-      .ant-tabs-tab-active {
-        border-color: #fff;
-        background: #fff;
-      }
+    .dashboard-activity {
+      width: 100%;
     }
   }
 }
