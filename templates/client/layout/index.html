@@ -22,7 +22,7 @@
             >
               <a-tab-pane key="0" closable>
                 <span slot="tab"><a-icon type="home"></a-icon>{% trans 'Dashboard' %}</span>
-                <suit-iframe :href="'https://www.baidu.com'" :height="height"></suit-iframe>
+                <suit-iframe :href="`{% url 'dashboard' %}`" :height="height"></suit-iframe>
               </a-tab-pane>
               <a-tab-pane v-for="(pane, index) in activePanes" :key="pane.key">
                 <span slot="tab"><a-icon :type="pane.icon"></a-icon><% pane.name %></span>
