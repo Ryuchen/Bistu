@@ -30,34 +30,27 @@ def accesslimit(request):
         "data": {
             'menus': [
                 {
-                    "key": 1,
-                    "name": "工作台",
+                    "key": reverse('dashboard'),
+                    "title": "学生管理",
+                    "name": "students",
                     "role": ["admin", "staff", "teacher"],
                     "icon": "appstore",
-                    "link": reverse('dashboard'),
-                },
-                {
-                    "key": 2,
-                    "name": "学生管理",
-                    "role": ["admin", "staff", "teacher"],
-                    "icon": "appstore",
-                    "link": reverse('dashboard'),
                     "subs": [
                         {
-                            "key": 201,
-                            "name": "学生列表",
+                            "key": reverse('student-list'),
+                            "title": "学生列表",
+                            "name": "stu-list",
                             "role": ["admin", "staff", "teacher"],
                             "icon": "appstore",
-                            "link": reverse('dashboard'),
                         }
                     ]
                 },
                 {
-                    "key": 3,
-                    "name": "学院管理",
+                    "key": reverse('academy-list'),
+                    "title": "学院管理",
+                    "name": "colleges",
                     "role": ["admin", "staff", "teacher"],
                     "icon": "appstore",
-                    "link": reverse('dashboard'),
                 },
             ]
         }

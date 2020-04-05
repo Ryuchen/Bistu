@@ -16,17 +16,15 @@
           <div class="card-container" id="content-wrapper">
             <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey"
                 @edit="onEdit"
-                @prevClick="callback"
-                @nextClick="callback"
                 @tabClick="onSelect"
             >
               <a-tab-pane key="0" closable>
-                <span slot="tab"><a-icon type="home"></a-icon>{% trans 'Dashboard' %}</span>
+                <span slot="tab">{% trans 'Dashboard' %}</span>
                 <suit-iframe :href="`{% url 'dashboard' %}`" :height="height"></suit-iframe>
               </a-tab-pane>
               <a-tab-pane v-for="(pane, index) in activePanes" :key="pane.key">
-                <span slot="tab"><a-icon :type="pane.icon"></a-icon><% pane.name %></span>
-                <suit-iframe :href="pane.content" :height="height"></suit-iframe>
+                <span slot="tab"><% pane.title %></span>
+                <suit-iframe :href="pane.key" :height="height"></suit-iframe>
               </a-tab-pane>
             </a-tabs>
           </div>
@@ -50,9 +48,16 @@
       }
     },
     computed: {
+      activeKey: {
+        get: function () {
+          return this.$store.state.app.activeKey;
+        },
+        set: function (value) {
+          this.$store.state.app.activeKey = value;
+        }
+      },
       ...Vuex.mapGetters('app', {
         collapsed: 'collapsed',
-        activeKey: 'activeKey',
         activePanes: 'activePanes'
       })
     },
@@ -81,9 +86,6 @@
         }).catch(error => {
           console.log(error);
         });
-      },
-      callback (key) {
-        console.log(key)
       },
       onEdit (key, action) {
         this[action](key)

@@ -1,17 +1,1 @@
-#exception-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  max-width: 480px;
-  transform: translate(-50%, -50%);
-}
-#exception-container .exception-img {
-  width: 100%;
-  max-width: 430px;
-  height: 360px;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: contain;
-  background-image: url("https://gw.alipayobjects.com/zos/rmsportal/RVRUAYdCGeYNBWoKiIwB.svg");
-}
-/*# sourceMappingURL=exception.css.map */
+#exception-container{position:absolute;top:50%;left:50%;max-width:480px;transform:translate(-50%, -50%)}#exception-container .exception-img{width:100%;max-width:430px;height:360px;background-repeat:no-repeat;background-position:50% 50%;background-size:contain;background-image:url("https://gw.alipayobjects.com/zos/rmsportal/RVRUAYdCGeYNBWoKiIwB.svg")}/*# sourceMappingURL=exception.css.map */

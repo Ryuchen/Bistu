@@ -1,1 +1,1 @@
-{"version":3,"sources":["bordered.less"],"names":[],"mappings":"AAAC,SAAS,SAIR;EACE,yBAAA;;AALH,SAAS,SAOR;AAPD,SAAS,SAQR;EACE,yBAAA","file":"bordered.css"}
+{"version":3,"sources":["bordered.less"],"names":[],"mappings":"AAAC,SAAS,SAIR,OACE,yBALH,SAAS,SAOR,IAPD,SAAS,SAQR,IACE","file":"bordered.css"}

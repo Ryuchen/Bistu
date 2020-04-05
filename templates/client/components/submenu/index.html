@@ -2,14 +2,14 @@
   <a-sub-menu v-bind="$props" v-on="$listeners" :key="menus.key">
     <span slot="title">
       <a-icon :type="menus.icon"></a-icon>
-      <span><% menus.name %></span>
+      <span><% menus.title %></span>
     </span>
     <template v-for="model in menus.subs">
-      <a-menu-item v-if="!model.subs" :key="model.key" :title="model.name" :url="model.link" :name="model.name" :icon="model.icon">
-        <a-icon :type="model.icon" />
-        <span><% model.name %></span>
+      <a-menu-item v-if="!model.subs" :key="model.key" :title="model.title">
+        <a-icon :type="model.icon"></a-icon>
+        <span><% model.title %></span>
       </a-menu-item>
-      <sub-menu v-else :key="model.key" :menus="model"></sub-menu>
+      <sub-menu v-else :menus="model" :key="model.key"></sub-menu>
     </template>
   </a-sub-menu>
 </script>

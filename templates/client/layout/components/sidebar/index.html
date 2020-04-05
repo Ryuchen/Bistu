@@ -21,14 +21,14 @@
       :style="{ height: 'calc(100%- 120px)', borderRight: 0 }"
       :inlineCollapsed="collapsed"
       :selectedKeys="activeKeys"
-      :openKeys="openKeys"
-      @click='select'
+      :openKeys.sync="openKeys"
+      @select='menuSelect'
       @openChange="onOpenChange"
     >
       <template v-for="item in menus">
-        <a-menu-item v-if="!item.subs" :key="item.key" :url="item.link" :title="item.name" :name="item.name" :icon="item.icon">
+        <a-menu-item v-if="!item.subs" :key="item.key" :title="item.title">
           <a-icon :type="item.icon"></a-icon>
-          <span><% item.name %></span>
+          <span><% item.title %></span>
         </a-menu-item>
         <sub-menu v-else :menus="item" :key="item.key"></sub-menu>
       </template>
@@ -112,11 +112,9 @@
           this.openKeys = latestOpenKey ? [latestOpenKey] : []
         }
       },
-      select ({ item, key }) {
+      menuSelect ({ item, key }) {
         const payload = {
-          name: item.$attrs.name,
-          content: item.$attrs.url,
-          icon: item.$attrs.icon,
+          title: item.title,
           key: key,
         };
         Bus.$emit('menuSelected', payload);
