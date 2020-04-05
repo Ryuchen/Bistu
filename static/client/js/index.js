@@ -26,11 +26,6 @@
             if (value) state.activeKey = value;
             return state.activeKey;
           },
-          activeKeys: function (state) {
-            const value = JSON.parse(window.localStorage.getItem('activeKey') || null);
-            if (value) state.activeKey = value;
-            return [state.activeKey];
-          },
           activePanes: function (state) {
             const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
             if (value) state.activePanes = value;
@@ -53,6 +48,10 @@
             if (state.activePanes.findIndex(obj => obj.key === payload.key) === -1) {
               state.activePanes.push(payload);
             }
+            window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
+          },
+          delActivePanes: function (state, payload) {
+            state.activePanes = state.activePanes.filter(item => item.key !== payload);
             window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
           },
           setPermissions: function (state, permissions) {

@@ -14,10 +14,7 @@
       <a-layout>
         <a-layout-content>
           <div class="card-container" id="content-wrapper">
-            <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey"
-                @edit="onEdit"
-                @tabClick="onSelect"
-            >
+            <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey" @edit="onEdit">
               <a-tab-pane key="0" closable>
                 <span slot="tab">{% trans 'Dashboard' %}</span>
                 <suit-iframe :href="`{% url 'dashboard' %}`" :height="height"></suit-iframe>
@@ -53,12 +50,16 @@
           return this.$store.state.app.activeKey;
         },
         set: function (value) {
-          this.$store.state.app.activeKey = value;
+          this.$store.commit('app/changeActiveKey', value);
+        }
+      },
+      activePanes: {
+        get: function () {
+          return this.$store.state.app.activePanes;
         }
       },
       ...Vuex.mapGetters('app', {
-        collapsed: 'collapsed',
-        activePanes: 'activePanes'
+        collapsed: 'collapsed'
       })
     },
     created: function () {
@@ -90,9 +91,6 @@
       onEdit (key, action) {
         this[action](key)
       },
-      onSelect (key) {
-        this.$store.commit('app/changeActiveKey', `${key}`);
-      },
       add (payload) {
         this.$store.commit('app/changeActiveKey', `${payload.key}`);
         if (this.activePanes.indexOf(payload) === -1) {
@@ -101,11 +99,7 @@
       },
       remove (key) {
         let nextActiveKey = '0';
-        let deleteIndex;
-        this.activePanes.map((item, index) => {
-          if (item.key === key) deleteIndex = index;
-        });
-        this.$store.commit('app/delActivePanes', deleteIndex);
+        this.$store.commit('app/delActivePanes', key);
         if (this.activePanes.length > 0) nextActiveKey = this.activePanes[this.activePanes.length - 1].key;
         this.$store.commit('app/changeActiveKey', nextActiveKey);
       },
