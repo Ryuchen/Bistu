@@ -26,7 +26,7 @@
             </a-tabs>
           </div>
         </a-layout-content>
-        <suit-footer :app="app" :auth="auth"></suit-footer>
+        <suit-footer :app="application.app" :auth="application.auth"></suit-footer>
       </a-layout>
     </a-layout>
   </a-layout>
@@ -38,70 +38,113 @@
     template: '#suit-layout',
     data: function () {
       return {
-        app: {},
-        auth: {},
         height: `${window.innerHeight - 240}px`,
-        csrftoken: Cookies.get('csrftoken')
       }
     },
     computed: {
-      activeKey: {
+      // Vuex store of site information.
+      application: {
         get: function () {
-          return this.$store.state.app.activeKey;
+          return this.$store.state.site.application;
         },
         set: function (value) {
-          this.$store.commit('app/changeActiveKey', value);
+          this.$store.commit('site/application', value);
+        }
+      },
+      activeKey: {
+        get: function () {
+          return this.$store.state.site.activeKey;
+        },
+        set: function (value) {
+          this.$store.commit('site/activeKey', value);
         }
       },
       activePanes: {
         get: function () {
-          return this.$store.state.app.activePanes;
+          return this.$store.state.site.activePanes;
         }
       },
-      ...Vuex.mapGetters('app', {
-        collapsed: 'collapsed'
-      })
+      // Vuex store of user information.
+      profile: {
+        get: function () {
+          return this.$store.state.user.profile;
+        },
+        set: function (value) {
+          this.$store.commit('user/profile', value);
+        }
+      },
+      authority: {
+        get: function () {
+          return this.$store.state.user.authority;
+        },
+        set: function (value) {
+          this.$store.commit('user/authority', value);
+        }
+      },
+      permissions: {
+        get: function () {
+          return this.$store.state.user.permissions;
+        },
+        set: function (value) {
+          this.$store.commit('user/permissions', value);
+        }
+      }
     },
     created: function () {
-      const _this = this;
-      Bus.$on('menuSelected', function(payload){
-        _this.add(payload);
-      });
+      // 如果当前加载的窗体宽度过小，则进行侧边栏缩小
+      if (window.innerWidth <= 992) this.$store.commit('site/collapsed');
+
       this.getApplication();
+      this.getUserProfile();
     },
     methods: {
+      // 获取website的基础信息存储在Vuex中
       getApplication () {
         axios({
-          url: "{% url 'settings:application' %}",
+          url: "{% url 'api-colleges:academy' %}",
           method: "GET",
           headers: {
-            'X-CSRFTOKEN': this.csrftoken
+            'X-CSRFTOKEN': window.csrftoken
+          },
+          params: {
+            pk: this.pk
           }
         }).then(response => {
           const {code, data} = response.data;
           if (code === "00000000") {
-            const {app, auth} = data;
-            this.app = app;
-            this.auth = auth;
+            console.log(data);
           }
         }).catch(error => {
           console.log(error);
         });
       },
+      // 获取当前登录用户的基础信息存储在Vuex中
+      getUserProfile () {
+        axios({
+          url: "{% url 'accounts:profile' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            const {profile, authority, permission} = data;
+            this.profile = profile;
+            this.authority = authority;
+            this.permissions = permission;
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+
+      // 活动标签页面有关的方法
       onEdit (key, action) {
         this[action](key)
       },
-      add (payload) {
-        this.$store.commit('app/changeActiveKey', `${payload.key}`);
-        if (this.activePanes.indexOf(payload) === -1) {
-          this.$store.commit('app/addActivePanes', payload);
-        }
-      },
       remove (key) {
-        let nextActiveKey = '0';
-        this.$store.commit('app/delActivePanes', key);
-        if (this.activePanes.length > 0) nextActiveKey = this.activePanes[this.activePanes.length - 1].key;
-        this.$store.commit('app/changeActiveKey', nextActiveKey);
+        Bus.$emit('closePane', key);
       },
     },
   })

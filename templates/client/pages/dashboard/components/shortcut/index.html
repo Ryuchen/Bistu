@@ -3,49 +3,16 @@
 <script type="text/x-template" id="suit-shortcut">
   <div>
     <a-divider dashed orientation="left">快捷方式</a-divider>
-    <a-row :gutter="8">
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
-          <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
-            <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
-          </a-card-meta>
-        </a-card>
-      </a-col>
+    <a-row :gutter="[16, { xs: 8, sm: 16, md: 24, lg: 32 }]">
+      <template v-for="item in [0,0,0,0,0,0,0,0]">
+        <a-col :xs="12" :sm="8" :md="6" :lg="6" :xl="4">
+          <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8;">
+            <a-card-meta title="{% trans '站点缓存' %}" description="{% trans '清除浏览器缓存' %}">
+              <a-avatar shape="square" size="large" slot="avatar" src="{% static 'client/img/svg/clean.svg' %}"></a-avatar>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </template>
     </a-row>
   </div>
 </script>

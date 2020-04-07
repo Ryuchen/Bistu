@@ -1,0 +1,56 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-colleges-detail">
+  <div>
+    <a-page-header @back="goBack()" title="学院详情页"></a-page-header>
+    <a-divider><% subTitle %></a-divider>
+    <div>
+      <% academyProfile %>
+    </div>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-colleges-detail', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-colleges-detail',
+    data: function () {
+      return {
+        pk: '',
+        subTitle: '',
+        academyProfile: {}
+      }
+    },
+    created: function () {
+      this.splitUrlParams();
+    },
+    methods: {
+      // 获取website的基础信息存储在Vuex中
+      getAcademyInfos () {
+        axios({
+          url: `{% url 'api-colleges:academy' %}${this.pk}/`,
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            this.academyProfile = data;
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+      goBack: function () {
+        window.history.back();
+      },
+      splitUrlParams: function () {
+        const urlParams = new URLSearchParams(window.location.search.substring(1));
+        this.pk = urlParams.get('pk');
+        this.subTitle = urlParams.get('name');
+        this.getAcademyInfos();
+      },
+    }
+  })
+</script>

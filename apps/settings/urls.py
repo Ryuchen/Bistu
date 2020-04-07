@@ -16,3 +16,5 @@ urlpatterns = [
 	url(r"^translation/$", views.translation, name="translation"),
 	url(r"^definitions/$", views.definitions, name="definitions"),
 ]
+
+app_name = 'settings'

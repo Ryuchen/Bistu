@@ -12,7 +12,7 @@ from .views import TutorList, TutorDetail
 
 
 urlpatterns = [
-    url(r"^teachers/$", TutorList.as_view(), name="tutor-list"),
+    url(r"^teachers/$", TutorList.as_view(), name="teacher-list"),
     url(r"^teacher/(?P<pk>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$", TutorDetail.as_view(),
         name="tutor-detail"),
 ]

@@ -18,3 +18,5 @@ urlpatterns = [
     url(r"^profile/$", views.profile_view, name="profile"),
     url(r"^register/$", views.register_view, name="register"),
 ]
+
+app_name = 'accounts'

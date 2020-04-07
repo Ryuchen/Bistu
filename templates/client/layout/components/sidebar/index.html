@@ -43,49 +43,49 @@
     data: function () {
       return {
         menus: [{}],
-        profile: {},
         openKeys: [],
         rootSubmenuKeys: [],
       }
     },
     computed: {
-      ...Vuex.mapGetters('app', {
-        collapsed: 'collapsed',
-        activeKeys: 'activeKeys',
-        hasPermission: 'hasPermission',
-      })
+      // Vuex store of site information.
+      collapsed: {
+        get: function () {
+          return this.$store.state.site.collapsed;
+        }
+      },
+      activeKey: {
+        get: function () {
+          return this.$store.state.site.activeKey;
+        },
+        set: function (value) {
+          this.$store.commit('site/activeKey', value);
+        }
+      },
+      // Vuex store of user information.
+      profile: {
+        get: function () {
+          return this.$store.state.user.profile;
+        }
+      },
+      // 针对当前的menu菜单选择项类型适配 Ant-design-vue
+      activeKeys: {
+        get: function () {
+          return [this.activeKey];
+        }
+      }
     },
     created: function () {
-      this.getUserProfile();
       this.getAccesslimit();
     },
     methods: {
-      getUserProfile () {
-        const csrftoken = Cookies.get('csrftoken'); // Using JS Cookies library
-        axios({
-          url: "{% url 'accounts:profile' %}",
-          method: "GET",
-          headers: {
-            'X-CSRFTOKEN': csrftoken
-          }
-        }).then(response => {
-          const {code, data} = response.data;
-          if (code === "00000000") {
-            const {profile, authority, permission} = data;
-            this.profile = profile;
-            this.$store.commit('app/setPermissions', permission);
-          }
-        }).catch(error => {
-          const {meta, data} = error.response.data;
-          Bus.$emit('notification', 'error', meta.code, meta.details);
-        });
-      },
+      // 获取菜单的ACL列表进行权限过滤
       getAccesslimit () {
         axios({
           url: "{% url 'settings:accesslimit' %}",
           method: "GET",
           headers: {
-            'X-CSRFTOKEN': this.csrftoken
+            'X-CSRFTOKEN': window.csrftoken
           }
         }).then(response => {
           const {code, data} = response.data;
@@ -97,6 +97,7 @@
           console.log(error);
         });
       },
+
       setSubmenuKeys () {
         this.menus.map(menu => {
           if (menu.hasOwnProperty("subs")) {
@@ -117,7 +118,7 @@
           title: item.title,
           key: key,
         };
-        Bus.$emit('menuSelected', payload);
+        Bus.$emit('openPane', payload);
       }
     },
   })

@@ -1,7 +1,7 @@
 <script type="text/x-template" id="suit-footer">
   <a-layout-footer style="text-align: center">
     <div class="ant-breadcrumb">
-      <a class="ant-breadcrumb-link" :href="auth.link" target="_blank">
+      <a class="ant-breadcrumb-link" :href="auth.href" target="_blank">
         <% app.name %> © Created by <% auth.name %> From <% auth.year %> to <% year %>
       </a>
     </div>
@@ -12,11 +12,23 @@
   Vue.component('suit-footer', {
     delimiters: ['<%', '%>'],
     template: '#suit-footer',
-    props: ['app', 'auth'],
     data () {
       return {
         year: moment().year(),
       }
+    },
+    computed: {
+      // Vuex store of user information.
+      app: {
+        get: function () {
+          return this.$store.state.site.application.app;
+        }
+      },
+      auth: {
+        get: function () {
+          return this.$store.state.site.application.auth;
+        }
+      },
     }
   })
 </script>

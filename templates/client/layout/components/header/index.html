@@ -15,19 +15,19 @@
       <ul class="toolbox-items-wrapper">
         <li>
           <div class="toolbox-item">
-            <a-button type="primary" @click="$store.commit('app/changeCollapsed')">
+            <a-button type="primary" @click="$store.commit('site/collapsed')">
               <a-icon :style="toolboxIconStyle" :type="collapsed ? 'menu-unfold' : 'menu-fold'"></a-icon>
             </a-button>
           </div>
         </li>
-        <li v-show="toolbox.lock.enable">
+        <li v-show="application.toolbox.lock.enable">
           <div class="toolbox-item">
             <a-button type="primary">
               <a-icon :style="toolboxIconStyle" type="lock"></a-icon>
             </a-button>
           </div>
         </li>
-        <li v-show="toolbox.github.enable">
+        <li v-show="application.toolbox.github.enable">
           <div class="toolbox-item">
             <a-button type="primary" @click="openGithub">
               <a-icon :style="toolboxIconStyle" type="github"></a-icon>
@@ -36,11 +36,11 @@
         </li>
       </ul>
       <div class="toolbox-search">
-        <suit-header-search :show="toolbox.search.enable"></suit-header-search>
+        <suit-header-search :show="application.toolbox.search.enable"></suit-header-search>
       </div>
       <ul class="toolbox-items-wrapper">
-        <suit-header-notice :show="toolbox.notice.enable"></suit-header-notice>
-        <suit-header-utility :show="toolbox.utility.enable"></suit-header-utility>
+        <suit-header-notice :show="application.toolbox.notice.enable"></suit-header-notice>
+        <suit-header-utility :show="application.toolbox.utility.enable"></suit-header-utility>
         <suit-header-setting></suit-header-setting>
       </ul>
     </div>
@@ -53,25 +53,6 @@
     template: '#suit-header',
     data: function () {
       return {
-        toolbox: {
-          "lock": {
-            "enable": true,
-            "verify": "email"
-          },
-          "github": {
-            "enable": true,
-            "link": "https://github.com/ryuchen"
-          },
-          "search": {
-            "enable": true,
-          },
-          "notice": {
-            "enable": true,
-          },
-          "utility": {
-            "enable": true,
-          }
-        },
         toolboxIconStyle: {
           fontSize: '16px',
           padding: '4px'
@@ -79,13 +60,21 @@
       }
     },
     computed: {
-      ...Vuex.mapGetters('app', {
-        collapsed: 'collapsed'
-      })
+      // Vuex store of site information.
+      application: {
+        get: function () {
+          return this.$store.state.site.application;
+        }
+      },
+      collapsed: {
+        get: function () {
+          return this.$store.state.site.collapsed;
+        }
+      }
     },
     methods: {
       openGithub() {
-        window.open(`${this.toolbox.github.link}`);
+        window.open(`${this.application.toolbox.github.link}`);
       }
     }
   })

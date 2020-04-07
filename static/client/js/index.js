@@ -1,50 +1,58 @@
 (function () {
   moment.locale('zh-cn');
-  window.Bus = new Vue(); // 将 vue 的事件总线注册到 window 上
+  window.Bus = new Vue();  // 将 vue 的事件总线注册到 window 上
+  window.csrftoken = Cookies.get('csrftoken');  // 将django页面渲染的csrftoken值作为全局对象
   /*
    * 声明 vuex 的状态管理
    */
   const store = new Vuex.Store({
     modules: {
-      app: {
+      site: {
         namespaced: true,
         state: {
-          application: {},
-          collapsed: false,
-          activeKey: '0',
-          activePanes: [],
-          permissions: [],
+          application: {},  // 应用产品的信息
+          collapsed: false,  // 侧边栏是否收起
+          activeKey: '0',  // 当前激活的tab页面key
+          activePanes: [],  // 总共打开的tab页面
         },
         getters: {
+          application: function(state) {
+            const value = JSON.parse(window.localStorage.getItem('application') || null);
+            state.application = value ? value : {};
+            return state.application;
+          },
           collapsed: function (state) {
             const value = JSON.parse(window.localStorage.getItem('collapsed') || null);
-            if (value) state.collapsed = value;
+            state.collapsed = value ? value : false;
             return state.collapsed;
           },
           activeKey: function (state) {
             const value = JSON.parse(window.localStorage.getItem('activeKey') || null);
-            if (value) state.activeKey = value;
+            state.activeKey = value ? value : '0';
             return state.activeKey;
           },
           activePanes: function (state) {
             const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
-            if (value) state.activePanes = value;
+            state.activePanes = value ? value : [];
             return state.activePanes;
-          },
-          hasPermission: (state) => (permission) => {
-            return !(state.permissions.indexOf(permission));
           }
         },
         mutations: {
-          changeCollapsed: function (state){
+          application: function (state, payload) {
+            state.application = payload;
+            window.localStorage.setItem('application', JSON.stringify(state.application));
+          },
+          collapsed: function (state){
             state.collapsed = !state.collapsed;
             window.localStorage.setItem('collapsed', JSON.stringify(state.collapsed));
           },
-          changeActiveKey: function (state, payload) {
+          activeKey: function (state, payload) {
             state.activeKey = payload;
             window.localStorage.setItem('activeKey', JSON.stringify(state.activeKey));
           },
           addActivePanes: function (state, payload) {
+            const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
+            state.activePanes = value ? value : [];
             if (state.activePanes.findIndex(obj => obj.key === payload.key) === -1) {
               state.activePanes.push(payload);
             }
@@ -53,16 +61,45 @@
           delActivePanes: function (state, payload) {
             state.activePanes = state.activePanes.filter(item => item.key !== payload);
             window.localStorage.setItem('activePanes', JSON.stringify(state.activePanes));
-          },
-          setPermissions: function (state, permissions) {
-            state.permissions = permissions;
           }
         }
       },
-      auth: {
+      user: {
+        namespaced: true,
+        state: {
+          profile: {},  // 用户的账户信息
+          authority: {},  // 用户的组信息
+          permissions: {}  // 用户的权限信息
+        },
+        getters: {
+          profile: function (state) {
+            const value = JSON.parse(window.localStorage.getItem('profile') || null);
+            state.profile = value ? value : {};
+          },
+          authority: function (state) {
+            const value = JSON.parse(window.localStorage.getItem('authority') || null);
+            state.authority = value ? value : {};
+          },
+          hasPermission: (state) => (permission) => {
+            return !(state.permissions.indexOf(permission));
+          }
+        },
+        mutations: {
+          profile: function (state, payload) {
+            state.profile = payload;
+            window.localStorage.setItem('profile', JSON.stringify(state.profile));
+          },
+          authority: function (state, payload) {
+            state.authority = payload;
+            window.localStorage.setItem('authority', JSON.stringify(state.authority));
+          },
+          permissions: function (state, permissions) {
+            state.permissions = permissions;
+            window.localStorage.setItem('permissions', JSON.stringify(state.permissions));
+          }
+        }
       }
     }
-
   });
 
   /*
@@ -74,16 +111,27 @@
     store,
     mixins: window.mixins.mixins,
     created: function () {
+      // 全局事件总线:=>进行错误信息提醒
       const _this = this;
-      if (window.innerWidth <= 992) {
-        this.$store.commit('app/changeCollapsed');
-      }
       Bus.$on('notification', function(type, title, message){
         _this.$notification[type]({
           message: title,
           description:
             message,
         });
+      });
+      // 全局事件总线:=>进行标签页打开&&关闭
+      Bus.$on('openPane', function(payload){
+        _this.$store.commit('site/addActivePanes', payload);
+        _this.$store.commit('site/activeKey', payload.key);
+      });
+      Bus.$on('closePane', function(payload){
+        _this.$store.commit('site/delActivePanes', payload);
+        if (_this.$store.state.site.activePanes.length > 0) {
+          _this.$store.commit('site/activeKey', _this.$store.state.site.activePanes[_this.$store.state.site.activePanes.length - 1].key);
+        } else {
+          _this.$store.commit('site/activeKey', '0');
+        }
       });
     }
   });

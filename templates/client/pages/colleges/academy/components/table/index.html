@@ -1,0 +1,57 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-colleges-tables">
+  <div>
+    <a-divider dashed orientation="left">学院列表</a-divider>
+    <a-row :gutter="[16, { xs: 8, sm: 16, md: 24, lg: 32 }]">
+      <template v-for="item in colleges">
+        <a-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+          <a-card hoverable>
+            <img :alt="item.aca_nickname" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" slot="cover" />
+            <template class="ant-card-actions" slot="actions">
+              <a-icon type="setting" key="setting" />
+              <a-icon type="edit" key="edit" />
+              <a :href="`{% url "colleges:academy-detail" %}?pk=${item.uuid}&name=${item.aca_cname}`"><a-icon type="ellipsis" key="ellipsis"></a-icon></a>
+            </template>
+            <a-card-meta :title="item.aca_cname" description="This is the description">
+              <a-avatar slot="avatar" :src="item.aca_avatar" />
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </template>
+    </a-row>
+  </div>
+</script>
+
+<script type="application/javascript">
+    Vue.component('suit-colleges-tables', {
+      delimiters: ['<%', '%>'],
+      template: '#suit-colleges-tables',
+      data: function () {
+        return {
+          colleges: [{}]
+        }
+      },
+      created: function () {
+        this.getCollegesInfors();
+      },
+      methods: {
+        getCollegesInfors () {
+          axios({
+            url: "{% url 'api-colleges:academies' %}",
+            method: "GET",
+            headers: {
+              'X-CSRFTOKEN': window.csrftoken
+            }
+          }).then(response => {
+            const {code, data} = response.data;
+            if (code === "00000000") {
+              this.colleges = data;
+            }
+          }).catch(error => {
+            console.log(error);
+          });
+        }
+      }
+    });
+</script>

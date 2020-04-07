@@ -22,10 +22,9 @@ from . import views
 # API's router
 urlpatterns = [
     path('', lambda request: redirect('client/', permanent=True)),
-
-    path("settings/", include(("apps.settings.urls", "settings"), namespace="settings")),
-    path("accounts/", include(("apps.accounts.urls", "accounts"), namespace="accounts")),
-    path("colleges/", include("apps.colleges.urls")),
+    path("settings/", include("apps.settings.urls", namespace="settings")),
+    path("accounts/", include("apps.accounts.urls", namespace="accounts")),
+    path("colleges/", include("apps.colleges.urls", namespace="api-colleges")),
     path("teachers/", include("apps.teachers.urls")),
     path("students/", include("apps.students.urls")),
     path("reports/", include("apps.midcheckreports.urls")),
@@ -39,7 +38,6 @@ urlpatterns += [
     url(r"^dashboard/$", views.dashboard, name="dashboard"),
 ]
 
-
 # server's router
 urlpatterns += [
     path("server/", admin.site.urls),
@@ -47,7 +45,8 @@ urlpatterns += [
 
 # client's router
 urlpatterns += [
-    path("client/", views.index, name="index")
+    path("client/", views.index, name="index"),
+    path("client/colleges/", include("apps.colleges.routers", namespace="colleges"))
 ]
 
 admin.sites.AdminSite.site_header = '研究生管理系统'

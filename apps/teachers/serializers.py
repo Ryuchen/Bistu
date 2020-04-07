@@ -11,7 +11,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from contrib.accounts.models import Tutor, Education
 from apps.accounts.serializers import UserSerializers
-from apps.colleges.serializers import AcademySerializers
+from apps.colleges.serializer import AcademySerializer
 
 
 class EducationSerializers(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class EducationSerializers(serializers.ModelSerializer):
 class TutorSerializers(serializers.ModelSerializer):
     """ 老师 """
     tut_user = UserSerializers(many=False)
-    academy = AcademySerializers(many=False, allow_null=True)
+    academy = AcademySerializer(many=False, allow_null=True)
     education = EducationSerializers(many=False, allow_null=True)
 
     class Meta:

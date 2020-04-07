@@ -30,27 +30,55 @@ def accesslimit(request):
         "data": {
             'menus': [
                 {
-                    "key": reverse('dashboard'),
+                    "key": reverse('student-list'),
                     "title": "学生管理",
                     "name": "students",
                     "role": ["admin", "staff", "teacher"],
-                    "icon": "appstore",
-                    "subs": [
-                        {
-                            "key": reverse('student-list'),
-                            "title": "学生列表",
-                            "name": "stu-list",
-                            "role": ["admin", "staff", "teacher"],
-                            "icon": "appstore",
-                        }
-                    ]
+                    "icon": "appstore"
                 },
                 {
-                    "key": reverse('academy-list'),
+                    "key": reverse('teacher-list'),
+                    "title": "教师管理",
+                    "name": "teachers",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore"
+                },
+                {
+                    "key": '2',
                     "title": "学院管理",
                     "name": "colleges",
                     "role": ["admin", "staff", "teacher"],
                     "icon": "appstore",
+                    "subs": [
+                        {
+                            "key": reverse('colleges:academy-table'),
+                            "title": "学院列表",
+                            "name": "aca-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:major-table'),
+                            "title": "专业领域",
+                            "name": "maj-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:research-table'),
+                            "title": "研究方向",
+                            "name": "res-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:class-table'),
+                            "title": "班级管理",
+                            "name": "cls-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        }
+                    ]
                 },
             ]
         }
@@ -74,6 +102,25 @@ def application(request):
                 "name": "Ryuchen",
                 "year": "2018",
                 "href": "https://github.com/Ryuchen"
+            },
+            'toolbox': {
+                "lock": {
+                    "enable": True,
+                    "verify": "email"
+                },
+                "github": {
+                    "enable": True,
+                    "link": "https://github.com/ryuchen"
+                },
+                "search": {
+                    "enable": True,
+                },
+                "notice": {
+                    "enable": True,
+                },
+                "utility": {
+                    "enable": True,
+                }
             }
         }
     }

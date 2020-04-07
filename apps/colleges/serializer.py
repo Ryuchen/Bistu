@@ -9,8 +9,16 @@
 # ==================================================
 from rest_framework import serializers
 from apps.accounts.serializers import UserSerializers
-from contrib.colleges.models import Major, Academy, Research
+from contrib.colleges.models import Major, Academy, Research, Class
 from contrib.colleges.models import ReformResults, Reform
+
+
+class ClassSerializers(serializers.ModelSerializer):
+    """ 科研方向 """
+
+    class Meta:
+        model = Class
+        fields = '__all__'
 
 
 class ResearchSerializers(serializers.ModelSerializer):
@@ -49,21 +57,6 @@ class ReformSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AcademySerializers(serializers.ModelSerializer):
-    """ 学院 """
-    aca_majors = MajorSerializers(many=True)
-    aca_user = UserSerializers(many=False)
-    student_count = serializers.SerializerMethodField(read_only=True)
-
-    def get_student_count(self, academy):
-        return academy.stu_academy.count()
-
-    class Meta:
-        model = Academy
-        fields = ('uuid', 'aca_avatar', 'aca_nickname', 'aca_cname', 'aca_ename', 'aca_code', 'aca_phone', 'aca_fax',
-                  'aca_href', 'aca_brief', 'aca_user', 'aca_majors', 'student_count')
-
-
 class ReformResultsSerializers(serializers.ModelSerializer):
     """ 研究生教育改革成果统计 """
 
@@ -71,3 +64,18 @@ class ReformResultsSerializers(serializers.ModelSerializer):
         model = ReformResults
         fields = '__all__'
 
+
+class AcademySerializer(serializers.ModelSerializer):
+    """ 学院 """
+    aca_majors = MajorSerializers(many=True)
+    aca_user = UserSerializers(many=False)
+    student_count = serializers.SerializerMethodField(read_only=True)
+
+    @staticmethod
+    def get_student_count(academy):
+        return academy.stu_academy.count()
+
+    class Meta:
+        model = Academy
+        fields = ('uuid', 'aca_avatar', 'aca_nickname', 'aca_cname', 'aca_ename', 'aca_code', 'aca_phone', 'aca_fax',
+                  'aca_href', 'aca_brief', 'aca_user', 'aca_majors', 'student_count')

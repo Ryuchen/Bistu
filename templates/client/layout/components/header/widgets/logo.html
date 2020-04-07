@@ -38,9 +38,11 @@
       },
     },
     computed: {
-      ...Vuex.mapGetters('app', {
-        collapsed: 'collapsed'
-      }),
+      collapsed: {
+        get: function () {
+          return this.$store.state.site.collapsed;
+        }
+      },
       logoWrapperStyle: function () {
         return {
           width: this.width,

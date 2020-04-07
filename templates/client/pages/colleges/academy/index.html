@@ -3,7 +3,7 @@
 
 {% block stylesheet %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/students.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/colleges.css' %}">
 {% endblock %}
 
 <!-- site javascript section -->
@@ -13,13 +13,13 @@
 <!-- site javascript section -->
 
 {% block x-template %}
-  {% include 'client/pages/students/components/tables/index.html' %}
+  {% include 'client/pages/colleges/academy/components/table/index.html' %}
 {% endblock %}
 
 {% block app %}
-  <div id="students-container">
-    <div class="students-wrapper">
-      学生管理
+  <div id="colleges-container">
+    <div class="colleges-wrapper">
+      <suit-colleges-tables></suit-colleges-tables>
     </div>
   </div>
 {% endblock %}
