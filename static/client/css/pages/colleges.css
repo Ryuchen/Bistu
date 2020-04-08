@@ -1,4 +1,10 @@
 #colleges-container .colleges-wrapper {
   padding: 0 20px;
 }
+#colleges-container .colleges-wrapper .ant-list-item-action {
+  text-align: right;
+}
+#colleges-container .colleges-wrapper .colleges-detail-section {
+  margin: 20px 0;
+}
 /*# sourceMappingURL=colleges.css.map */

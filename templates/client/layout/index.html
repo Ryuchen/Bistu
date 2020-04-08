@@ -101,7 +101,7 @@
       // 获取website的基础信息存储在Vuex中
       getApplication () {
         axios({
-          url: "{% url 'api-colleges:academy' %}",
+          url: "{% url 'api-settings:application' %}",
           method: "GET",
           headers: {
             'X-CSRFTOKEN': window.csrftoken
@@ -112,7 +112,7 @@
         }).then(response => {
           const {code, data} = response.data;
           if (code === "00000000") {
-            console.log(data);
+            this.application = data;
           }
         }).catch(error => {
           console.log(error);

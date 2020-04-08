@@ -2,24 +2,27 @@
 
 <script type="text/x-template" id="suit-colleges-tables">
   <div>
-    <a-divider dashed orientation="left">学院列表</a-divider>
-    <a-row :gutter="[16, { xs: 8, sm: 16, md: 24, lg: 32 }]">
-      <template v-for="item in colleges">
-        <a-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-          <a-card hoverable>
-            <img :alt="item.aca_nickname" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" slot="cover" />
-            <template class="ant-card-actions" slot="actions">
-              <a-icon type="setting" key="setting" />
-              <a-icon type="edit" key="edit" />
-              <a :href="`{% url "colleges:academy-detail" %}?pk=${item.uuid}&name=${item.aca_cname}`"><a-icon type="ellipsis" key="ellipsis"></a-icon></a>
-            </template>
-            <a-card-meta :title="item.aca_cname" description="This is the description">
-              <a-avatar slot="avatar" :src="item.aca_avatar" />
-            </a-card-meta>
-          </a-card>
-        </a-col>
-      </template>
-    </a-row>
+    <a-page-header title="学院列表"></a-page-header>
+    <a-list itemLayout="vertical" size="large" :dataSource="colleges">
+      <a-list-item slot="renderItem" slot-scope="item, index" key="item.uuid">
+        <template v-if="!loading" slot="actions" v-for="{type, text, key} in actions">
+          <span :key="type">
+            <a-icon :type="type" style="margin-right: 8px"></a-icon>
+            <span v-if="key === 'aca_code'"><% text %>: <% item.aca_code %></span>
+            <span v-if="key === 'aca_phone'"><% text %>: <% item.aca_phone %></span>
+            <span v-if="key === 'aca_fax'"><% text %>: <% item.aca_fax %></span>
+            <a v-if="key === 'aca_href'" :href="item.aca_href"><% text %>: <% item.aca_href %></a>
+          </span>
+        </template>
+        <a-skeleton :loading="loading" active avatar>
+          <a-list-item-meta :description="item.aca_brief">
+            <a slot="title" :href="`{% url "colleges:academy-detail" %}?pk=${item.uuid}&name=${item.aca_cname}`"><% item.aca_cname %> | <% item.aca_ename %></a>
+            <a-avatar shape="square" size="large" slot="avatar" :src="item.aca_avatar"></a-avatar>
+          </a-list-item-meta>
+          <% item.content %>
+        </a-skeleton>
+      </a-list-item>
+    </a-list>
   </div>
 </script>
 
@@ -29,7 +32,14 @@
       template: '#suit-colleges-tables',
       data: function () {
         return {
-          colleges: [{}]
+          loading: true,
+          colleges: [{}],
+          actions: [
+            { type: 'code-o', text: '编码', key: 'aca_code' },
+            { type: 'phone-o', text: '电话', key: 'aca_phone' },
+            { type: 'paper-clip', text: '邮编', key: 'aca_fax' },
+            { type: 'link', text: '网址', key: 'aca_href' }
+          ],
         }
       },
       created: function () {
@@ -47,7 +57,9 @@
             const {code, data} = response.data;
             if (code === "00000000") {
               this.colleges = data;
+              console.log(data);
             }
+            this.loading = !this.loading;
           }).catch(error => {
             console.log(error);
           });

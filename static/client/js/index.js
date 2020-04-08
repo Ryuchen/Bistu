@@ -10,7 +10,36 @@
       site: {
         namespaced: true,
         state: {
-          application: {},  // 应用产品的信息
+          application: {
+            'app': {
+              "name": "Postgraduate Manager System",
+              "description": "Using for College CMS"
+            },
+            'auth': {
+              "name": "Ryuchen",
+              "year": "2018",
+              "href": "https://github.com/Ryuchen"
+            },
+            'toolbox': {
+              "lock": {
+                "enable": true,
+                "verify": "email"
+              },
+              "github": {
+                "enable": true,
+                "link": "https://github.com/ryuchen"
+              },
+              "search": {
+                "enable": true,
+              },
+              "notice": {
+                "enable": true,
+              },
+              "utility": {
+                "enable": true,
+              }
+            }
+          },  // 应用产品的信息
           collapsed: false,  // 侧边栏是否收起
           activeKey: '0',  // 当前激活的tab页面key
           activePanes: [],  // 总共打开的tab页面

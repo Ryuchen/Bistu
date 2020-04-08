@@ -17,4 +17,4 @@ urlpatterns = [
 	url(r"^definitions/$", views.definitions, name="definitions"),
 ]
 
-app_name = 'settings'
+app_name = 'api-settings'

@@ -22,7 +22,7 @@ from . import views
 # API's router
 urlpatterns = [
     path('', lambda request: redirect('client/', permanent=True)),
-    path("settings/", include("apps.settings.urls", namespace="settings")),
+    path("settings/", include("apps.settings.urls", namespace="api-settings")),
     path("accounts/", include("apps.accounts.urls", namespace="accounts")),
     path("colleges/", include("apps.colleges.urls", namespace="api-colleges")),
     path("teachers/", include("apps.teachers.urls")),

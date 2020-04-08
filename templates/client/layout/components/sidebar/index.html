@@ -82,7 +82,7 @@
       // 获取菜单的ACL列表进行权限过滤
       getAccesslimit () {
         axios({
-          url: "{% url 'settings:accesslimit' %}",
+          url: "{% url 'api-settings:accesslimit' %}",
           method: "GET",
           headers: {
             'X-CSRFTOKEN': window.csrftoken
