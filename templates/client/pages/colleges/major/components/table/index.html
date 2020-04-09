@@ -5,27 +5,9 @@
     <a-page-header title="专业列表"></a-page-header>
     <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
       <a-row :gutter="24">
-        <a-col
-          v-for="i in 10"
-          :key="i"
-          :span="8"
-          :style="{ display: i < count ? 'block' : 'none' }"
-        >
-          <a-form-item :label="`Field ${i}`">
-            <a-input
-              v-decorator="[
-                `field-${i}`,
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: 'Input something!',
-                    },
-                  ],
-                },
-              ]"
-              placeholder="placeholder"
-            />
+        <a-col key="maj_name" :span="8">
+          <a-form-item :label="`专业名称`">
+            <a-input v-decorator="['maj_name']" placeholder="输入你想查询的专业名称"></a-input>
           </a-form-item>
         </a-col>
       </a-row>
@@ -37,14 +19,14 @@
           <a-button :style="{ marginLeft: '8px' }" @click="handleReset">
             Clear
           </a-button>
-          <a :style="{ marginLeft: '8px', fontSize: '12px' }" @click="toggle">
-            Collapse <a-icon :type="expand ? 'up' : 'down'" />
-          </a>
         </a-col>
       </a-row>
     </a-form>
     <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8; cursor: default;">
-      <a-table :columns="columns" :dataSource="majors">
+      <a-table :columns="columns" :dataSource="data">
+        <span slot="name" slot-scope="text, record">
+          <a :href="`{% url "colleges:major-detail" %}?pk=${record.uuid}&name=${text}`"><% text %></a>
+        </span>
         <span slot="first" slot-scope="text, record">
           <a-tag :color="text ? 'green' : 'volcano'" >
             <% record.maj_first %>
@@ -59,7 +41,7 @@
           <a-divider dashed>当前开设的研究方向</a-divider>
           <div>
             <template v-for="research in record.maj_research">
-              <a-tag><% research.res_name %></a-tag>
+              <a-tag :data-uuid="research.uuid"><% research.res_name %></a-tag>
             </template>
           </div>
           <a-divider></a-divider>
@@ -75,21 +57,27 @@
       template: '#suit-major-tables',
       data: function () {
         return {
+          temp: [{}],
           majors: [{}],
-          expand: false,
           form: this.$form.createForm(this, { name: 'advanced_search' }),
         }
       },
       computed: {
-        count() {
-          return this.expand ? 11 : 7;
+        data: {
+          get () {
+            return this.temp;
+          },
+          set (value) {
+            this.temp = value;
+          }
         },
-        columns() {
+        columns () {
           return [
             {
               dataIndex: 'maj_name',
               key: 'name',
               title: '专业名称',
+              scopedSlots: { customRender: 'name' },
             },
             {
               dataIndex: 'maj_code',
@@ -146,6 +134,7 @@
             const {code, data} = response.data;
             if (code === "00000000") {
               this.majors = data;
+              this.data = data;
             }
             this.loading = !this.loading;
           }).catch(error => {
@@ -155,18 +144,17 @@
         handleSearch(e) {
           e.preventDefault();
           this.form.validateFields((error, values) => {
-            console.log('error', error);
-            console.log('Received values of form: ', values);
+            this.data = this.majors.filter(function (x) {
+              if (x.maj_name.indexOf(values.maj_name) === 0) {
+                return x;
+              }
+            });
           });
         },
-
         handleReset() {
           this.form.resetFields();
-        },
-
-        toggle() {
-          this.expand = !this.expand;
-        },
+          this.data = this.majors;
+        }
       }
     });
 </script>

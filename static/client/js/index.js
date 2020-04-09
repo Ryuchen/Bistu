@@ -138,6 +138,12 @@
             window.localStorage.setItem('permissions', JSON.stringify(state.permissions));
           }
         }
+      },
+      colleges: {
+        namespaced: true,
+        state: {
+          academy: {}
+        }
       }
     }
   });
@@ -173,6 +179,19 @@
           _this.$store.commit('site/activeKey', '0');
         }
       });
+    },
+    methods: {
+      // 全局右键菜单功能
+      refresh () {
+        window.location.reload(true);
+      },
+      closeCurrent () {
+        // TODO: 虽然关闭了标签页面，但是没有重载tab页
+        Bus.$emit('closePane', this.$store.state.site.activeKey);
+      },
+      goBack () {
+        history.go(-1);
+      }
     }
   });
 })();

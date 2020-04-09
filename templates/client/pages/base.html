@@ -39,12 +39,20 @@
 
     {% endblock %}
     <!-- template load section -->
-    <div id="app">
-      <!-- site application section -->
-      {% block app %}
 
-      {% endblock %}
-      <!-- site application section -->
+    <div id="app">
+      <a-dropdown :trigger="['contextmenu']">
+        <!-- site application section -->
+        {% block app %}
+
+        {% endblock %}
+        <!-- site application section -->
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="refresh"><a-icon type="reload"></a-icon>重载当前页</a-menu-item>
+          <a-menu-item key="2" @click="closeCurrent"><a-icon type="close-circle"></a-icon>关闭当前页</a-menu-item>
+          <a-menu-item key="3" @click="goBack"><a-icon type="rollback"></a-icon>返回上一页</a-menu-item>
+        </a-menu>
+      </a-dropdown>
     </div>
   </body>
   <!-- Customize django vueSuit mixin function for global -->

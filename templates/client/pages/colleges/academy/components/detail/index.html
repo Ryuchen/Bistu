@@ -87,12 +87,6 @@
     data: function () {
       return {
         loading: true,
-        actions: [
-          { type: 'code-o', text: '专业编码', key: 'maj_code' },
-          { type: 'phone-o', text: '设立时间', key: 'maj_setup_time' },
-          { type: 'paper-clip', text: '学位类型', key: 'maj_degree' },
-          { type: 'link', text: '学生人数', key: 'student_count' }
-        ],
         pk: '',
         subTitle: '',
         academyProfile: {
@@ -105,7 +99,6 @@
       this.splitUrlParams();
     },
     methods: {
-      // 获取website的基础信息存储在Vuex中
       getAcademyInfos () {
         axios({
           url: `{% url 'api-colleges:academy' %}${this.pk}/`,

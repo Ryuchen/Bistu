@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends "client/pages/base.html" %}
+{% load i18n static %}
 
-</body>
-</html>
+{% block stylesheet %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/colleges.css' %}">
+{% endblock %}
+
+<!-- site javascript section -->
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
+<!-- site javascript section -->
+
+{% block x-template %}
+  {% include 'client/pages/colleges/major/components/detail/index.html' %}
+{% endblock %}
+
+{% block app %}
+  <div id="colleges-container">
+    <div class="colleges-wrapper">
+      <suit-major-detail></suit-major-detail>
+    </div>
+  </div>
+{% endblock %}

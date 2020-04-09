@@ -138,7 +138,6 @@ class SimpleMajor(object):
 class MajorList(SimpleMajor, generics.GenericAPIView):
 
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
         res = {
             "code": "00000000",
@@ -151,7 +150,6 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
 
     # 添加
     @excepts
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         data = request.data
         bulk = isinstance(data, list)
@@ -169,7 +167,6 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def put(self, request, *args, **kwargs):
         file = request.data['file']
         data = xlrd.open_workbook(filename=None, file_contents=file.read())
@@ -191,14 +188,17 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
 
 class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
     @excepts
-    @csrf_exempt
     def get(self, request, *args, **kwargs):
+        res = {
+            "code": "00000000",
+            "data": {}
+        }
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        res["data"] = serializer.data
+        return Response(res)
 
     @excepts
-    @csrf_exempt
     def put(self, request, *args, **kwargs):
         data = request.data
         data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
@@ -210,7 +210,6 @@ class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
     @excepts
-    @csrf_exempt
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
