@@ -80,6 +80,43 @@ def accesslimit(request):
                         }
                     ]
                 },
+                {
+                    "key": '3',
+                    "title": "test管理",
+                    "name": "colleges",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore",
+                    "subs": [
+                        {
+                            "key": '301',
+                            "title": "学院列表",
+                            "name": "aca-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '302',
+                            "title": "专业领域",
+                            "name": "maj-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '303',
+                            "title": "研究方向",
+                            "name": "res-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '304',
+                            "title": "班级管理",
+                            "name": "cls-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        }
+                    ]
+                },
             ]
         }
     }

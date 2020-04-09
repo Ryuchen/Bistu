@@ -1,6 +1,6 @@
 {% load i18n static %}
 
-<script type="text/x-template" id="suit-colleges-detail">
+<script type="text/x-template" id="suit-academy-detail">
   <div>
     <a-page-header @back="goBack()" title="学院详情页"></a-page-header>
     <div>
@@ -65,7 +65,7 @@
                       <span>该专业自<% item.maj_setup_time %>起建设，专业类型为：<% item.maj_degree %>, 学生毕业后授予学位类型为：<% item.maj_type %>。</span>
                       <p>已经开设了如下研究方向：</p>
                       <template v-for="research in item.maj_research">
-                        <span><% research.res_name %></span><a-divider type="vertical"></a-divider>
+                        <a-tag><% research.res_name %></a-tag>
                       </template>
                     </div>
                   </a-list-item-meta>
@@ -81,9 +81,9 @@
 </script>
 
 <script type="application/javascript">
-  Vue.component('suit-colleges-detail', {
+  Vue.component('suit-academy-detail', {
     delimiters: ['<%', '%>'],
-    template: '#suit-colleges-detail',
+    template: '#suit-academy-detail',
     data: function () {
       return {
         loading: true,

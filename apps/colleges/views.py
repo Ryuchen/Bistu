@@ -127,41 +127,12 @@ class AcademyDetail(SimpleAcademy, generics.RetrieveUpdateDestroyAPIView):
         return Response(status.HTTP_200_OK)
 
 
-# Todo: check && rewrite some of this functions.
 # 专业
 class SimpleMajor(object):
     model = Major
     queryset = Major.objects.all()
     serializer_class = MajorSerializers
-    pagination_class = None
-
-
-class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
-    @excepts
-    @csrf_exempt
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-    @excepts
-    @csrf_exempt
-    def put(self, request, *args, **kwargs):
-        data = request.data
-        data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data, partial=partial, context={"research": ""})
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-    @excepts
-    @csrf_exempt
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status.HTTP_200_OK)
+    pagination_class = StandardPagination
 
 
 class MajorList(SimpleMajor, generics.GenericAPIView):
@@ -169,13 +140,14 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
     @excepts
     @csrf_exempt
     def get(self, request, *args, **kwargs):
+        res = {
+            "code": "00000000",
+            "data": {}
+        }
         queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        res["data"] = serializer.data
+        return Response(res)
 
     # 添加
     @excepts
@@ -217,6 +189,35 @@ class MajorList(SimpleMajor, generics.GenericAPIView):
         return Response(serializer.data)
 
 
+class MajorDetail(SimpleMajor, generics.RetrieveUpdateDestroyAPIView):
+    @excepts
+    @csrf_exempt
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    @excepts
+    @csrf_exempt
+    def put(self, request, *args, **kwargs):
+        data = request.data
+        data["research"] = [i.uuid for i in Research.objects.filter(res_name__in=data.get('research').split(","))]
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data, partial=partial, context={"research": ""})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    @excepts
+    @csrf_exempt
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status.HTTP_200_OK)
+
+
+# Todo: check && rewrite some of this functions.
 # 科研方向
 class SimpleResearch(object):
     model = Research

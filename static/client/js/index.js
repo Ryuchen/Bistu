@@ -10,7 +10,7 @@
       site: {
         namespaced: true,
         state: {
-          application: {
+          application: {  // Pre define default value
             'app': {
               "name": "Postgraduate Manager System",
               "description": "Using for College CMS"
@@ -41,6 +41,7 @@
             }
           },  // 应用产品的信息
           collapsed: false,  // 侧边栏是否收起
+          openKeys: [],  // 当前展开的 SubMenu 菜单项 key 数组
           activeKey: '0',  // 当前激活的tab页面key
           activePanes: [],  // 总共打开的tab页面
         },
@@ -54,6 +55,11 @@
             const value = JSON.parse(window.localStorage.getItem('collapsed') || null);
             state.collapsed = value ? value : false;
             return state.collapsed;
+          },
+          openKeys: function (state) {
+            const value = JSON.parse(window.localStorage.getItem('openKeys') || null);
+            state.openKeys = value ? value : [];
+            return state.openKeys;
           },
           activeKey: function (state) {
             const value = JSON.parse(window.localStorage.getItem('activeKey') || null);
@@ -75,10 +81,15 @@
             state.collapsed = !state.collapsed;
             window.localStorage.setItem('collapsed', JSON.stringify(state.collapsed));
           },
+          openKeys: function (state, payload) {
+            state.openKeys = payload;
+            window.localStorage.setItem('openKeys', JSON.stringify(state.openKeys));
+          },
           activeKey: function (state, payload) {
             state.activeKey = payload;
             window.localStorage.setItem('activeKey', JSON.stringify(state.activeKey));
           },
+          // for tab panes open && close method
           addActivePanes: function (state, payload) {
             const value = JSON.parse(window.localStorage.getItem('activePanes') || null);
             state.activePanes = value ? value : [];

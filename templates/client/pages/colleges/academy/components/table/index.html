@@ -1,9 +1,9 @@
 {% load i18n static %}
 
-<script type="text/x-template" id="suit-colleges-tables">
+<script type="text/x-template" id="suit-academy-tables">
   <div>
     <a-page-header title="学院列表"></a-page-header>
-    <a-list itemLayout="vertical" size="large" :dataSource="colleges">
+    <a-list itemLayout="vertical" size="large" :dataSource="academies">
       <a-list-item slot="renderItem" slot-scope="item, index" key="item.uuid">
         <template v-if="!loading" slot="actions" v-for="{type, text, key} in actions">
           <span :key="type">
@@ -27,13 +27,13 @@
 </script>
 
 <script type="application/javascript">
-    Vue.component('suit-colleges-tables', {
+    Vue.component('suit-academy-tables', {
       delimiters: ['<%', '%>'],
-      template: '#suit-colleges-tables',
+      template: '#suit-academy-tables',
       data: function () {
         return {
           loading: true,
-          colleges: [{}],
+          academies: [{}],
           actions: [
             { type: 'code-o', text: '编码', key: 'aca_code' },
             { type: 'phone-o', text: '电话', key: 'aca_phone' },
@@ -56,8 +56,7 @@
           }).then(response => {
             const {code, data} = response.data;
             if (code === "00000000") {
-              this.colleges = data;
-              console.log(data);
+              this.academies = data;
             }
             this.loading = !this.loading;
           }).catch(error => {

@@ -21,7 +21,7 @@
       :style="{ height: 'calc(100%- 120px)', borderRight: 0 }"
       :inlineCollapsed="collapsed"
       :selectedKeys="activeKeys"
-      :openKeys.sync="openKeys"
+      :openKeys="openKeys"
       @select='menuSelect'
       @openChange="onOpenChange"
     >
@@ -38,12 +38,11 @@
 
 <script type="application/javascript">
   Vue.component('suit-sidebar', {
-    delimiters: ['<%', '%>'],
+    delimiters: ['<%' , '%>'],
     template: '#suit-sidebar',
     data: function () {
       return {
         menus: [{}],
-        openKeys: [],
         rootSubmenuKeys: [],
       }
     },
@@ -52,6 +51,14 @@
       collapsed: {
         get: function () {
           return this.$store.state.site.collapsed;
+        }
+      },
+      openKeys: {
+        get: function () {
+          return this.$store.state.site.openKeys;
+        },
+        set: function (value) {
+          this.$store.commit('site/openKeys', value);
         }
       },
       activeKey: {
@@ -91,14 +98,13 @@
           const {code, data} = response.data;
           if (code === "00000000") {
             this.menus = data.menus;
-            this.setSubmenuKeys();
+            this.setRootSubmenuKeys();
           }
         }).catch(error => {
           console.log(error);
         });
       },
-
-      setSubmenuKeys () {
+      setRootSubmenuKeys () {
         this.menus.map(menu => {
           if (menu.hasOwnProperty("subs")) {
             this.rootSubmenuKeys.push(menu.key);

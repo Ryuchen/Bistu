@@ -1,10 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% load i18n static %}
 
-</body>
-</html>
+<script type="text/x-template" id="suit-major-tables">
+  <div>
+    <a-page-header title="专业列表"></a-page-header>
+    <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
+      <a-row :gutter="24">
+        <a-col
+          v-for="i in 10"
+          :key="i"
+          :span="8"
+          :style="{ display: i < count ? 'block' : 'none' }"
+        >
+          <a-form-item :label="`Field ${i}`">
+            <a-input
+              v-decorator="[
+                `field-${i}`,
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: 'Input something!',
+                    },
+                  ],
+                },
+              ]"
+              placeholder="placeholder"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="24" :style="{ textAlign: 'right' }">
+          <a-button type="primary" html-type="submit">
+            Search
+          </a-button>
+          <a-button :style="{ marginLeft: '8px' }" @click="handleReset">
+            Clear
+          </a-button>
+          <a :style="{ marginLeft: '8px', fontSize: '12px' }" @click="toggle">
+            Collapse <a-icon :type="expand ? 'up' : 'down'" />
+          </a>
+        </a-col>
+      </a-row>
+    </a-form>
+    <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8; cursor: default;">
+      <a-table :columns="columns" :dataSource="majors">
+        <span slot="first" slot-scope="text, record">
+          <a-tag :color="text ? 'green' : 'volcano'" >
+            <% record.maj_first %>
+          </a-tag>
+        </span>
+        <span slot="second" slot-scope="text, record">
+          <a-tag :color="text ? 'green' : 'volcano'" >
+            <% record.maj_second %>
+          </a-tag>
+        </span>
+        <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
+          <a-divider dashed>当前开设的研究方向</a-divider>
+          <div>
+            <template v-for="research in record.maj_research">
+              <a-tag><% research.res_name %></a-tag>
+            </template>
+          </div>
+          <a-divider></a-divider>
+        </div>
+      </a-table>
+    </a-card>
+  </div>
+</script>
+
+<script type="application/javascript">
+    Vue.component('suit-major-tables', {
+      delimiters: ['<%', '%>'],
+      template: '#suit-major-tables',
+      data: function () {
+        return {
+          majors: [{}],
+          expand: false,
+          form: this.$form.createForm(this, { name: 'advanced_search' }),
+        }
+      },
+      computed: {
+        count() {
+          return this.expand ? 11 : 7;
+        },
+        columns() {
+          return [
+            {
+              dataIndex: 'maj_name',
+              key: 'name',
+              title: '专业名称',
+            },
+            {
+              dataIndex: 'maj_code',
+              key: 'code',
+              title: '专业编码',
+            },
+            {
+              dataIndex: 'maj_type',
+              key: 'type',
+              title: '学科类型',
+            },
+            {
+              dataIndex: 'maj_setup_time',
+              key: 'setup_time',
+              title: '获批时间',
+            },
+            {
+              dataIndex: 'maj_degree',
+              key: 'degree',
+              title: '学位类型',
+            },
+            {
+              dataIndex: 'student_count',
+              key: 'std_count',
+              title: '学生人数',
+            },
+            {
+              dataIndex: 'maj_first',
+              key: 'first',
+              title: '是否一级学科',
+              scopedSlots: { customRender: 'first' },
+            },
+            {
+              dataIndex: 'maj_second',
+              key: 'second',
+              title: '是否二级学科',
+              scopedSlots: { customRender: 'second' },
+            }
+          ]
+        }
+      },
+      created: function () {
+        this.getCollegesInfors();
+      },
+      methods: {
+        getCollegesInfors () {
+          axios({
+            url: "{% url 'api-colleges:majors' %}",
+            method: "GET",
+            headers: {
+              'X-CSRFTOKEN': window.csrftoken
+            }
+          }).then(response => {
+            const {code, data} = response.data;
+            if (code === "00000000") {
+              this.majors = data;
+            }
+            this.loading = !this.loading;
+          }).catch(error => {
+            console.log(error);
+          });
+        },
+        handleSearch(e) {
+          e.preventDefault();
+          this.form.validateFields((error, values) => {
+            console.log('error', error);
+            console.log('Received values of form: ', values);
+          });
+        },
+
+        handleReset() {
+          this.form.resetFields();
+        },
+
+        toggle() {
+          this.expand = !this.expand;
+        },
+      }
+    });
+</script>

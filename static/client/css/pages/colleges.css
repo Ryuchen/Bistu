@@ -7,4 +7,29 @@
 #colleges-container .colleges-wrapper .colleges-detail-section {
   margin: 20px 0;
 }
+#colleges-container .colleges-wrapper .ant-advanced-search-form {
+  padding: 24px;
+  background: #fbfbfb;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+#colleges-container .colleges-wrapper .ant-advanced-search-form .ant-form-item {
+  display: flex;
+}
+#colleges-container .colleges-wrapper .ant-advanced-search-form .ant-form-item-control-wrapper {
+  flex: 1;
+}
+#colleges-container .colleges-wrapper #components-form-demo-advanced-search .ant-form {
+  max-width: none;
+}
+#colleges-container .colleges-wrapper #components-form-demo-advanced-search .search-result-list {
+  margin-top: 16px;
+  border: 1px dashed #e9e9e9;
+  border-radius: 6px;
+  background-color: #fafafa;
+  min-height: 200px;
+  text-align: center;
+  padding-top: 80px;
+}
 /*# sourceMappingURL=colleges.css.map */
