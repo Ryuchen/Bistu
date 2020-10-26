@@ -15,3 +15,8 @@ urlpatterns = [
 	url(r"^translation/$", views.translation, name="settings-translation"),
 	url(r"^definitions/$", views.definitions, name="common-settings"),
 ]
+<<<<<<< HEAD
+=======
+
+app_name = 'api-settings'
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5

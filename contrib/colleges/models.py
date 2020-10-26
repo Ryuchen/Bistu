@@ -134,8 +134,12 @@ class Academy(models.Model):
     学院模型
     """
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, verbose_name="唯一标识ID")
+<<<<<<< HEAD
     aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user",
                                  verbose_name="学院负责人")
+=======
+    aca_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="aca_user", verbose_name="学院负责人")
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
     aca_avatar = models.ImageField(null=True, upload_to="academies", default='default.png', verbose_name="学院图标")
     aca_nickname = models.CharField(max_length=128, null=True, verbose_name="学院简称")
     aca_cname = models.CharField(max_length=128, null=True, verbose_name="学院名称(中)")
@@ -153,6 +157,10 @@ class Academy(models.Model):
 
     class Meta:
         db_table = 'academy'
+<<<<<<< HEAD
+=======
+        ordering = ['aca_code']
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
         verbose_name = "学院"
         verbose_name_plural = verbose_name
         default_permissions = ()

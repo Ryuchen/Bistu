@@ -17,9 +17,22 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+<<<<<<< Updated upstream
     path("", admin.site.urls),
     path("accounts/", include("apps.accounts.urls")),
+=======
+    path('', lambda request: redirect('client/', permanent=True)),
+<<<<<<< HEAD
+
+    path("settings/", include(("apps.settings.urls", "settings"), namespace="settings")),
+    path("accounts/", include(("apps.accounts.urls", "accounts"), namespace="accounts")),
+>>>>>>> Stashed changes
     path("colleges/", include("apps.colleges.urls")),
+=======
+    path("settings/", include("apps.settings.urls", namespace="api-settings")),
+    path("accounts/", include("apps.accounts.urls", namespace="accounts")),
+    path("colleges/", include("apps.colleges.urls", namespace="api-colleges")),
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
     path("teachers/", include("apps.teachers.urls")),
     path("students/", include("apps.students.urls")),
     path("settings/", include("apps.settings.urls")),
@@ -27,8 +40,41 @@ urlpatterns = [
     path("thesis/", include("apps.thesis.urls")),
     path("statistic/", include("apps.statistic.urls")),
     path("history_data/", include("apps.history_data.urls")),
+<<<<<<< HEAD
 ]
 
+<<<<<<< Updated upstream
+=======
+# dashboard's router
+urlpatterns += [
+    url(r"^dashboard/$", views.dashboard, name="dashboard"),
+]
+
+=======
+]
+
+# dashboard's router
+urlpatterns += [
+    url(r"^dashboard/$", views.dashboard, name="dashboard"),
+]
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+
+# server's router
+urlpatterns += [
+    path("server/", admin.site.urls),
+]
+
+# client's router
+urlpatterns += [
+<<<<<<< HEAD
+    path("client/", views.index, name="index")
+=======
+    path("client/", views.index, name="index"),
+    path("client/colleges/", include("apps.colleges.routers", namespace="colleges"))
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+]
+
+>>>>>>> Stashed changes
 admin.sites.AdminSite.site_header = '研究生管理系统'
 admin.sites.AdminSite.site_title = '研究生管理系统'
 admin.sites.AdminSite.index_title = '北京信息科技大学'

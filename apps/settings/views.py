@@ -23,10 +23,173 @@ from core.definition.enums import *
 @authentication_classes(())
 @permission_classes(())
 @excepts
+<<<<<<< Updated upstream
 def application(request):
     res = {
         "code": "00000000",
         "data": {}
+=======
+def accesslimit(request):
+    res = {
+        "code": "00000000",
+        "data": {
+            'menus': [
+                {
+<<<<<<< HEAD
+                    "key": reverse('dashboard'),
+                    "title": "学生管理",
+                    "name": "students",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore",
+                    "subs": [
+                        {
+                            "key": reverse('student-list'),
+                            "title": "学生列表",
+                            "name": "stu-list",
+=======
+                    "key": reverse('student-list'),
+                    "title": "学生管理",
+                    "name": "students",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore"
+                },
+                {
+                    "key": reverse('teacher-list'),
+                    "title": "教师管理",
+                    "name": "teachers",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore"
+                },
+                {
+                    "key": '2',
+                    "title": "学院管理",
+                    "name": "colleges",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore",
+                    "subs": [
+                        {
+                            "key": reverse('colleges:academy-table'),
+                            "title": "学院列表",
+                            "name": "aca-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:major-table'),
+                            "title": "专业领域",
+                            "name": "maj-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:research-table'),
+                            "title": "研究方向",
+                            "name": "res-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": reverse('colleges:class-table'),
+                            "title": "班级管理",
+                            "name": "cls-list",
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        }
+                    ]
+                },
+                {
+<<<<<<< HEAD
+                    "key": reverse('academy-list'),
+                    "title": "学院管理",
+                    "name": "colleges",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore",
+=======
+                    "key": '3',
+                    "title": "test管理",
+                    "name": "colleges",
+                    "role": ["admin", "staff", "teacher"],
+                    "icon": "appstore",
+                    "subs": [
+                        {
+                            "key": '301',
+                            "title": "学院列表",
+                            "name": "aca-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '302',
+                            "title": "专业领域",
+                            "name": "maj-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '303',
+                            "title": "研究方向",
+                            "name": "res-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        },
+                        {
+                            "key": '304',
+                            "title": "班级管理",
+                            "name": "cls-list",
+                            "role": ["admin", "staff", "teacher"],
+                            "icon": "appstore",
+                        }
+                    ]
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+                },
+            ]
+        }
+    }
+    return Response(res)
+
+
+@api_view(["GET"])
+@authentication_classes(())
+@permission_classes(())
+@excepts
+def application(request):
+    res = {
+        "code": "00000000",
+        "data": {
+            'app': {
+                "name": "Postgraduate Manager System",
+                "description": "Using for College CMS"
+            },
+            'auth': {
+                "name": "Ryuchen",
+                "year": "2018",
+                "href": "https://github.com/Ryuchen"
+<<<<<<< HEAD
+=======
+            },
+            'toolbox': {
+                "lock": {
+                    "enable": True,
+                    "verify": "email"
+                },
+                "github": {
+                    "enable": True,
+                    "link": "https://github.com/ryuchen"
+                },
+                "search": {
+                    "enable": True,
+                },
+                "notice": {
+                    "enable": True,
+                },
+                "utility": {
+                    "enable": True,
+                }
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+            }
+        }
+>>>>>>> Stashed changes
     }
     res['data']['app'] = {"name": "Bistu Postgraduate Manager System", "description": "Using for Bistu College CMS"}
     # res['data']['menu'] = [

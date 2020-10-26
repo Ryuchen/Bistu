@@ -1,0 +1,229 @@
+{% load i18n static %}
+
+{# !!! Don't import in any other pages again !!! #}
+{% include 'client/layout/components/header/index.html' %}
+{% include 'client/layout/components/sidebar/index.html' %}
+{% include 'client/layout/components/footer/index.html' %}
+{% include 'client/components/iframe/index.html' %}
+
+<script type="text/x-template" id="suit-layout">
+  <a-layout>
+    <suit-header></suit-header>
+    <a-layout style="height: calc(100vh - 64px)">
+      <suit-sidebar></suit-sidebar>
+      <a-layout>
+        <a-layout-content>
+          <div class="card-container" id="content-wrapper">
+<<<<<<< HEAD
+            <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey"
+                @edit="onEdit"
+                @tabClick="onSelect"
+            >
+=======
+            <a-tabs hide-add type="editable-card" :tab-bar-gutter=1 v-model="activeKey" @edit="onEdit">
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+              <a-tab-pane key="0" closable>
+                <span slot="tab">{% trans 'Dashboard' %}</span>
+                <suit-iframe :href="`{% url 'dashboard' %}`" :height="height"></suit-iframe>
+              </a-tab-pane>
+              <a-tab-pane v-for="(pane, index) in activePanes" :key="pane.key">
+                <span slot="tab"><% pane.title %></span>
+                <suit-iframe :href="pane.key" :height="height"></suit-iframe>
+              </a-tab-pane>
+            </a-tabs>
+          </div>
+        </a-layout-content>
+<<<<<<< HEAD
+        <suit-footer :app="app" :auth="auth"></suit-footer>
+=======
+        <suit-footer :app="application.app" :auth="application.auth"></suit-footer>
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+      </a-layout>
+    </a-layout>
+  </a-layout>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-layout', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-layout',
+    data: function () {
+      return {
+<<<<<<< HEAD
+        app: {},
+        auth: {},
+        height: `${window.innerHeight - 240}px`,
+        csrftoken: Cookies.get('csrftoken')
+      }
+    },
+    computed: {
+      activeKey: {
+        get: function () {
+          return this.$store.state.app.activeKey;
+        },
+        set: function (value) {
+          this.$store.state.app.activeKey = value;
+        }
+      },
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activePanes: 'activePanes'
+      })
+    },
+    created: function () {
+      const _this = this;
+      Bus.$on('menuSelected', function(payload){
+        _this.add(payload);
+      });
+      this.getApplication();
+    },
+    methods: {
+      getApplication () {
+        axios({
+          url: "{% url 'settings:application' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': this.csrftoken
+=======
+        height: `${window.innerHeight - 240}px`,
+      }
+    },
+    computed: {
+      // Vuex store of site information.
+      application: {
+        get: function () {
+          return this.$store.state.site.application;
+        },
+        set: function (value) {
+          this.$store.commit('site/application', value);
+        }
+      },
+      activeKey: {
+        get: function () {
+          return this.$store.state.site.activeKey;
+        },
+        set: function (value) {
+          this.$store.commit('site/activeKey', value);
+        }
+      },
+      activePanes: {
+        get: function () {
+          return this.$store.state.site.activePanes;
+        }
+      },
+      // Vuex store of user information.
+      profile: {
+        get: function () {
+          return this.$store.state.user.profile;
+        },
+        set: function (value) {
+          this.$store.commit('user/profile', value);
+        }
+      },
+      authority: {
+        get: function () {
+          return this.$store.state.user.authority;
+        },
+        set: function (value) {
+          this.$store.commit('user/authority', value);
+        }
+      },
+      permissions: {
+        get: function () {
+          return this.$store.state.user.permissions;
+        },
+        set: function (value) {
+          this.$store.commit('user/permissions', value);
+        }
+      }
+    },
+    created: function () {
+      // 如果当前加载的窗体宽度过小，则进行侧边栏缩小
+      if (window.innerWidth <= 992) this.$store.commit('site/collapsed');
+
+      this.getApplication();
+      this.getUserProfile();
+    },
+    methods: {
+      // 获取website的基础信息存储在Vuex中
+      getApplication () {
+        axios({
+          url: "{% url 'api-settings:application' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+          },
+          params: {
+            pk: this.pk
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            this.application = data;
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+      // 获取当前登录用户的基础信息存储在Vuex中
+      getUserProfile () {
+        axios({
+          url: "{% url 'accounts:profile' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+<<<<<<< HEAD
+            const {app, auth} = data;
+            this.app = app;
+            this.auth = auth;
+=======
+            const {profile, authority, permission} = data;
+            this.profile = profile;
+            this.authority = authority;
+            this.permissions = permission;
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+<<<<<<< HEAD
+      onEdit (key, action) {
+        this[action](key)
+      },
+      onSelect (key) {
+        this.$store.commit('app/changeActiveKey', `${key}`);
+      },
+      add (payload) {
+        this.$store.commit('app/changeActiveKey', `${payload.key}`);
+        if (this.activePanes.indexOf(payload) === -1) {
+          this.$store.commit('app/addActivePanes', payload);
+        }
+      },
+      remove (key) {
+        let nextActiveKey = '0';
+        let deleteIndex;
+        this.activePanes.map((item, index) => {
+          if (item.key === key) deleteIndex = index;
+        });
+        this.$store.commit('app/delActivePanes', deleteIndex);
+        if (this.activePanes.length > 0) nextActiveKey = this.activePanes[this.activePanes.length - 1].key;
+        this.$store.commit('app/changeActiveKey', nextActiveKey);
+=======
+
+      // 活动标签页面有关的方法
+      onEdit (key, action) {
+        this[action](key)
+      },
+      remove (key) {
+        Bus.$emit('closePane', key);
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+      },
+    },
+  })
+</script>

@@ -18,7 +18,11 @@ from rest_framework.pagination import LimitOffsetPagination
 from contrib.accounts.models import Tutor
 from contrib.colleges.models import Major, Academy
 from .serializers import TutorSerializers
+<<<<<<< HEAD
 from .serializers import AcademySerializers
+=======
+from .serializers import AcademySerializer
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
 from core.decorators.excepts import excepts
 from apps.settings.views import trans_choice
 

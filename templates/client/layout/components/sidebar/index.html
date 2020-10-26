@@ -1,0 +1,196 @@
+{% load i18n static %}
+
+{% include "client/components/submenu/index.html" %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'client/css/layouts/components/sidebar.css' %}">
+
+<script type="text/x-template" id="suit-sidebar">
+  <a-layout-sider :trigger="null" collapsible v-model="collapsed" theme="light">
+    <div style="text-align: center; margin: 20px auto;">
+      <div class="user-avatar">
+        <a-avatar :size="collapsed ? 32 : 64" :src="profile.avatar" icon="user"></a-avatar>
+      </div>
+      <div class="user-info">
+        <div><strong><% profile.name %></strong></div>
+        <div v-show="!collapsed"><% profile.email %></div>
+        <div v-show="!collapsed"><% profile.group %></div>
+      </div>
+    </div>
+    <a-menu
+      mode="inline"
+      :style="{ height: 'calc(100%- 120px)', borderRight: 0 }"
+      :inlineCollapsed="collapsed"
+      :selectedKeys="activeKeys"
+<<<<<<< HEAD
+      :openKeys.sync="openKeys"
+=======
+      :openKeys="openKeys"
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+      @select='menuSelect'
+      @openChange="onOpenChange"
+    >
+      <template v-for="item in menus">
+        <a-menu-item v-if="!item.subs" :key="item.key" :title="item.title">
+          <a-icon :type="item.icon"></a-icon>
+          <span><% item.title %></span>
+        </a-menu-item>
+        <sub-menu v-else :menus="item" :key="item.key"></sub-menu>
+      </template>
+    </a-menu>
+  </a-layout-sider>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-sidebar', {
+<<<<<<< HEAD
+    delimiters: ['<%', '%>'],
+=======
+    delimiters: ['<%' , '%>'],
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+    template: '#suit-sidebar',
+    data: function () {
+      return {
+        menus: [{}],
+<<<<<<< HEAD
+        profile: {},
+        openKeys: [],
+=======
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+        rootSubmenuKeys: [],
+      }
+    },
+    computed: {
+<<<<<<< HEAD
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed',
+        activeKeys: 'activeKeys',
+        hasPermission: 'hasPermission',
+      })
+    },
+    created: function () {
+      this.getUserProfile();
+      this.getAccesslimit();
+    },
+    methods: {
+      getUserProfile () {
+        const csrftoken = Cookies.get('csrftoken'); // Using JS Cookies library
+        axios({
+          url: "{% url 'accounts:profile' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            const {profile, authority, permission} = data;
+            this.profile = profile;
+            this.$store.commit('app/setPermissions', permission);
+          }
+        }).catch(error => {
+          const {meta, data} = error.response.data;
+          Bus.$emit('notification', 'error', meta.code, meta.details);
+        });
+      },
+      getAccesslimit () {
+        axios({
+          url: "{% url 'settings:accesslimit' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': this.csrftoken
+=======
+      // Vuex store of site information.
+      collapsed: {
+        get: function () {
+          return this.$store.state.site.collapsed;
+        }
+      },
+      openKeys: {
+        get: function () {
+          return this.$store.state.site.openKeys;
+        },
+        set: function (value) {
+          this.$store.commit('site/openKeys', value);
+        }
+      },
+      activeKey: {
+        get: function () {
+          return this.$store.state.site.activeKey;
+        },
+        set: function (value) {
+          this.$store.commit('site/activeKey', value);
+        }
+      },
+      // Vuex store of user information.
+      profile: {
+        get: function () {
+          return this.$store.state.user.profile;
+        }
+      },
+      // 针对当前的menu菜单选择项类型适配 Ant-design-vue
+      activeKeys: {
+        get: function () {
+          return [this.activeKey];
+        }
+      }
+    },
+    created: function () {
+      this.getAccesslimit();
+    },
+    methods: {
+      // 获取菜单的ACL列表进行权限过滤
+      getAccesslimit () {
+        axios({
+          url: "{% url 'api-settings:accesslimit' %}",
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            this.menus = data.menus;
+<<<<<<< HEAD
+            this.setSubmenuKeys();
+=======
+            this.setRootSubmenuKeys();
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+<<<<<<< HEAD
+      setSubmenuKeys () {
+=======
+      setRootSubmenuKeys () {
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+        this.menus.map(menu => {
+          if (menu.hasOwnProperty("subs")) {
+            this.rootSubmenuKeys.push(menu.key);
+          }
+        });
+      },
+      onOpenChange (openKeys) {
+        const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1);
+        if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+          this.openKeys = openKeys
+        } else {
+          this.openKeys = latestOpenKey ? [latestOpenKey] : []
+        }
+      },
+      menuSelect ({ item, key }) {
+        const payload = {
+          title: item.title,
+          key: key,
+        };
+<<<<<<< HEAD
+        Bus.$emit('menuSelected', payload);
+=======
+        Bus.$emit('openPane', payload);
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+      }
+    },
+  })
+</script>

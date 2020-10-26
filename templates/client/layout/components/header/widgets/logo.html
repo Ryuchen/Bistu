@@ -1,0 +1,74 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-header-logo">
+  <div :style="logoWrapperStyle">
+    <a href="{% url 'index' %}" style="display: inherit;">
+      <img v-show="collapsed" :style="logoImgStyle" :src="src.mini.src" :alt="alt" />
+    </a>
+    <a href="{% url 'index' %}" style="display: inherit;">
+      <img v-show="!collapsed" :style="logoImgStyle" :src="src.full.src" :alt="alt" />
+    </a>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-header-logo', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-header-logo',
+    data: function () {
+      const logo = {
+        "full": {
+          "src": "{% static 'client/img/logo-full.png' %}"
+        },
+        "mini": {
+          "src": "{% static 'client/img/logo-mini.png' %}"
+        },
+        "alt": "logo"
+      };
+      return {
+        width: '200px',
+        src: logo,
+        alt: logo.alt,
+        img: '',
+      }
+    },
+    watch: {
+      collapsed: function (val) {
+        this.width = val ? '80px' : '200px';
+      },
+    },
+    computed: {
+<<<<<<< HEAD
+      ...Vuex.mapGetters('app', {
+        collapsed: 'collapsed'
+      }),
+=======
+      collapsed: {
+        get: function () {
+          return this.$store.state.site.collapsed;
+        }
+      },
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+      logoWrapperStyle: function () {
+        return {
+          width: this.width,
+          height: '32px',
+          margin: '16px auto',
+          float: 'left'
+        }
+      },
+      logoImgStyle: function () {
+        return {
+          width: this.width,
+          height: '32px',
+          display: 'inherit',
+          padding: '0 24px'
+        }
+      }
+    },
+    created: function () {
+      this.width = this.collapsed ? '80px' : '200px';
+      this.alt = `{% trans 'Home' %}`;
+    }
+  })
+</script>

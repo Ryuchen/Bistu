@@ -9,40 +9,25 @@
 <div id="contentWrapper">
   <el-container>
     <el-header>
-      <el-page-header @back="javascript:history.go(-1);" content="硕士生分专业招生人数汇总表"></el-page-header>
-      <el-form :inline="true" :model="formInline" class="demo-form-inline" size="small" style="text-align: right; font-size: 12px">
-        <el-form-item label="招生年份">
-          <el-select v-model="formInline.year" placeholder="全部年份">
-            <el-option v-for="option in options" :value="option">{{ option }}</el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button type="primary" @click="onExport">导出</el-button>
-        </el-form-item>
-      </el-form>
+      <el-page-header @back="javascript:history.go(-1);" content="导入教师数据"></el-page-header>
     </el-header>
 
     <el-main>
-      <template>
+      <div style="text-align: center">
         <div id="drag-upload">
-          <el-upload class="el-upload" drag action="{% url 'student-list' %}" :on-error="handleError" :on-success="handleSuccess">
+          <el-upload class="el-upload" drag action="{% url 'tutor-list' %}" :on-error="handleError" :on-success="handleSuccess">
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将Excel文件拖到此处，或<em>点击上传</em></div>
             <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件，且不超过 2w 条记录</div>
           </el-upload>
         </div>
-<<<<<<< Updated upstream
-      </template>
-=======
         <br/>
 <<<<<<< HEAD
         <el-link type="primary">导入模板下载</el-link>
 =======
-        <el-link type="primary" :href="`{% static 'templates/student-template.xls' %}`">导入模板下载</el-link>
+        <el-link type="primary" :href="`{% static 'templates/teacher-template.xls' %}`">导入模板下载</el-link>
 >>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
       </div>
->>>>>>> Stashed changes
     </el-main>
   </el-container>
 </div>

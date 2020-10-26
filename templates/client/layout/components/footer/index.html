@@ -1,0 +1,45 @@
+<script type="text/x-template" id="suit-footer">
+  <a-layout-footer style="text-align: center">
+    <div class="ant-breadcrumb">
+<<<<<<< HEAD
+      <a class="ant-breadcrumb-link" :href="auth.link" target="_blank">
+=======
+      <a class="ant-breadcrumb-link" :href="auth.href" target="_blank">
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+        <% app.name %> © Created by <% auth.name %> From <% auth.year %> to <% year %>
+      </a>
+    </div>
+  </a-layout-footer>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-footer', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-footer',
+<<<<<<< HEAD
+    props: ['app', 'auth'],
+=======
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+    data () {
+      return {
+        year: moment().year(),
+      }
+<<<<<<< HEAD
+=======
+    },
+    computed: {
+      // Vuex store of user information.
+      app: {
+        get: function () {
+          return this.$store.state.site.application.app;
+        }
+      },
+      auth: {
+        get: function () {
+          return this.$store.state.site.application.auth;
+        }
+      },
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+    }
+  })
+</script>

@@ -16,3 +16,5 @@ urlpatterns = [
     url(r"^logout/$", views.logout_view, name="logout"),
     url(r"^current/$", views.current_view, name="current-user"),
 ]
+
+app_name = 'accounts'

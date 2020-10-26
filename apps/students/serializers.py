@@ -12,12 +12,20 @@ from django.contrib.auth.models import User
 from contrib.accounts.models import Student
 from apps.accounts.serializers import UserSerializers
 from apps.teachers.serializers import TutorSerializers
+<<<<<<< HEAD
 from apps.colleges.serializers import AcademySerializers, MajorSerializers
+=======
+from apps.colleges.serializer import AcademySerializer, MajorSerializers
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
 
 
 class StudentSerializers(serializers.ModelSerializer):
     stu_user = UserSerializers(many=False)
+<<<<<<< HEAD
     stu_academy = AcademySerializers(many=False)
+=======
+    stu_academy = AcademySerializer(many=False)
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
     stu_major = MajorSerializers(many=False)
     stu_tutor = TutorSerializers(many=False)
 

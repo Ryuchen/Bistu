@@ -10,10 +10,24 @@
 # SimpleUI settings
 # https://github.com/newpanjing/simpleui/blob/master/QUICK.md
 SIMPLEUI_STATIC_OFFLINE = True
+<<<<<<< Updated upstream
 SIMPLEUI_FAVICON_ICON = "/static/bistu/img/logo-mini.png"
 SIMPLEUI_LOGIN_LOGO = "/static/bistu/img/logo-full.png"
 SIMPLEUI_INDEX_LOGO = "/static/bistu/img/logo-mini.png"
 SIMPLEUI_LOGO = "/static/bistu/img/logo-mini.png"
+=======
+<<<<<<< HEAD
+SIMPLEUI_FAVICON_ICON = "/static/bistu/img/logo.png"
+SIMPLEUI_LOGIN_LOGO = "/static/bistu/img/caiselogo.png"
+SIMPLEUI_INDEX_LOGO = "/static/bistu/img/logo.png"
+SIMPLEUI_LOGO = "/static/bistu/img/logo.png"
+=======
+SIMPLEUI_FAVICON_ICON = "/static/client/img/logo.png"
+SIMPLEUI_LOGIN_LOGO = "/static/client/img/caiselogo.png"
+SIMPLEUI_INDEX_LOGO = "/static/client/img/logo.png"
+SIMPLEUI_LOGO = "/static/client/img/logo.png"
+>>>>>>> 9f27577387a6752b6bc33d0280deb765b5689ec5
+>>>>>>> Stashed changes
 SIMPLEUI_HOME_TITLE = '工作台'
 SIMPLEUI_HOME_ICON = 'fas fa-tachometer-alt'
 SIMPLEUI_CONFIG = {
