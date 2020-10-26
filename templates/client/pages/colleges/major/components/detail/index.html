@@ -1,0 +1,129 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-major-detail">
+  <div>
+    <a-page-header @back="goBack()" title="专业详情页"></a-page-header>
+    <div>
+      <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8; cursor: default;">
+        <div class="colleges-detail-section">
+          <a-divider>
+            <a-avatar :size="84" style="backgroundColor:#87d068"><% majorProfile.maj_name %></a-avatar>
+          </a-divider>
+{#          <div class="colleges-detail-section">#}
+{#            <a-descriptions title="基本信息">#}
+{#              <a-descriptions-item label="学院名称"><% majorProfile.aca_cname %></a-descriptions-item>#}
+{#              <a-descriptions-item label="学院编码"><% majorProfile.aca_code %></a-descriptions-item>#}
+{#              <a-descriptions-item label="学院人数"><% majorProfile.student_count %></a-descriptions-item>#}
+{#            </a-descriptions>#}
+{#          </div>#}
+{#          <div class="colleges-detail-section">#}
+{#            <a-descriptions title="联系方式">#}
+{#              <a-descriptions-item label="联系电话"><% majorProfile.aca_cname %></a-descriptions-item>#}
+{#              <a-descriptions-item label="传真号"><% majorProfile.aca_fax %></a-descriptions-item>#}
+{#              <a-descriptions-item label="学院官网">#}
+{#                <a :href="majorProfile.aca_href" target="_blank"><% majorProfile.aca_href %></a>#}
+{#              </a-descriptions-item>#}
+{#            </a-descriptions>#}
+{#          </div>#}
+{#          <div class="colleges-detail-section">#}
+{#            <a-descriptions title="学院秘书">#}
+{#              <a-descriptions-item label="秘书姓名">#}
+{#                <% majorProfile.aca_user.first_name %><% majorProfile.aca_user.last_name %>#}
+{#              </a-descriptions-item>#}
+{#              <a-descriptions-item label="联系邮箱">#}
+{#                <% majorProfile.aca_user.email %>#}
+{#              </a-descriptions-item>#}
+{#              <a-descriptions-item label="职工档案">#}
+{#                <a href="#">详细资料</a>#}
+{#              </a-descriptions-item>#}
+{#            </a-descriptions>#}
+{#          </div>#}
+{#          <div class="colleges-detail-section">#}
+{#            <a-descriptions title="学院介绍">#}
+{#              <a-descriptions-item span="3">#}
+{#                <% majorProfile.aca_brief %>#}
+{#              </a-descriptions-item>#}
+{#            </a-descriptions>#}
+{#          </div>#}
+{#          <div class="colleges-detail-section">#}
+{#            <a-descriptions title="专业建设"></a-descriptions>#}
+{#            <a-list itemLayout="vertical" size="small" :dataSource="majorProfile.aca_majors">#}
+{#              <a-list-item slot="renderItem" slot-scope="item, index" key="item.uuid">#}
+{#                <template v-if="!loading" slot="actions" v-for="{type, text, key} in actions">#}
+{#                  <span :key="type">#}
+{#                    <a-icon :type="type" style="margin-right: 8px"></a-icon>#}
+{#                    <span v-if="key === 'maj_code'"><% text %>: <% item.maj_code %></span>#}
+{#                    <span v-if="key === 'maj_setup_time'"><% text %>: <% item.maj_setup_time %></span>#}
+{#                    <span v-if="key === 'maj_degree'"><% text %>: <% item.maj_degree %></span>#}
+{#                    <span v-if="key === 'student_count'"><% text %>: <% item.student_count %></span>#}
+{#                  </span>#}
+{#                </template>#}
+{#                <a-skeleton :loading="loading" active avatar>#}
+{#                  <a-list-item-meta>#}
+{#                    <a slot="title" :href="`{% url "colleges:major-detail" %}?pk=${item.uuid}&name=${item.maj_name}`"><% item.maj_name %></a>#}
+{#                    <div slot="description">#}
+{#                      <span>该专业自<% item.maj_setup_time %>起建设，专业类型为：<% item.maj_degree %>, 学生毕业后授予学位类型为：<% item.maj_type %>。</span>#}
+{#                      <p>已经开设了如下研究方向：</p>#}
+{#                      <template v-for="research in item.maj_research">#}
+{#                        <a-tag><% research.res_name %></a-tag>#}
+{#                      </template>#}
+{#                    </div>#}
+{#                  </a-list-item-meta>#}
+{#                  <% item.content %>#}
+{#                </a-skeleton>#}
+{#              </a-list-item>#}
+{#            </a-list>#}
+{#          </div>#}
+        </div>
+      </a-card>
+    </div>
+  </div>
+</script>
+
+<script type="application/javascript">
+  Vue.component('suit-major-detail', {
+    delimiters: ['<%', '%>'],
+    template: '#suit-major-detail',
+    data: function () {
+      return {
+        loading: true,
+        pk: '',
+        subTitle: '',
+        majorProfile: {
+          maj_research: {}
+        }
+      }
+    },
+    created: function () {
+      this.splitUrlParams();
+    },
+    methods: {
+      getMajorInfos () {
+        axios({
+          url: `{% url 'api-colleges:major' %}${this.pk}/`,
+          method: "GET",
+          headers: {
+            'X-CSRFTOKEN': window.csrftoken
+          }
+        }).then(response => {
+          const {code, data} = response.data;
+          if (code === "00000000") {
+            this.majorProfile = data;
+          }
+          this.loading = !this.loading;
+        }).catch(error => {
+          console.log(error);
+        });
+      },
+      goBack: function () {
+        window.history.back();
+      },
+      splitUrlParams: function () {
+        const urlParams = new URLSearchParams(window.location.search.substring(1));
+        this.pk = urlParams.get('pk');
+        this.subTitle = urlParams.get('name');
+        this.getMajorInfos();
+      }
+    }
+  })
+</script>

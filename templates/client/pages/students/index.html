@@ -1,0 +1,25 @@
+{% extends "client/pages/base.html" %}
+{% load i18n static %}
+
+{% block stylesheet %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'client/css/pages/students.css' %}">
+{% endblock %}
+
+<!-- site javascript section -->
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
+<!-- site javascript section -->
+
+{% block x-template %}
+  {% include 'client/pages/students/components/tables/index.html' %}
+{% endblock %}
+
+{% block app %}
+  <div id="students-container">
+    <div class="students-wrapper">
+      学生管理
+    </div>
+  </div>
+{% endblock %}

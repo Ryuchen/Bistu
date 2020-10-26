@@ -1,0 +1,160 @@
+{% load i18n static %}
+
+<script type="text/x-template" id="suit-major-tables">
+  <div>
+    <a-page-header title="专业列表"></a-page-header>
+    <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
+      <a-row :gutter="24">
+        <a-col key="maj_name" :span="8">
+          <a-form-item :label="`专业名称`">
+            <a-input v-decorator="['maj_name']" placeholder="输入你想查询的专业名称"></a-input>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="24" :style="{ textAlign: 'right' }">
+          <a-button type="primary" html-type="submit">
+            Search
+          </a-button>
+          <a-button :style="{ marginLeft: '8px' }" @click="handleReset">
+            Clear
+          </a-button>
+        </a-col>
+      </a-row>
+    </a-form>
+    <a-card hoverable style="border-radius: 5px; border: 1px dashed #e8e8e8; cursor: default;">
+      <a-table :columns="columns" :dataSource="data">
+        <span slot="name" slot-scope="text, record">
+          <a :href="`{% url "colleges:major-detail" %}?pk=${record.uuid}&name=${text}`"><% text %></a>
+        </span>
+        <span slot="first" slot-scope="text, record">
+          <a-tag :color="text ? 'green' : 'volcano'" >
+            <% record.maj_first %>
+          </a-tag>
+        </span>
+        <span slot="second" slot-scope="text, record">
+          <a-tag :color="text ? 'green' : 'volcano'" >
+            <% record.maj_second %>
+          </a-tag>
+        </span>
+        <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
+          <a-divider dashed>当前开设的研究方向</a-divider>
+          <div>
+            <template v-for="research in record.maj_research">
+              <a-tag :data-uuid="research.uuid"><% research.res_name %></a-tag>
+            </template>
+          </div>
+          <a-divider></a-divider>
+        </div>
+      </a-table>
+    </a-card>
+  </div>
+</script>
+
+<script type="application/javascript">
+    Vue.component('suit-major-tables', {
+      delimiters: ['<%', '%>'],
+      template: '#suit-major-tables',
+      data: function () {
+        return {
+          temp: [{}],
+          majors: [{}],
+          form: this.$form.createForm(this, { name: 'advanced_search' }),
+        }
+      },
+      computed: {
+        data: {
+          get () {
+            return this.temp;
+          },
+          set (value) {
+            this.temp = value;
+          }
+        },
+        columns () {
+          return [
+            {
+              dataIndex: 'maj_name',
+              key: 'name',
+              title: '专业名称',
+              scopedSlots: { customRender: 'name' },
+            },
+            {
+              dataIndex: 'maj_code',
+              key: 'code',
+              title: '专业编码',
+            },
+            {
+              dataIndex: 'maj_type',
+              key: 'type',
+              title: '学科类型',
+            },
+            {
+              dataIndex: 'maj_setup_time',
+              key: 'setup_time',
+              title: '获批时间',
+            },
+            {
+              dataIndex: 'maj_degree',
+              key: 'degree',
+              title: '学位类型',
+            },
+            {
+              dataIndex: 'student_count',
+              key: 'std_count',
+              title: '学生人数',
+            },
+            {
+              dataIndex: 'maj_first',
+              key: 'first',
+              title: '是否一级学科',
+              scopedSlots: { customRender: 'first' },
+            },
+            {
+              dataIndex: 'maj_second',
+              key: 'second',
+              title: '是否二级学科',
+              scopedSlots: { customRender: 'second' },
+            }
+          ]
+        }
+      },
+      created: function () {
+        this.getCollegesInfors();
+      },
+      methods: {
+        getCollegesInfors () {
+          axios({
+            url: "{% url 'api-colleges:majors' %}",
+            method: "GET",
+            headers: {
+              'X-CSRFTOKEN': window.csrftoken
+            }
+          }).then(response => {
+            const {code, data} = response.data;
+            if (code === "00000000") {
+              this.majors = data;
+              this.data = data;
+            }
+            this.loading = !this.loading;
+          }).catch(error => {
+            console.log(error);
+          });
+        },
+        handleSearch(e) {
+          e.preventDefault();
+          this.form.validateFields((error, values) => {
+            this.data = this.majors.filter(function (x) {
+              if (x.maj_name.indexOf(values.maj_name) === 0) {
+                return x;
+              }
+            });
+          });
+        },
+        handleReset() {
+          this.form.resetFields();
+          this.data = this.majors;
+        }
+      }
+    });
+</script>
